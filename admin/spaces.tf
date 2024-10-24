@@ -60,7 +60,7 @@ resource "spacelift_space" "opentofu" {
 
 resource "spacelift_space" "opentofu-aws" {
   name             = "aws"
-  parent_space_id  = spacelift_space.kubernetes.id
+  parent_space_id  = spacelift_space.opentofu.id
   inherit_entities = true
 }
 
