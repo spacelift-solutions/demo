@@ -1,0 +1,10 @@
+{
+  "universe_domain": "googleapis.com",
+  "type": "external_account",
+  "audience": "//iam.googleapis.com/projects/534988924197/locations/global/workloadIdentityPools/spacelift/providers/spacelift-io",
+  "subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
+  "token_url": "https://sts.googleapis.com/v1/token",
+  "credential_source": {
+    "file": "/mnt/workspace/spacelift.oidc"
+  }
+}
