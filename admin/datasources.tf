@@ -1,0 +1,1 @@
+data "spacelift_current_stack" "admin" {}
