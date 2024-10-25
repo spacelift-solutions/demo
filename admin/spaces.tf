@@ -125,7 +125,7 @@ resource "spacelift_space" "azure-terraform" {
 }
 
 resource "spacelift_space" "azure-terragrunt" {
-  name             = "ansible"
+  name             = "terragrunt"
   inherit_entities = true
   parent_space_id  = spacelift_space.azure.id
 }
