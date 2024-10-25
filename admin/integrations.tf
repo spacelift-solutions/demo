@@ -53,6 +53,6 @@ resource "google_service_account_iam_binding" "spacelift" {
   service_account_id = google_service_account.spacelift.name
   role               = "roles/iam.workloadIdentityUser"
 
-  members = [    "principalSet://iam.googleapis.com/projects/${data.google_project.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.spacelift.workload_identity_pool_id}/*"
+  members = ["principalSet://iam.googleapis.com/projects/${data.google_project.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.spacelift.workload_identity_pool_id}/*"
   ]
 }
