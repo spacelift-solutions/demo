@@ -2,6 +2,7 @@ resource "spacelift_context" "gcp" {
   description = "config needed for the workload identity gcp integration"
   name        = "gcp-config"
   labels      = ["autoattach:gcp"]
+  space_id    = spacelift_space.gcp.id
 }
 
 resource "spacelift_mounted_file" "gcp" {

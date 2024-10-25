@@ -1,7 +1,7 @@
 resource "spacelift_aws_integration" "demo" {
   name     = "demo"
   role_arn = var.role_arn
-  space_id = "root"
+  space_id = spacelift_space.aws.id
 }
 
 resource "spacelift_gcp_service_account" "admin" {
