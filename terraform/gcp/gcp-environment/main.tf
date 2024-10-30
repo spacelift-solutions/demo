@@ -277,7 +277,7 @@ variable "project_id" {
 
 variable "gcp_region" {
     type    = string
-    default = "europe-central2"
+    # default = "europe-central2"
 }
 
 variable "parent_space_id" {
