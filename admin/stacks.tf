@@ -14,7 +14,7 @@ module "stacks-module" {
     id      = spacelift_aws_integration.demo.id
   }
   labels            = ["aws", "networking"]
-  project_root      = "../opentofu/aws/vpc"
+  project_root      = "opentofu/aws/vpc"
   repository_branch = "main"
   tf_version = "1.8.4"
   # worker_pool_id            = string
