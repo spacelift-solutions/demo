@@ -101,8 +101,8 @@ resource "spacelift_stack" "env-iam" {
     # Main config
     administrative = false
     autodeploy = true
-    space_id = spacelift.gcp-dev-environment.id
-    branch = "main"
+    space_id = spacelift_space.gcp-dev-environment.id
+    branch = "feature/gcp-env-creator"
     project_root = "modules/iam-module"
     description = "The stack orchestrating the IAM component of the infrastructure"
     name = "gcp-env-iam"
@@ -115,8 +115,8 @@ resource "spacelift_stack" "env-iam" {
 resource "spacelift_stack" "env-gke" {
     administrative = false
     autodeploy = true
-    space_id = spacelift.gcp-dev-environment.id
-    branch = "main"
+    space_id = spacelift_space.gcp-dev-environment.id
+    branch = "feature/gcp-env-creator"
     project_root = "modules/gke-module"
     description = "The stack orchestrating the gke cluster"
     name = "gcp-env-gke"
@@ -129,8 +129,8 @@ resource "spacelift_stack" "env-gke" {
 resource "spacelift_stack" "env-db" {
     administrative = false
     autodeploy = true
-    space_id = spacelift.gcp-dev-environment.id
-    branch = "main"
+    space_id = spacelift_space.gcp-dev-environment.id
+    branch = "feature/gcp-env-creator"
     project_root = "modules/db-module"
     description = "The stack orchestrating the databases"
     name = "gcp-env-db"
@@ -143,8 +143,8 @@ resource "spacelift_stack" "env-db" {
 resource "spacelift_stack" "env-network" {
     administrative = false
     autodeploy = true
-    space_id = spacelift.gcp-dev-environment.id
-    branch = "main"
+    space_id = spacelift_space.gcp-dev-environment.id
+    branch = "feature/gcp-env-creator"
     project_root = "modules/networking-module"
     description = "The stack orchestrating the network of the env"
     name = "gcp-env-network"
