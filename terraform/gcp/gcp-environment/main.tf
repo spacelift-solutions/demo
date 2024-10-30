@@ -29,12 +29,12 @@ terraform {
 
 # Already defined via OIDC - using only for explicit needs.
 
-# provider "spacelift" {}
+provider "spacelift" {}
 
-# provider "google" {
-#   project = var.project_id
-#   region  = var.gcp-region
-# }
+provider "google" {
+  project = var.project_id
+  region  = var.gcp-region
+}
 
 /////////////////////////////
 ###--GCP MODULES REFENCE--###
@@ -102,7 +102,7 @@ resource "spacelift_stack" "env-iam" {
     administrative = false
     autodeploy = true
     space_id = spacelift_space.gcp-dev-environment.id
-    branch = "feature/gcp-env-creator"
+    branch = "main"
     project_root = "./modules/iam-module"
     description = "The stack orchestrating the IAM component of the infrastructure"
     name = "gcp-env-iam"
@@ -116,7 +116,7 @@ resource "spacelift_stack" "env-gke" {
     administrative = false
     autodeploy = true
     space_id = spacelift_space.gcp-dev-environment.id
-    branch = "feature/gcp-env-creator"
+    branch = "main"
     project_root = "./modules/gke-module"
     description = "The stack orchestrating the gke cluster"
     name = "gcp-env-gke"
@@ -130,7 +130,7 @@ resource "spacelift_stack" "env-db" {
     administrative = false
     autodeploy = true
     space_id = spacelift_space.gcp-dev-environment.id
-    branch = "feature/gcp-env-creator"
+    branch = "main"
     project_root = "./modules/db-module"
     description = "The stack orchestrating the databases"
     name = "gcp-env-db"
@@ -144,7 +144,7 @@ resource "spacelift_stack" "env-network" {
     administrative = false
     autodeploy = true
     space_id = spacelift_space.gcp-dev-environment.id
-    branch = "feature/gcp-env-creator"
+    branch = "main"
     project_root = "./modules/networking-module"
     description = "The stack orchestrating the network of the env"
     name = "gcp-env-network"
