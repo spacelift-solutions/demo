@@ -50,9 +50,4 @@ module "stacks-module" {
       value = var.disable_password_auth
     }
   }
-
-  environment = "QA"
-  resource_group_name = modules.resource_group_name
-  vnet_address_space = modules.vnet_address_space
-  subnet_address_prefixes = modules.subnet_address_prefixes
 }
