@@ -36,49 +36,49 @@ terraform {
 #   region  = var.gcp-region
 # }
 
-/////////////////////
-###--GCP MODULES--###
-////////////////////
+/////////////////////////////
+###--GCP MODULES REFENCE--###
+////////////////////////////
 
-module "iam" {
-  source     = "./modules/iam-module"
-  project_id = var.project_id
-  region     = var.gcp-region
-}
+# module "iam" {
+#   source     = "./modules/iam-module"
+#   project_id = var.project_id
+#   region     = var.gcp-region
+# }
 
-module "networking" {
-  source     = "./modules/networking-module"
-  project_id = var.project_id
-  region     = var.gcp-region
+# module "networking" {
+#   source     = "./modules/networking-module"
+#   project_id = var.project_id
+#   region     = var.gcp-region
   
-  depends_on = [module.iam]  # Wait for IAM and APIs to be ready
-}
+#   depends_on = [module.iam]  # Wait for IAM and APIs to be ready
+# }
 
-module "gke" {
-  source               = "./modules/gke-module"
-  project_id          = var.project_id
-  region              = var.gcp-region
-  network_name        = module.networking.vpc_name
-  subnet_name         = module.networking.subnet_name
-  gke_service_account = module.iam.gke_service_account_email
+# module "gke" {
+#   source               = "./modules/gke-module"
+#   project_id          = var.project_id
+#   region              = var.gcp-region
+#   network_name        = module.networking.vpc_name
+#   subnet_name         = module.networking.subnet_name
+#   gke_service_account = module.iam.gke_service_account_email
   
-  depends_on = [
-    module.iam,
-    module.networking
-  ]
-}
+#   depends_on = [
+#     module.iam,
+#     module.networking
+#   ]
+# }
 
-module "database" {
-  source      = "./modules/db-module"
-  project_id  = var.project_id
-  region      = var.gcp-region
-  network_id  = module.networking.vpc_id
+# module "database" {
+#   source      = "./modules/db-module"
+#   project_id  = var.project_id
+#   region      = var.gcp-region
+#   network_id  = module.networking.vpc_id
   
-  depends_on = [
-    module.networking,
-    module.gke  # If you want to ensure GKE is ready before DB
-  ]
-}
+#   depends_on = [
+#     module.networking,
+#     module.gke  # If you want to ensure GKE is ready before DB
+#   ]
+# }
 
 /////////////////////////////
 ###--SPACELIFT RESOURCES--###
@@ -103,7 +103,7 @@ resource "spacelift_stack" "env-iam" {
     autodeploy = true
     space_id = spacelift_space.gcp-dev-environment.id
     branch = "feature/gcp-env-creator"
-    project_root = "modules/iam-module"
+    project_root = "./modules/iam-module"
     description = "The stack orchestrating the IAM component of the infrastructure"
     name = "gcp-env-iam"
     repository = var.repository
@@ -117,7 +117,7 @@ resource "spacelift_stack" "env-gke" {
     autodeploy = true
     space_id = spacelift_space.gcp-dev-environment.id
     branch = "feature/gcp-env-creator"
-    project_root = "modules/gke-module"
+    project_root = "./modules/gke-module"
     description = "The stack orchestrating the gke cluster"
     name = "gcp-env-gke"
     repository = var.repository
@@ -131,7 +131,7 @@ resource "spacelift_stack" "env-db" {
     autodeploy = true
     space_id = spacelift_space.gcp-dev-environment.id
     branch = "feature/gcp-env-creator"
-    project_root = "modules/db-module"
+    project_root = "./modules/db-module"
     description = "The stack orchestrating the databases"
     name = "gcp-env-db"
     repository = var.repository
@@ -145,7 +145,7 @@ resource "spacelift_stack" "env-network" {
     autodeploy = true
     space_id = spacelift_space.gcp-dev-environment.id
     branch = "feature/gcp-env-creator"
-    project_root = "modules/networking-module"
+    project_root = "./modules/networking-module"
     description = "The stack orchestrating the network of the env"
     name = "gcp-env-network"
     repository = var.repository
