@@ -1,4 +1,4 @@
-module "stacks-module" {
+module "networking" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
   version = "0.3.0"
 
@@ -16,6 +16,28 @@ module "stacks-module" {
   labels            = ["aws", "networking"]
   project_root      = "opentofu/aws/vpc"
   repository_branch = "main"
-  tf_version = "1.8.4"
+  tf_version        = "1.8.4"
+  # worker_pool_id            = string
+}
+
+module "ec2" {
+  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  version = "0.3.0"
+
+  # Required inputs 
+  description     = "creates a simple EC2 instance"
+  name            = "ec2"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws-opentofu.id
+
+  # Optional inputs 
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "ec2"]
+  project_root      = "opentofu/aws/ec2"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
   # worker_pool_id            = string
 }
