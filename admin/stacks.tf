@@ -1,3 +1,4 @@
+
 # Azure Terraform Stack Deployment
 module "stacks-module" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
@@ -50,4 +51,53 @@ module "stacks-module" {
       value = var.disable_password_auth
     }
   }
+
+  environment = "QA"
+  resource_group_name = modules.resource_group_name
+  vnet_address_space = modules.vnet_address_space
+  subnet_address_prefixes = modules.subnet_address_prefixes
+}
+
+module "networking" {
+  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  version = "0.3.0"
+
+  # Required inputs 
+  description     = "stack that creates a VPC and handles networking"
+  name            = "networking"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws-opentofu.id
+
+  # Optional inputs 
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "networking"]
+  project_root      = "opentofu/aws/vpc"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
+  # worker_pool_id            = string
+}
+
+module "ec2" {
+  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  version = "0.3.0"
+
+  # Required inputs 
+  description     = "creates a simple EC2 instance"
+  name            = "ec2"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws-opentofu.id
+
+  # Optional inputs 
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "ec2"]
+  project_root      = "opentofu/aws/ec2"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
+  # worker_pool_id            = string
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Getting Started With Azure Terraform Deployments
 
 <!-- BEGIN_TF_DOCS -->
@@ -76,3 +77,6 @@ Virtual Machine Ex: `customerportal-qa-web1-vm`
 Subnet Ex: `customerportal-qa-web1-subnet`
 Resource Group Ex: `customerportal-qa-web1-rg`
 Virtual Network Ex: `customerportal-qa-web1-vnet`
+=======
+test ac
+>>>>>>> 9ce5d4222fa6bfe766c3910e54559f07a7c3ca80
