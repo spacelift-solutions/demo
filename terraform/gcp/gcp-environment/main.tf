@@ -14,18 +14,18 @@
 ##--PROVIDER CONFIGURATION--## 
 /////////////////////////////
 
-terraform {
-  required_providers {
-    spacelift = {
-      source  = "spacelift-io/spacelift"
-      version = "1.16.1"
-    }
-    google = {
-      source  = "opentofu/google"
-      version = "6.4.0"
-    }
-  }
-}
+# terraform {
+#   required_providers {
+#     spacelift = {
+#       source  = "spacelift-io/spacelift"
+#       version = "1.16.1"
+#     }
+#     google = {
+#       source  = "opentofu/google"
+#       version = "6.4.0"
+#     }
+#   }
+# }
 
 # Already defined via OIDC - using only for explicit needs.
 
