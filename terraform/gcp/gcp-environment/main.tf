@@ -271,12 +271,13 @@ resource "spacelift_drift_detection" "infra-state-drift-detector" {
 ///////////////////////////////////
 
 variable "project_id" {
-  type        = string
-  description = "default project for the GCP integration via workload identity"
+    type        = string
+    description = "default project for the GCP integration via workload identity"
 }
 
 variable "gcp-region" {
-  type    = string
+    type    = string
+    default = "europe-central2"
 }
 
 variable "parent_space_id" {
