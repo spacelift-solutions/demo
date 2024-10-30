@@ -29,12 +29,12 @@
 
 # Already defined via OIDC - using only for explicit needs.
 
-# provider "spacelift" {}
+provider "spacelift" {}
 
-# provider "google" {
-#   project = var.project_id
-#   region  = var.gcp-region
-# }
+provider "google" {
+  project = var.project_id
+  region  = var.gcp_region
+}
 
 /////////////////////////////
 ###--GCP MODULES REFENCE--###
@@ -275,7 +275,7 @@ variable "project_id" {
     description = "default project for the GCP integration via workload identity"
 }
 
-variable "gcp-region" {
+variable "gcp_region" {
     type    = string
     default = "europe-central2"
 }
