@@ -4,7 +4,7 @@ resource "spacelift_module" "stacks-module" {
   administrative     = true
   branch             = "main"
   description        = "module used to standardize creation of stacks"
-  repository         = "module-stack"
+  repository         = "module-stacks"
   space_id           = "root"
   workflow_tool      = "OPEN_TOFU"
 }
