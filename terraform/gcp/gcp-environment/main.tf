@@ -29,12 +29,12 @@ terraform {
 
 # Already defined via OIDC - using only for explicit needs.
 
-provider "spacelift" {}
+# provider "spacelift" {}
 
-provider "google" {
-  project = var.project_id
-  region  = var.gcp-region
-}
+# provider "google" {
+#   project = var.project_id
+#   region  = var.gcp-region
+# }
 
 /////////////////////
 ###--GCP MODULES--###
