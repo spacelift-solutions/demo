@@ -51,7 +51,7 @@ resource "google_container_node_pool" "primary_nodes" {
   node_count = var.node_count
 
   node_config {
-    preemptible  = true  # Cost optimization for demo
+    preemptible  = true # Cost optimization for demo
     machine_type = var.machine_type
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.

@@ -50,7 +50,7 @@ provider "google" {
 #   source     = "./modules/networking-module"
 #   project_id = var.project_id
 #   region     = var.gcp-region
-  
+
 #   depends_on = [module.iam]  # Wait for IAM and APIs to be ready
 # }
 
@@ -61,7 +61,7 @@ provider "google" {
 #   network_name        = module.networking.vpc_name
 #   subnet_name         = module.networking.subnet_name
 #   gke_service_account = module.iam.gke_service_account_email
-  
+
 #   depends_on = [
 #     module.iam,
 #     module.networking
@@ -73,7 +73,7 @@ provider "google" {
 #   project_id  = var.project_id
 #   region      = var.gcp-region
 #   network_id  = module.networking.vpc_id
-  
+
 #   depends_on = [
 #     module.networking,
 #     module.gke  # If you want to ensure GKE is ready before DB
@@ -88,69 +88,69 @@ provider "google" {
 
 # Create the space this env will live in:
 resource "spacelift_space" "gcp-dev-environment" {
-  name = "gcp-dev-environment"
-  parent_space_id = var.parent_space_id
+  name             = "gcp-dev-environment"
+  parent_space_id  = var.parent_space_id
   inherit_entities = true
-  labels = ["gcp", "tf_created"]
+  labels           = ["gcp", "tf_created"]
 }
 
 ###---STACKS---###
 
 # Defining the IAM Stack:
 resource "spacelift_stack" "env-iam" {
-    # Main config
-    administrative = false
-    autodeploy = true
-    space_id = spacelift_space.gcp-dev-environment.id
-    branch = "main"
-    project_root = "./modules/iam-module"
-    description = "The stack orchestrating the IAM component of the infrastructure"
-    name = "gcp-env-iam"
-    repository = var.repository
-    terraform_version = "1.5.0"
-    labels = var.labels
+  # Main config
+  administrative    = false
+  autodeploy        = true
+  space_id          = spacelift_space.gcp-dev-environment.id
+  branch            = "main"
+  project_root      = "./modules/iam-module"
+  description       = "The stack orchestrating the IAM component of the infrastructure"
+  name              = "gcp-env-iam"
+  repository        = var.repository
+  terraform_version = "1.5.0"
+  labels            = var.labels
 }
 
 # Defining the GKE Stack:
 resource "spacelift_stack" "env-gke" {
-    administrative = false
-    autodeploy = true
-    space_id = spacelift_space.gcp-dev-environment.id
-    branch = "main"
-    project_root = "./modules/gke-module"
-    description = "The stack orchestrating the gke cluster"
-    name = "gcp-env-gke"
-    repository = var.repository
-    terraform_version = "1.5.0"
-    labels = var.labels
+  administrative    = false
+  autodeploy        = true
+  space_id          = spacelift_space.gcp-dev-environment.id
+  branch            = "main"
+  project_root      = "./modules/gke-module"
+  description       = "The stack orchestrating the gke cluster"
+  name              = "gcp-env-gke"
+  repository        = var.repository
+  terraform_version = "1.5.0"
+  labels            = var.labels
 }
 
 # Defining the db's Stack:
 resource "spacelift_stack" "env-db" {
-    administrative = false
-    autodeploy = true
-    space_id = spacelift_space.gcp-dev-environment.id
-    branch = "main"
-    project_root = "./modules/db-module"
-    description = "The stack orchestrating the databases"
-    name = "gcp-env-db"
-    repository = var.repository
-    terraform_version = "1.5.0"
-    labels = var.labels
+  administrative    = false
+  autodeploy        = true
+  space_id          = spacelift_space.gcp-dev-environment.id
+  branch            = "main"
+  project_root      = "./modules/db-module"
+  description       = "The stack orchestrating the databases"
+  name              = "gcp-env-db"
+  repository        = var.repository
+  terraform_version = "1.5.0"
+  labels            = var.labels
 }
 
 # Defining the caching Stack:
 resource "spacelift_stack" "env-network" {
-    administrative = false
-    autodeploy = true
-    space_id = spacelift_space.gcp-dev-environment.id
-    branch = "main"
-    project_root = "./modules/networking-module"
-    description = "The stack orchestrating the network of the env"
-    name = "gcp-env-network"
-    repository = var.repository
-    terraform_version = "1.5.0"
-    labels = var.labels
+  administrative    = false
+  autodeploy        = true
+  space_id          = spacelift_space.gcp-dev-environment.id
+  branch            = "main"
+  project_root      = "./modules/networking-module"
+  description       = "The stack orchestrating the network of the env"
+  name              = "gcp-env-network"
+  repository        = var.repository
+  terraform_version = "1.5.0"
+  labels            = var.labels
 }
 
 ###--STACK DEPEDENCIES--###
@@ -173,20 +173,20 @@ resource "spacelift_stack_dependency" "db-network-dependency" {
 ###--CONTEXTS--###
 
 resource "spacelift_context" "bootstrapper-config" {
-    description = "Reusable scripts for bootstrapping environments, demo-grade."
-    name = "resource-creator"
-    labels = ["gcp", "bootstrap", "eu-zone"]
+  description = "Reusable scripts for bootstrapping environments, demo-grade."
+  name        = "resource-creator"
+  labels      = ["gcp", "bootstrap", "eu-zone"]
 
-    # config
-    before_plan = [
+  # config
+  before_plan = [
     "terraform validate",
     "terraform fmt"
-    ]
+  ]
 
 }
 
 resource "spacelift_context_attachment" "bootstrapper-config-attachment" {
-  for_each = local.all_stack_ids
+  for_each   = local.all_stack_ids
   context_id = resource.bootstrapper-config.id
   stack_id   = local.all_stack_ids
   priority   = 1
@@ -235,20 +235,20 @@ resource "spacelift_policy" "notification_policy" {
 
 # Policy attachments:
 resource "spacelift_policy_attachment" "attach_approval" {
-  for_each = local.all_stack_ids
-  stack_id = each.value
+  for_each  = local.all_stack_ids
+  stack_id  = each.value
   policy_id = spacelift_policy.approval_policy.id
 }
 
 resource "spacelift_policy_attachment" "attach_plan" {
-  for_each = local.all_stack_ids
-  stack_id = each.value
+  for_each  = local.all_stack_ids
+  stack_id  = each.value
   policy_id = spacelift_policy.plan_policy.id
 }
 
 resource "spacelift_policy_attachment" "attach_notification" {
-  for_each = local.all_stack_ids
-  stack_id = each.value
+  for_each  = local.all_stack_ids
+  stack_id  = each.value
   policy_id = spacelift_policy.notification_policy.id
 }
 
@@ -256,10 +256,10 @@ resource "spacelift_policy_attachment" "attach_notification" {
 
 # Configured for all stacks with local data: 
 resource "spacelift_drift_detection" "infra-state-drift-detector" {
-    for_each  = local.all_stack_ids
-    reconcile = true
-    stack_id  = each.value
-    schedule  = ["*/15 * * * *"]  # Every 15 minutes
+  for_each  = local.all_stack_ids
+  reconcile = true
+  stack_id  = each.value
+  schedule  = ["*/15 * * * *"] # Every 15 minutes
 }
 
 ###--WORKER POOLS--###
@@ -271,28 +271,28 @@ resource "spacelift_drift_detection" "infra-state-drift-detector" {
 ///////////////////////////////////
 
 variable "project_id" {
-    type        = string
-    description = "default project for the GCP integration via workload identity"
+  type        = string
+  description = "default project for the GCP integration via workload identity"
 }
 
 variable "gcp_region" {
-    type    = string
-    # default = "europe-central2"
+  type = string
+  # default = "europe-central2"
 }
 
 variable "parent_space_id" {
-    type = string
-    default = "terraform-01JB2XV7A8KN4FE6MGJKQNYF3J"
+  type    = string
+  default = "terraform-01JB2XV7A8KN4FE6MGJKQNYF3J"
 }
 
 variable "repository" {
-    type = string
-    default = "demo"
+  type    = string
+  default = "demo"
 }
 
 variable "labels" {
-    type = list(string)
-    default = ["gcp_env", "tf_created"]
+  type    = list(string)
+  default = ["gcp_env", "tf_created"]
 }
 
 ////////////////////

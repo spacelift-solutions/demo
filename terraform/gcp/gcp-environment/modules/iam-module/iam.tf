@@ -10,17 +10,17 @@
 # Enable necessary APIs
 resource "google_project_service" "required_apis" {
   for_each = toset([
-    "compute.googleapis.com",          
-    "container.googleapis.com",        
-    "servicenetworking.googleapis.com", 
-    "sqladmin.googleapis.com",         
-    "iam.googleapis.com",              
-    "cloudresourcemanager.googleapis.com",  
-    "redis.googleapis.com"             
+    "compute.googleapis.com",
+    "container.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "sqladmin.googleapis.com",
+    "iam.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "redis.googleapis.com"
   ])
 
-  project = var.project_id
-  service = each.value
+  project                    = var.project_id
+  service                    = each.value
   disable_dependent_services = false
 }
 
@@ -39,7 +39,7 @@ resource "google_project_iam_custom_role" "devops_role" {
     "compute.instances.start",
     "compute.instances.stop",
     "compute.instances.update",
-    
+
     # GKE permissions
     "container.clusters.get",
     "container.clusters.list",
@@ -48,14 +48,14 @@ resource "google_project_iam_custom_role" "devops_role" {
     "container.clusters.delete",
     "container.operations.get",
     "container.operations.list",
-    
+
     # Cloud SQL permissions
     "cloudsql.instances.get",
     "cloudsql.instances.list",
     "cloudsql.instances.update",
     "cloudsql.instances.create",
     "cloudsql.instances.delete",
-    
+
     # IAM permissions
     "iam.roles.get",
     "iam.roles.list",
@@ -63,13 +63,13 @@ resource "google_project_iam_custom_role" "devops_role" {
     "iam.serviceAccounts.list",
     "iam.serviceAccounts.create",
     "iam.serviceAccounts.delete",
-    
+
     # Storage permissions
     "storage.buckets.get",
     "storage.buckets.list",
     "storage.buckets.create",
     "storage.buckets.delete",
-    
+
     # Logging and Monitoring
     "logging.logEntries.list",
     "logging.logs.list",

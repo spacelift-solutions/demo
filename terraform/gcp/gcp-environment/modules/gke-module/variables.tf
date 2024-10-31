@@ -45,7 +45,7 @@ variable "node_count" {
 variable "machine_type" {
   type        = string
   description = "Machine type for nodes"
-  default     = "e2-medium"  # Demo-grade
+  default     = "e2-medium" # Demo-grade
 }
 
 variable "gke_service_account" {
