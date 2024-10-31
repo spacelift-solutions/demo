@@ -26,7 +26,7 @@ variable "network_id" {
 variable "db_tier" {
   type        = string
   description = "The machine type for the database instance"
-  default     = "db-f1-micro"  # Demo-grade
+  default     = "db-f1-micro" # Demo-grade
 }
 
 variable "db_name" {

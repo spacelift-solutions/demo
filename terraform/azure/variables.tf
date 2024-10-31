@@ -66,6 +66,6 @@ variable "disable_password_auth" {
 
 variable "subscription_id" {
   description = "The Subscription ID is required to run a plan or apply"
-  type = string
-  sensitive = true
+  type        = string
+  sensitive   = true
 }

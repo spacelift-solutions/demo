@@ -1,33 +1,33 @@
 
 variable "project_name" {
   description = "Name of the Project"
-  type = string
+  type        = string
 }
 
 variable "environment" {
   description = "Name of the Environment - Sandbox, QA, or Prod"
-  type = string
+  type        = string
 }
 
 variable "location" {
   description = "Azure region"
   type        = string
-  default = "East US 2"
+  default     = "East US 2"
 }
 variable "vm_role" {
   description = "Role of the VM Resource"
-  type = string
+  type        = string
 }
 
 variable "vm_number" {
   description = "Number of the VM Resource"
-  type = string
+  type        = string
 }
 
 variable "vm_size" {
   description = "Size of the VM Resource"
-  type = string
-  default = "Standard_A1_v2"
+  type        = string
+  default     = "Standard_A1_v2"
 }
 
 variable "resource_group_name" {
@@ -41,9 +41,9 @@ variable "subnet_id" {
 }
 
 variable "admin_username" {
-  type = string
+  type        = string
   description = "Azure Virtual Machine Admin Username"
-  default = "cloudopsuser1"
+  default     = "cloudopsuser1"
 }
 
 variable "admin_password" {
@@ -60,8 +60,8 @@ variable "disable_password_auth" {
 
 variable "subscription_id" {
   description = "The Subscription ID is required to run a plan or apply"
-  type = string
-  sensitive = true
+  type        = string
+  sensitive   = true
 }
 
 

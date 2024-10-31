@@ -21,7 +21,7 @@ variable "region" {
 variable "devops_principals" {
   type        = list(string)
   description = "List of principals to attach to DevOps role (e.g., user:user@domain.com, group:group@domain.com)"
-  default     = [
+  default = [
     "emina@spacelift.io",
     "joeys@spacelift.io",
     "jubrann@spacelift.io",
