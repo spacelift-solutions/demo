@@ -55,7 +55,7 @@ module "azure-linux-stack" {
 
 module "networking" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = "0.3.0"
+  version = "0.5.0"
 
   # Required inputs 
   description     = "stack that creates a VPC and handles networking"
@@ -73,11 +73,23 @@ module "networking" {
   repository_branch = "main"
   tf_version        = "1.8.4"
   # worker_pool_id            = string
+  dependencies = {
+    ec2 = {
+      dependent_stack_id = module.ec2.id
+      output_name        = "subnetId"
+      input_name         = "subnetId"
+    }
+    ec3 = {
+      dependent_stack_id = module.ec2.id
+      output_name        = "dev-sg"
+      input_name         = "aws_security_group_id"
+    }
+  }
 }
 
 module "ec2" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = "0.3.0"
+  version = "0.5.0"
 
   # Required inputs 
   description     = "creates a simple EC2 instance"

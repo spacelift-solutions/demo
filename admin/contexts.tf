@@ -28,15 +28,15 @@ resource "spacelift_context" "ansible-context" {
 
 resource "spacelift_environment_variable" "ansible_remote_user" {
   context_id = spacelift_context.ansible-context.id
-  name = "ANSIBLE_REMOTE_USER"
-  value = "ec2-user" 
+  name       = "ANSIBLE_REMOTE_USER"
+  value      = "ec2-user"
   write_only = false
 }
 
 resource "spacelift_environment_variable" "ansible_inventory" {
   context_id = spacelift_context.ansible-context.id
-  name = "ANSIBLE_INVENTORY"
-  value = "/mnt/workspace/inventory.ini" 
+  name       = "ANSIBLE_INVENTORY"
+  value      = "/mnt/workspace/inventory.ini"
   write_only = false
 }
 
