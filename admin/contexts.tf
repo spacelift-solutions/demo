@@ -67,3 +67,8 @@ resource "spacelift_environment_variable" "ansible_private_key_file" {
   value      = "/mnt/workspace/id_rsa"
   write_only = false
 }
+
+resource "spacelift_context_attachment" "ansible_ec2" {
+  context_id = spacelift_context.ansible_context.id
+  stack_id = module.stack_aws_ec2.id
+}
