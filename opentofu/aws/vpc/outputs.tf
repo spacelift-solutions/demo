@@ -4,5 +4,5 @@ output "subnetId" {
 }
 
 output "dev-sg" {
-  value = aws.aws_security_group.allow_access.id
+  value = aws_security_group.allow_access.id
 }
