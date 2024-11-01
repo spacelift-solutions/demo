@@ -26,6 +26,13 @@ resource "spacelift_context" "ansible_context" {
   labels      = ["autoattach:ansible"]
 }
 
+resource "spacelift_context" "public_key" {
+  description = "public key for EC2 instance"
+  name = "EC2 Public key"
+  space_id = spacelift_space.aws-opentofu.id
+  labels = ["autoattach:ec2"]
+}
+
 resource "spacelift_environment_variable" "ansible_remote_user" {
   context_id = spacelift_context.ansible_context.id
   name       = "ANSIBLE_REMOTE_USER"
@@ -54,7 +61,7 @@ resource "spacelift_mounted_file" "private_key" {
 }
 
 resource "spacelift_mounted_file" "public_key" {
-  context_id    = spacelift_context.ansible_context.id
+  context_id    = spacelift_context.public_key.id
   relative_path = "id_rsa.pub"
   content       = base64encode(tls_private_key.rsa.public_key_openssh)
   write_only    = true
@@ -66,9 +73,4 @@ resource "spacelift_environment_variable" "ansible_private_key_file" {
   name       = "ANSIBLE_PRIVATE_KEY_FILE"
   value      = "/mnt/workspace/id_rsa"
   write_only = false
-}
-
-resource "spacelift_context_attachment" "ansible_ec2" {
-  context_id = spacelift_context.ansible_context.id
-  stack_id = module.stack_aws_ec2.id
 }
