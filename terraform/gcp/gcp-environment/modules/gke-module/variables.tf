@@ -3,10 +3,9 @@ variable "project_id" {
   description = "The GCP project ID"
 }
 
-variable "environment" {
+variable "environment_type" {
   type        = string
   description = "Environment name (e.g., dev, staging, prod)"
-  default     = "dev"
 }
 
 variable "region" {
@@ -45,7 +44,7 @@ variable "node_count" {
 variable "machine_type" {
   type        = string
   description = "Machine type for nodes"
-  default     = "e2-medium" # Demo-grade
+  default     = "e2-small" # Demo-grade
 }
 
 variable "gke_service_account" {

@@ -1,16 +1,11 @@
-////////////////////////////
-###---MODULE VARIABLES---###
-////////////////////////////
-
 variable "project_id" {
   type        = string
   description = "The GCP project ID"
 }
 
-variable "environment" {
+variable "environment_type" {
   type        = string
   description = "Environment name (e.g., dev, staging, prod)"
-  default     = "dev"
 }
 
 variable "region" {
@@ -26,23 +21,30 @@ variable "network_id" {
 variable "db_tier" {
   type        = string
   description = "The machine type for the database instance"
-  default     = "db-f1-micro" # Demo-grade
+  default     = "db-f1-micro"  # Demo-grade
 }
 
 variable "db_name" {
   type        = string
   description = "The name of the database to create"
-  default     = "mg_demo_db"
+  default     = "myapp"
 }
 
 variable "db_user" {
   type        = string
   description = "The name of the database user"
-  default     = "db_demo_user"
+  default     = "myapp_user"
 }
 
-variable "db_password" {
-  type        = string
-  description = "The password for the database user"
-  sensitive   = true
+variable "secret_accessors" {
+  type        = list(string)
+  description = "List of members that can access the password secret"
+  default     = [
+    "emina@spacelift.io",
+    "joeys@spacelift.io",
+    "jubrann@spacelift.io",
+    "maring@spacelift.io",
+    "chrisd@spacelift.io",
+    "aaronc@spacelift.io"
+  ]
 }

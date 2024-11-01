@@ -9,7 +9,7 @@
 
 # Create GKE cluster
 resource "google_container_cluster" "primary" {
-  name     = "${var.environment}-gke-cluster"
+  name     = "${var.environment_type}-gke-cluster"
   location = var.region
   project  = var.project_id
 

@@ -10,5 +10,12 @@ variable "project_id" {
 
 variable "gcp_region" {
   type    = string
+  description = "the default gcp region to be used across gcp stacks"
   default = "us-east1"
+}
+
+variable "gcp-environment-type" {
+  type = string
+  description = "the default env type to be used across gcp stacks"
+  default = "dev"
 }

@@ -7,7 +7,7 @@ variable "project_id" {
   description = "The GCP project ID"
 }
 
-variable "environment" {
+variable "environment_type" {
   type        = string
   description = "Environment name (e.g., dev, staging, prod)"
 }

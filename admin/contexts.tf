@@ -1,3 +1,5 @@
+###--GCP OIDC INTEGRATION--##
+
 resource "spacelift_context" "gcp" {
   description = "config needed for the workload identity gcp integration"
   name        = "gcp-config"
@@ -74,3 +76,5 @@ resource "spacelift_environment_variable" "ansible_private_key_file" {
   value      = "/mnt/workspace/id_rsa"
   write_only = false
 }
+
+##--GCP ENV CONTEXTS--##
