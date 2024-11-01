@@ -79,7 +79,7 @@ module "stack_aws_vpc" {
 
       references = {
         SUBNET = {
-          output_name = "subnetID"
+          output_name = "subnetId"
           input_name  = "TF_VAR_subnetId"
           trigger_always = true
         }
@@ -113,14 +113,4 @@ module "stack_aws_ec2" {
   repository_branch = "main"
   tf_version        = "1.8.4"
   # worker_pool_id            = string
-  environment_variables = {
-    TF_VAR_subnetId = {
-      sensitive = true
-      value = ""
-    }
-    TF_VAR_aws_security_group_id = {
-      sensitive = true
-      value = ""
-    }
-  }
 }
