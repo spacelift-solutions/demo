@@ -1,0 +1,43 @@
+---
+- name: Install and Configure Nginx
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+  pre_tasks:
+    - name: Set SSH user for Ubuntu systems
+      set_fact:
+        ansible_user: ubuntu
+      when: ansible_os_family == "Debian"
+
+    - name: Set SSH user for RedHat systems
+      set_fact:
+        ansible_user: ec2-user
+      when: ansible_os_family == "RedHat"
+
+  tasks:
+    - name: Wait for system to become reachable
+      ansible.builtin.wait_for_connection:
+          timeout: 180
+
+    - name: Install Nginx Redhat
+      ansible.builtin.yum:
+        name: nginx
+        state: present
+      when: ansible_os_family == "RedHat"
+      
+    - name: install nginx Debian
+      apt: name=nginx state=latest
+      when: ansible_os_family == "Debian"
+
+    - name: Create index.html
+      ansible.builtin.copy:
+        dest: /usr/share/nginx/html/index.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head><title>Server Details</title></head>
+          <body>
+          <h1>Served from {{ ansible_hostname }}</h1>
+          </body>
+          </html>
+        mode: '0644'
