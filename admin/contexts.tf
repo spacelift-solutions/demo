@@ -28,9 +28,9 @@ resource "spacelift_context" "ansible_context" {
 
 resource "spacelift_context" "public_key" {
   description = "public key for EC2 instance"
-  name = "EC2 Public key"
-  space_id = spacelift_space.aws-opentofu.id
-  labels = ["autoattach:ec2"]
+  name        = "EC2 Public key"
+  space_id    = spacelift_space.aws-opentofu.id
+  labels      = ["autoattach:ec2"]
 }
 
 resource "spacelift_environment_variable" "ansible_remote_user" {
