@@ -1,13 +1,13 @@
 
 # Azure Terraform Stack Deployment
-module "azure-linux-stack" {
+module "azure_linux_stack" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs 
   name            = "azure-terraform-stack"
   description     = "Stack to Deploy Infrastructure to Azure"
   repository_name = "demo"
-  space_id        = spacelift_space.azure-terraform.id
+  space_id        = spacelift_space.azure_terraform.id
   #   Optional Inputs
   workflow_tool = "TERRAFORM_FOSS"
   tf_version    = "1.5.7"
@@ -59,7 +59,7 @@ module "stack_aws_vpc" {
   description     = "stack that creates a VPC and handles networking"
   name            = "networking"
   repository_name = "demo"
-  space_id        = spacelift_space.aws-opentofu.id
+  space_id        = spacelift_space.aws_opentofu.id
 
   # Optional inputs 
   aws_integration = {
@@ -98,7 +98,7 @@ module "stack_aws_ec2" {
   description     = "creates a simple EC2 instance"
   name            = "ec2"
   repository_name = "demo"
-  space_id        = spacelift_space.aws-opentofu.id
+  space_id        = spacelift_space.aws_opentofu.id
 
   # Optional inputs 
   aws_integration = {

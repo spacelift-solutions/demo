@@ -22,14 +22,14 @@ resource "spacelift_environment_variable" "gcp" {
 resource "spacelift_context" "ansible_context" {
   description = "Context for Ansible stacks"
   name        = "Ansible context"
-  space_id    = spacelift_space.aws-ansible.id
+  space_id    = spacelift_space.aws_ansible.id
   labels      = ["autoattach:ansible"]
 }
 
 resource "spacelift_context" "public_key" {
   description = "public key for EC2 instance"
   name        = "EC2 Public key"
-  space_id    = spacelift_space.aws-opentofu.id
+  space_id    = spacelift_space.aws_opentofu.id
   labels      = ["autoattach:ec2"]
 }
 

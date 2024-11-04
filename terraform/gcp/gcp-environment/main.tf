@@ -87,7 +87,7 @@ provider "google" {
 ###---SPACES---###
 
 # Create the space this env will live in:
-resource "spacelift_space" "gcp-dev-environment" {
+resource "spacelift_space" "gcp_dev_environment" {
   name             = "gcp-dev-environment"
   parent_space_id  = var.parent_space_id
   inherit_entities = true
@@ -97,11 +97,11 @@ resource "spacelift_space" "gcp-dev-environment" {
 ###---STACKS---###
 
 # Defining the IAM Stack:
-resource "spacelift_stack" "env-iam" {
+resource "spacelift_stack" "env_iam" {
   # Main config
   administrative    = false
   autodeploy        = true
-  space_id          = spacelift_space.gcp-dev-environment.id
+  space_id          = spacelift_space.gcp_dev_environment.id
   branch            = "main"
   project_root      = "./modules/iam-module"
   description       = "The stack orchestrating the IAM component of the infrastructure"
@@ -112,10 +112,10 @@ resource "spacelift_stack" "env-iam" {
 }
 
 # Defining the GKE Stack:
-resource "spacelift_stack" "env-gke" {
+resource "spacelift_stack" "env_gke" {
   administrative    = false
   autodeploy        = true
-  space_id          = spacelift_space.gcp-dev-environment.id
+  space_id          = spacelift_space.gcp_dev_environment.id
   branch            = "main"
   project_root      = "./modules/gke-module"
   description       = "The stack orchestrating the gke cluster"
@@ -126,10 +126,10 @@ resource "spacelift_stack" "env-gke" {
 }
 
 # Defining the db's Stack:
-resource "spacelift_stack" "env-db" {
+resource "spacelift_stack" "env_db" {
   administrative    = false
   autodeploy        = true
-  space_id          = spacelift_space.gcp-dev-environment.id
+  space_id          = spacelift_space.gcp_dev_environment.id
   branch            = "main"
   project_root      = "./modules/db-module"
   description       = "The stack orchestrating the databases"
@@ -140,10 +140,10 @@ resource "spacelift_stack" "env-db" {
 }
 
 # Defining the caching Stack:
-resource "spacelift_stack" "env-network" {
+resource "spacelift_stack" "env_network" {
   administrative    = false
   autodeploy        = true
-  space_id          = spacelift_space.gcp-dev-environment.id
+  space_id          = spacelift_space.gcp_dev_environment.id
   branch            = "main"
   project_root      = "./modules/networking-module"
   description       = "The stack orchestrating the network of the env"
@@ -155,24 +155,24 @@ resource "spacelift_stack" "env-network" {
 
 ###--STACK DEPEDENCIES--###
 
-resource "spacelift_stack_dependency" "iam-network-dependency" {
-  stack_id            = spacelift_stack.env-network.id
-  depends_on_stack_id = spacelift_stack.env-iam.id
+resource "spacelift_stack_dependency" "iam_network_dependency" {
+  stack_id            = spacelift_stack.env_network.id
+  depends_on_stack_id = spacelift_stack.env_iam.id
 }
 
-resource "spacelift_stack_dependency" "network-gke-dependency" {
-  stack_id            = spacelift_stack.env-gke.id
-  depends_on_stack_id = spacelift_stack.env-network.id
+resource "spacelift_stack_dependency" "network_gke_dependency" {
+  stack_id            = spacelift_stack.env_gke.id
+  depends_on_stack_id = spacelift_stack.env_network.id
 }
 
-resource "spacelift_stack_dependency" "db-network-dependency" {
-  stack_id            = spacelift_stack.env-db.id
-  depends_on_stack_id = spacelift_stack.env-network.id
+resource "spacelift_stack_dependency" "db_network_dependency" {
+  stack_id            = spacelift_stack.env_db.id
+  depends_on_stack_id = spacelift_stack.env_network.id
 }
 
 ###--CONTEXTS--###
 
-resource "spacelift_context" "bootstrapper-config" {
+resource "spacelift_context" "bootstrapper_config" {
   description = "Reusable scripts for bootstrapping environments, demo-grade."
   name        = "resource-creator"
   labels      = ["gcp", "bootstrap", "eu-zone"]
@@ -185,25 +185,25 @@ resource "spacelift_context" "bootstrapper-config" {
 
 }
 
-resource "spacelift_context_attachment" "bootstrapper-config-attachment" {
+resource "spacelift_context_attachment" "bootstrapper_config_attachment" {
   for_each   = local.all_stack_ids
-  context_id = resource.bootstrapper-config.id
+  context_id = resource.bootstrapper_config.id
   stack_id   = local.all_stack_ids
   priority   = 1
 }
 
 ###--ENV VARIABLES--###
 
-resource "spacelift_environment_variable" "gcp-project" {
-  context_id  = resource.bootstrapper-config.id
+resource "spacelift_environment_variable" "gcp_project" {
+  context_id  = resource.bootstrapper_config.id
   name        = "TF_VAR_project_id"
   value       = "swift-climate-439711-s0"
   write_only  = true
   description = "Project var used across multiple stacks"
 }
 
-resource "spacelift_environment_variable" "gcp-region" {
-  context_id  = resource.bootstrapper-config.id
+resource "spacelift_environment_variable" "gcp_region" {
+  context_id  = resource.bootstrapper_config.id
   name        = "TF_VAR_region"
   value       = "europe-central2"
   write_only  = true
@@ -255,7 +255,7 @@ resource "spacelift_policy_attachment" "attach_notification" {
 ###--DRIFT DETECTION--### 
 
 # Configured for all stacks with local data: 
-resource "spacelift_drift_detection" "infra-state-drift-detector" {
+resource "spacelift_drift_detection" "infra_state_drift_detector" {
   for_each  = local.all_stack_ids
   reconcile = true
   stack_id  = each.value
@@ -308,9 +308,9 @@ variable "labels" {
 # Used for spacelift_drift_detection
 locals {
   all_stack_ids = {
-    iam     = spacelift_stack.env-iam.id
-    gke     = spacelift_stack.env-gke.id
-    db      = spacelift_stack.env-db.id
-    caching = spacelift_stack.env-caching.id
+    iam     = spacelift_stack.env_iam.id
+    gke     = spacelift_stack.env_gke.id
+    db      = spacelift_stack.env_db.id
+    caching = spacelift_stack.env_caching.id
   }
 }

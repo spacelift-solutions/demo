@@ -3,6 +3,6 @@ output "subnetId" {
   value       = aws_subnet.dev_public_subnet.id
 }
 
-output "dev-sg" {
+output "dev_sg" {
   value = aws_security_group.allow_access.id
 }
