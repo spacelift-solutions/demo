@@ -17,3 +17,5 @@ track {
   module_version != "999999999999999.99999999999999.99999999999"
   not propose
 }
+
+sample := true
