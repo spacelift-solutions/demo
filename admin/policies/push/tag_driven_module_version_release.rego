@@ -15,7 +15,7 @@ propose {
 
 track { 
   module_version != "999999999999999.99999999999999.99999999999"
-  not purpose
+  not propose
 }
 
 sample := true
