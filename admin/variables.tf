@@ -8,7 +8,7 @@ variable "project_id" {
   description = "default project for the GCP integration via workload identity"
 }
 
-variable "gcp-region" {
+variable "gcp_region" {
   type    = string
   default = "us-east1"
 }
