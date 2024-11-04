@@ -1,8 +1,7 @@
 
 # Azure Terraform Stack Deployment
 module "azure-linux-stack" {
-  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = ">=0.3.0"
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs 
   name            = "azure-terraform-stack"
@@ -54,8 +53,7 @@ module "azure-linux-stack" {
 }
 
 module "stack_aws_vpc" {
-  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = "0.6.0"
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs 
   description     = "stack that creates a VPC and handles networking"
@@ -94,8 +92,7 @@ module "stack_aws_vpc" {
 }
 
 module "stack_aws_ec2" {
-  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = "0.5.0"
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs 
   description     = "creates a simple EC2 instance"
