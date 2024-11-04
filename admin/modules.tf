@@ -7,4 +7,5 @@ resource "spacelift_module" "stacks-module" {
   repository         = "module-stacks"
   space_id           = "root"
   workflow_tool      = "OPEN_TOFU"
+  enable_local_preview = true
 }
