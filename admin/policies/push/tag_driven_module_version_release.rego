@@ -15,5 +15,5 @@ propose {
 
 track { 
   module_version != "999999999999999.99999999999999.99999999999"
-  input.push.branch == input.module.branch
+  not propose
 }
