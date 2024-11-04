@@ -82,7 +82,7 @@ module "stack_aws_vpc" {
           trigger_always = true
         }
         SECURITY_GROUP = {
-          output_name    = "dev-sg"
+          output_name    = "dev_sg"
           input_name     = "TF_VAR_aws_security_group_id"
           trigger_always = true
         }
