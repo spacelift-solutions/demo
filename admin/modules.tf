@@ -8,4 +8,6 @@ resource "spacelift_module" "stacks-module" {
   space_id           = "root"
   workflow_tool      = "OPEN_TOFU"
   enable_local_preview = true
+  public             = true
+  labels             = ["module"]
 }

@@ -79,13 +79,13 @@ module "stack_aws_vpc" {
 
       references = {
         SUBNET = {
-          output_name = "subnetId"
-          input_name  = "TF_VAR_subnetId"
+          output_name    = "subnetId"
+          input_name     = "TF_VAR_subnetId"
           trigger_always = true
         }
         SECURITY_GROUP = {
-          output_name = "dev-sg"
-          input_name  = "TF_VAR_aws_security_group_id"
+          output_name    = "dev-sg"
+          input_name     = "TF_VAR_aws_security_group_id"
           trigger_always = true
         }
       }
