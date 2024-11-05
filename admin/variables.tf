@@ -14,6 +14,6 @@ variable "gcp_region" {
 }
 
 variable "gcp_environment_type" {
-  type = string
+  type    = string
   default = "dev"
 }
