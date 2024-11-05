@@ -123,14 +123,6 @@ module "stack_gcp_gke" {
       sensitive = false
       value     = var.gcp_environment_type
     }
-    TF_VAR_network_name = {
-      sensitive = false
-      value     = "$${tracked.gcp-network.vpc_name}"
-    }
-    TF_VAR_subnet_name = {
-      sensitive = false
-      value     = "$${tracked.gcp-network.subnet_name}"
-    }
   }
 }
 
@@ -165,10 +157,6 @@ module "stack_gcp_db" {
     TF_VAR_environment_type = {
       sensitive = false
       value     = var.gcp_environment_type
-    }
-    TF_VAR_network_id = {
-      sensitive = false
-      value     = "$${tracked.gcp-network.vpc_id}"
     }
   }
 }
