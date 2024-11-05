@@ -35,16 +35,7 @@ module "stack_gcp_iam" {
    dependencies = {
     NETWORK = {
       dependent_stack_id = module.stack_gcp_networking.id
-<<<<<<< HEAD
       trigger_always = true
-=======
-
-      references = {
-        PROJECT_ID = {
-          output_name = "TF_VAR_project_id"
-          trigger_always    = true
-        }
->>>>>>> f36c8e4 (fix: fixing typos and depedency definition.)
       }
     }
 
@@ -99,11 +90,7 @@ module "stack_gcp_networking" {
     DB = {
       dependent_stack_id = module.stack_gcp_db.id
       
-<<<<<<< HEAD
-      references = {
-=======
       references {
->>>>>>> f36c8e4 (fix: fixing typos and depedency definition.)
         NETWORK = {
           trigger_always    = true
           output_name       = "vpc_id"
