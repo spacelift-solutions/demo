@@ -3,13 +3,13 @@ variable "project_id" {
   description = "The GCP project ID"
 }
 
-variable "environment" {
+variable "gcp_environment_type" {
   type        = string
   description = "Environment name (e.g., dev, staging, prod)"
   default     = "dev"
 }
 
-variable "region" {
+variable "gcp_region" {
   type        = string
   description = "The GCP region for the cluster"
 }

@@ -2,23 +2,18 @@
 ###---MODULE RESOURCES---###
 ////////////////////////////
 
-// Author: MG
-
-// Anyone can add additional resources 
-// With the modules, the regular "modular" approach of files is followed, due to the expected growing size.
-
 # Create VPC
 resource "google_compute_network" "vpc" {
-  name                    = "${var.environment}-vpc"
+  name                    = "${var.gcp_environment_type}-vpc"
   project                 = var.project_id
   auto_create_subnetworks = false
 }
 
 # Create subnet
 resource "google_compute_subnetwork" "subnet" {
-  name          = "${var.environment}-subnet"
+  name          = "${var.gcp_environment_type}-subnet"
   project       = var.project_id
-  region        = var.region
+  region        = var.gcp_region
   network       = google_compute_network.vpc.id
   ip_cidr_range = var.subnet_cidr
 
@@ -34,14 +29,14 @@ resource "google_compute_subnetwork" "subnet" {
 
 # Create Cloud NAT for outbound internet access
 resource "google_compute_router" "router" {
-  name    = "${var.environment}-router"
+  name    = "${var.gcp_environment_type}-router"
   project = var.project_id
-  region  = var.region
+  region  = var.gcp_region
   network = google_compute_network.vpc.id
 }
 
 resource "google_compute_router_nat" "nat" {
-  name                               = "${var.environment}-nat"
+  name                               = "${var.gcp_environment_type}-nat"
   project                            = var.project_id
   router                             = google_compute_router.router.name
   region                             = var.region
@@ -51,7 +46,7 @@ resource "google_compute_router_nat" "nat" {
 
 # Basic firewall rules
 resource "google_compute_firewall" "allow_internal" {
-  name    = "${var.environment}-allow-internal"
+  name    = "${var.gcp_environment_type}-allow-internal"
   project = var.project_id
   network = google_compute_network.vpc.id
 
@@ -69,7 +64,7 @@ resource "google_compute_firewall" "allow_internal" {
 }
 
 resource "google_compute_firewall" "allow_health_checks" {
-  name    = "${var.environment}-allow-health-checks"
+  name    = "${var.gcp_var.environment_type}-allow-health-checks"
   project = var.project_id
   network = google_compute_network.vpc.id
 
