@@ -85,7 +85,7 @@ module "stack_gcp_networking" {
     GKE = {
       dependent_stack_id = module.stack_gcp_gke.id
 
-      references {
+      references = {
         VPC = {
           trigger_always    = true
           output_name       = "vpc_name"
