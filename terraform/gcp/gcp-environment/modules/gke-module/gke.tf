@@ -2,15 +2,10 @@
 ###---MODULE RESOURCES---###
 ////////////////////////////
 
-// Author: MG
-
-// Anyone can add additional resources 
-// With the modules, the regular "modular" approach of files is followed, due to the expected growing size.
-
 # Create GKE cluster
 resource "google_container_cluster" "primary" {
-  name     = "${var.environment}-gke-cluster"
-  location = var.region
+  name     = "${var.gcp_environment_type}-gke-cluster"
+  location = var.gcp_region
   project  = var.project_id
 
   # We can't create a cluster with no node pool defined, but we want to only use
@@ -44,7 +39,7 @@ resource "google_container_cluster" "primary" {
 
 # Create managed node pool
 resource "google_container_node_pool" "primary_nodes" {
-  name       = "${var.environment}-node-pool"
+  name       = "${var.gcp_environment_type}-node-pool"
   location   = var.region
   cluster    = google_container_cluster.primary.name
   project    = var.project_id
