@@ -285,13 +285,12 @@ module "stack_aws_ec2" {
 
 module "stack_aws_ansible" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = "0.5.0"
 
   # Required inputs 
   description     = "creates an ansible stack to install nginx"
   name            = "ansible-ec2"
   repository_name = "demo"
-  space_id        = spacelift_space.aws-opentofu.id
+  space_id        = spacelift_space.aws_ansible.id
 
   # Optional inputs 
   aws_integration = {
@@ -301,6 +300,18 @@ module "stack_aws_ansible" {
   labels            = ["aws", "ansible"]
   project_root      = "ansible/aws"
   repository_branch = "main"
-  tf_version        = "1.8.4"
   # worker_pool_id            = string
+    dependencies = {
+    ec2 = {
+      dependent_stack_id = module.stack_aws_ec2.id
+
+      references = {
+        VPC = {
+          trigger_always    = false
+          output_name       = "instance_ip"
+          input_name        = "host" 
+        }
+      }
+    }
+  }
 }
