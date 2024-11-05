@@ -22,7 +22,7 @@ module "stack_gcp_iam" {
       sensitive = true 
       value     = var.project_id
     }
-    TF_VAR_gcp_egion = {
+    TF_VAR_region = {
       sensitive = true 
       value     = var.gcp_region
     }
@@ -65,7 +65,7 @@ module "stack_gcp_networking" {
       sensitive = true 
       value     = var.project_id
     }
-    TF_VAR_gcp_region = {
+    TF_VAR_region = {
       sensitive = true 
       value     = var.gcp_region
     }
@@ -125,7 +125,7 @@ module "stack_gcp_gke" {
       sensitive = true 
       value     = var.project_id
     }
-    TF_VAR_gcp_region = {
+    TF_VAR_region = {
       sensitive = true 
       value     = var.gcp_region
     }
@@ -160,7 +160,7 @@ module "stack_gcp_db" {
       sensitive = true 
       value     = var.project_id
     }
-    TF_VAR_gcp_region = {
+    TF_VAR_region = {
       sensitive = true 
       value     = var.gcp_region
     }
