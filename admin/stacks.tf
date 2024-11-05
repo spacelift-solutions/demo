@@ -292,6 +292,11 @@ module "stack_aws_ansible" {
   repository_name = "demo"
   space_id        = spacelift_space.aws_ansible.id
 
+  ansible_config = {
+    ansible_playbook = "playbook.yml"
+  }
+
+
   # Optional inputs 
   aws_integration = {
     enabled = true
