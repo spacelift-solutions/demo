@@ -26,7 +26,7 @@ module "stack_gcp_iam" {
       sensitive = true 
       value     = var.gcp_region
     }
-    TF_VAR_gcp-nvironment-type = {
+    TF_VAR_gcp_environment_type = {
       sensitive = false
       value     = var.gcp_environment_type
     }
@@ -35,7 +35,13 @@ module "stack_gcp_iam" {
    dependencies = {
     NETWORK = {
       dependent_stack_id = module.stack_gcp_networking.id
-      trigger_always    = true
+
+      references = {
+        PROJECT_ID = {
+          output_name = "TF_VAR_project_id"
+          trigger_always    = true
+        }
+      }
     }
   }
 
@@ -78,15 +84,25 @@ module "stack_gcp_networking" {
   dependencies = {
     GKE = {
       dependent_stack_id = module.stack_gcp_gke.id
-      trigger_always    = true
-      output_name       = "vpc_name"
-      input_name        = "TF_VAR_network_name"
+
+      references {
+        VPC = {
+          trigger_always    = true
+          output_name       = "vpc_name"
+          input_name        = "TF_VAR_network_name" 
+        }
+      }
     }
     DB = {
       dependent_stack_id = module.stack_gcp_db.id
-      trigger_always    = true
-      output_name       = "vpc_id"
-      input_name        = "TF_VAR_network_id"
+      
+      references {
+        NETWORK = {
+          trigger_always    = true
+          output_name       = "vpc_id"
+          input_name        = "TF_VAR_network_id"        
+        }
+      }
     }
   }
 }
