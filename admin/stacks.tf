@@ -1,6 +1,6 @@
 module "stack_gcp_iam" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = ">=0.3.0"
+  version = "0.10.0"
 
   # Required inputs 
   description     = "Creates all the relevant roles, service accounts and permissions for the gcp environment"
@@ -11,19 +11,19 @@ module "stack_gcp_iam" {
 
   # Optional inputs 
   administrative    = false
-  auto_deploy      = true
-  labels           = ["gcp", "iam"]
-  project_root     = "terraform/gcp/gcp-environment/modules/iam-module"
+  auto_deploy       = true
+  labels            = ["gcp", "iam"]
+  project_root      = "terraform/gcp/gcp-environment/modules/iam-module"
   repository_branch = "main"
-  tf_version       = ">=1.5.7"
+  tf_version        = ">=1.5.7"
 
   environment_variables = {
     TF_VAR_project_id = {
-      sensitive = true 
+      sensitive = true
       value     = var.project_id
     }
     TF_VAR_gcp_region = {
-      sensitive = true 
+      sensitive = true
       value     = var.gcp_region
     }
     TF_VAR_gcp_environment_type = {
@@ -32,18 +32,18 @@ module "stack_gcp_iam" {
     }
   }
 
-   dependencies = {
+  dependencies = {
     NETWORK = {
       dependent_stack_id = module.stack_gcp_networking.id
-      trigger_always = true
-      }
+      trigger_always     = true
     }
+  }
 
 }
 
 module "stack_gcp_networking" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = ">=0.3.0"
+  version = "0.10.0"
 
   # Required inputs 
   description     = "Creates all the relevant networking components for the GCP environment"
@@ -54,19 +54,19 @@ module "stack_gcp_networking" {
 
   # Optional inputs 
   administrative    = false
-  auto_deploy      = true
-  labels           = ["gcp", "network"]
-  project_root     = "terraform/gcp/gcp-environment/modules/network-module"
+  auto_deploy       = true
+  labels            = ["gcp", "network"]
+  project_root      = "terraform/gcp/gcp-environment/modules/network-module"
   repository_branch = "main"
-  tf_version       = ">=1.5.7"
+  tf_version        = ">=1.5.7"
 
   environment_variables = {
     TF_VAR_project_id = {
-      sensitive = true 
+      sensitive = true
       value     = var.project_id
     }
     TF_VAR_gcp_region = {
-      sensitive = true 
+      sensitive = true
       value     = var.gcp_region
     }
     TF_VAR_environment_type = {
@@ -81,20 +81,20 @@ module "stack_gcp_networking" {
 
       references = {
         VPC = {
-          trigger_always    = true
-          output_name       = "vpc_name"
-          input_name        = "TF_VAR_network_name" 
+          trigger_always = true
+          output_name    = "vpc_name"
+          input_name     = "TF_VAR_network_name"
         }
       }
     }
     DB = {
       dependent_stack_id = module.stack_gcp_db.id
-      
+
       references = {
         NETWORK = {
-          trigger_always    = true
-          output_name       = "vpc_id"
-          input_name        = "TF_VAR_network_id"        
+          trigger_always = true
+          output_name    = "vpc_id"
+          input_name     = "TF_VAR_network_id"
         }
       }
     }
@@ -103,7 +103,7 @@ module "stack_gcp_networking" {
 
 module "stack_gcp_gke" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = ">=0.3.0"
+  version = "0.10.0"
 
   # Required inputs 
   description     = "Creates a basic demo-grade GKE cluster"
@@ -114,19 +114,19 @@ module "stack_gcp_gke" {
 
   # Optional inputs 
   administrative    = false
-  auto_deploy      = true
-  labels           = ["gcp", "gke"]
-  project_root     = "terraform/gcp/gcp-environment/modules/gke-module"
+  auto_deploy       = true
+  labels            = ["gcp", "gke"]
+  project_root      = "terraform/gcp/gcp-environment/modules/gke-module"
   repository_branch = "main"
-  tf_version       = ">=1.5.7"
+  tf_version        = ">=1.5.7"
 
   environment_variables = {
     TF_VAR_project_id = {
-      sensitive = true 
+      sensitive = true
       value     = var.project_id
     }
     TF_VAR_gcp_region = {
-      sensitive = true 
+      sensitive = true
       value     = var.gcp_region
     }
     TF_VAR_environment_type = {
@@ -138,7 +138,7 @@ module "stack_gcp_gke" {
 
 module "stack_gcp_db" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = ">=0.3.0"
+  version = "0.10.0"
 
   # Required inputs 
   description     = "Creates a basic demo-grade DB instance, along a user and pass"
@@ -149,19 +149,19 @@ module "stack_gcp_db" {
 
   # Optional inputs 
   administrative    = false
-  auto_deploy      = true
-  labels           = ["gcp", "db"]
-  project_root     = "terraform/gcp/gcp-environment/modules/db-module"
+  auto_deploy       = true
+  labels            = ["gcp", "db"]
+  project_root      = "terraform/gcp/gcp-environment/modules/db-module"
   repository_branch = "main"
-  tf_version       = ">=1.5.7"
+  tf_version        = ">=1.5.7"
 
   environment_variables = {
     TF_VAR_project_id = {
-      sensitive = true 
+      sensitive = true
       value     = var.project_id
     }
     TF_VAR_gcp_region = {
-      sensitive = true 
+      sensitive = true
       value     = var.gcp_region
     }
     TF_VAR_environment_type = {
@@ -172,8 +172,8 @@ module "stack_gcp_db" {
 }
 # Azure Terraform Stack Deployment
 module "azure_linux_stack" {
-  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-
+  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  version = "0.10.0"
   # Required inputs 
   name            = "azure-terraform-stack"
   description     = "Stack to Deploy Infrastructure to Azure"
@@ -224,8 +224,8 @@ module "azure_linux_stack" {
 }
 
 module "stack_aws_vpc" {
-  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-
+  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  version = "0.10.0"
   # Required inputs 
   description     = "stack that creates a VPC and handles networking"
   name            = "networking"
@@ -263,8 +263,8 @@ module "stack_aws_vpc" {
 }
 
 module "stack_aws_ec2" {
-  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-
+  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  version = "0.10.0"
   # Required inputs 
   description     = "creates a simple EC2 instance"
   name            = "ec2"
