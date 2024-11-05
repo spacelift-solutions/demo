@@ -22,7 +22,7 @@ module "stack_gcp_iam" {
       sensitive = true 
       value     = var.project_id
     }
-    TF_VAR_gcp_region = {
+    TF_VAR_gcp_region = 
       sensitive = true 
       value     = var.gcp_region
     }
@@ -90,7 +90,7 @@ module "stack_gcp_networking" {
     DB = {
       dependent_stack_id = module.stack_gcp_db.id
       
-      references {
+      references = {
         NETWORK = {
           trigger_always    = true
           output_name       = "vpc_id"
