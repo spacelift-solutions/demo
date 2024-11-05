@@ -9,12 +9,12 @@ module_version := "999999999999999.99999999999999.99999999999" {
     propose
 }
 
-propose { 
-  not is_null(input.pull_request) 
+propose {
+  input.push.branch != ""
+  input.push.tag == ""
 }
 
-track { 
-  module_version != "999999999999999.99999999999999.99999999999"
+track {
   not propose
 }
 
