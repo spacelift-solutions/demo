@@ -1,6 +1,5 @@
 module "stack_gcp_iam" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = "0.10.0"
 
   # Required inputs 
   description     = "Creates all the relevant roles, service accounts and permissions for the gcp environment"
@@ -34,7 +33,7 @@ module "stack_gcp_iam" {
 
   dependencies = {
     NETWORK = {
-      dependent_stack_id = module.stack_gcp_networking.id
+      child_stack_id = module.stack_gcp_networking.id
       trigger_always     = true
     }
   }
@@ -43,7 +42,6 @@ module "stack_gcp_iam" {
 
 module "stack_gcp_networking" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = "0.10.0"
 
   # Required inputs 
   description     = "Creates all the relevant networking components for the GCP environment"
@@ -77,7 +75,7 @@ module "stack_gcp_networking" {
 
   dependencies = {
     GKE = {
-      dependent_stack_id = module.stack_gcp_gke.id
+      child_stack_id = module.stack_gcp_gke.id
 
       references = {
         VPC = {
@@ -88,7 +86,7 @@ module "stack_gcp_networking" {
       }
     }
     DB = {
-      dependent_stack_id = module.stack_gcp_db.id
+      child_stack_id = module.stack_gcp_db.id
 
       references = {
         NETWORK = {
@@ -103,7 +101,6 @@ module "stack_gcp_networking" {
 
 module "stack_gcp_gke" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = "0.10.0"
 
   # Required inputs 
   description     = "Creates a basic demo-grade GKE cluster"
@@ -138,7 +135,6 @@ module "stack_gcp_gke" {
 
 module "stack_gcp_db" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = "0.10.0"
 
   # Required inputs 
   description     = "Creates a basic demo-grade DB instance, along a user and pass"
@@ -173,7 +169,7 @@ module "stack_gcp_db" {
 # Azure Terraform Stack Deployment
 module "azure_linux_stack" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = "0.10.0"
+
   # Required inputs 
   name            = "azure-terraform-stack"
   description     = "Stack to Deploy Infrastructure to Azure"
@@ -225,7 +221,7 @@ module "azure_linux_stack" {
 
 module "stack_aws_vpc" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = "0.10.0"
+
   # Required inputs 
   description     = "stack that creates a VPC and handles networking"
   name            = "networking"
@@ -244,7 +240,7 @@ module "stack_aws_vpc" {
   # worker_pool_id            = string
   dependencies = {
     EC2 = {
-      dependent_stack_id = module.stack_aws_ec2.id
+      child_stack_id = module.stack_aws_ec2.id
 
       references = {
         SUBNET = {
@@ -264,7 +260,7 @@ module "stack_aws_vpc" {
 
 module "stack_aws_ec2" {
   source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-  version = "0.10.0"
+
   # Required inputs 
   description     = "creates a simple EC2 instance"
   name            = "ec2"
