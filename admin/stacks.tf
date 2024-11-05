@@ -22,7 +22,7 @@ module "stack_gcp_iam" {
       sensitive = true 
       value     = var.project_id
     }
-    TF_VAR_gcp_region = 
+    TF_VAR_gcp_region = {
       sensitive = true 
       value     = var.gcp_region
     }
