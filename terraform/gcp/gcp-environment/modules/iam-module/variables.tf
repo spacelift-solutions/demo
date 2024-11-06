@@ -22,11 +22,11 @@ variable "devops_principals" {
   type        = list(string)
   description = "List of principals to attach to DevOps role (e.g., user:user@domain.com, group:group@domain.com)"
   default = [
-    "emina@spacelift.io",
-    "joeys@spacelift.io",
-    "jubrann@spacelift.io",
-    "maring@spacelift.io",
-    "chrisd@spacelift.io",
-    "aaronc@spacelift.io"
+    "user:emina@spacelift.io",
+    "user:joeys@spacelift.io",
+    "user:jubrann@spacelift.io",
+    "user:maring@spacelift.io",
+    "user:chrisd@spacelift.io",
+    "user:aaronc@spacelift.io"
   ]
 }
