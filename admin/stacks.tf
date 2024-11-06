@@ -67,7 +67,7 @@ module "stack_gcp_networking" {
       sensitive = true
       value     = var.gcp_region
     }
-    TF_VAR_environment_type = {
+    TF_VAR_gcp_environment_type = {
       sensitive = false
       value     = var.gcp_environment_type
     }
@@ -126,7 +126,7 @@ module "stack_gcp_gke" {
       sensitive = true
       value     = var.gcp_region
     }
-    TF_VAR_environment_type = {
+    TF_VAR_gcp_environment_type = {
       sensitive = false
       value     = var.gcp_environment_type
     }
@@ -160,7 +160,7 @@ module "stack_gcp_db" {
       sensitive = true
       value     = var.gcp_region
     }
-    TF_VAR_environment_type = {
+    TF_VAR_gcp_environment_type = {
       sensitive = false
       value     = var.gcp_environment_type
     }
