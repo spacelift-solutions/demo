@@ -147,7 +147,7 @@ resource "spacelift_context" "k8s-configuration" {
   space_id    = spacelift_space.aws.id
 }
 
-resource "spacelift_environment_variable" "aws_region" {
+resource "spacelift_environment_variable" "aws_region_k8s" {
   context_id  = spacelift_context.k8s-configuration.id
   name        = "REGION"
   value       = "eu-west-1"
