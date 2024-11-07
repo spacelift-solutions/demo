@@ -77,7 +77,7 @@ resource "spacelift_environment_variable" "ansible_private_key_file" {
 
 # Kubernetes Example Context
 
-resource "spacelift_context" "k8s-example" {
+resource "spacelift_context" "k8s_example" {
   description = "Configuration details for the Kubernetes Example"
   name        = "Kubernetes Example"
   labels      = ["autoattach:aws"]
@@ -140,7 +140,7 @@ resource "spacelift_environment_variable" "cluster_version" {
   description = "Version of the EKS cluster"
 }
 
-resource "spacelift_context" "k8s-configuration" {
+resource "spacelift_context" "k8s_configuration" {
   description = "Configuration details for the EKS Cluster"
   name        = "EKS Context"
   labels      = ["autoattach:eks"]
