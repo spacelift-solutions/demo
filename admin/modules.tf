@@ -25,3 +25,17 @@ resource "spacelift_module" "context_trigger_plugin_module" {
   public               = true
   labels               = ["module"]
 }
+
+resource "spacelift_module" "sops_plugin_module" {
+  name                 = "plugin-sops"
+  terraform_provider   = "spacelift"
+  administrative       = true
+  branch               = "main"
+  description          = "Plugin that manages sops encrypted files."
+  repository           = "plugin-sops"
+  space_id             = "root"
+  workflow_tool        = "OPEN_TOFU"
+  enable_local_preview = true
+  public               = true
+  labels               = ["module"]
+}
