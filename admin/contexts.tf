@@ -85,7 +85,7 @@ resource "spacelift_context" "k8s_example" {
 }
 
 resource "spacelift_environment_variable" "aws_region" {
-  context_id  = spacelift_context.k8s-example.id
+  context_id  = spacelift_context.k8s_example.id
   name        = "TF_VAR_aws_region"
   value       = "eu-west-1"
   write_only  = false
@@ -93,7 +93,7 @@ resource "spacelift_environment_variable" "aws_region" {
 }
 
 resource "spacelift_environment_variable" "vpc_name" {
-  context_id  = spacelift_context.k8s-example.id
+  context_id  = spacelift_context.k8s_example.id
   name        = "TF_VAR_vpc_name"
   value       = "eks-vpc"
   write_only  = false
@@ -101,7 +101,7 @@ resource "spacelift_environment_variable" "vpc_name" {
 }
 
 resource "spacelift_environment_variable" "vpc_cidr" {
-  context_id  = spacelift_context.k8s-example.id
+  context_id  = spacelift_context.k8s_example.id
   name        = "TF_VAR_vpc_cidr"
   value       = "10.0.0.0/16"
   write_only  = false
@@ -109,7 +109,7 @@ resource "spacelift_environment_variable" "vpc_cidr" {
 }
 
 resource "spacelift_environment_variable" "public_subnets" {
-  context_id  = spacelift_context.k8s-example.id
+  context_id  = spacelift_context.k8s_example.id
   name        = "TF_VAR_public_subnets"
   value       = "[\"10.0.3.0/24\", \"10.0.4.0/24\", \"10.0.5.0/24\"]"
   write_only  = false
@@ -117,7 +117,7 @@ resource "spacelift_environment_variable" "public_subnets" {
 }
 
 resource "spacelift_environment_variable" "private_subnets" {
-  context_id  = spacelift_context.k8s-example.id
+  context_id  = spacelift_context.k8s_example.id
   name        = "TF_VAR_private_subnets"
   value       = "[\"10.0.0.0/24\", \"10.0.1.0/24\", \"10.0.2.0/24\"]"
   write_only  = false
@@ -125,7 +125,7 @@ resource "spacelift_environment_variable" "private_subnets" {
 }
 
 resource "spacelift_environment_variable" "cluster_name" {
-  context_id  = spacelift_context.k8s-example.id
+  context_id  = spacelift_context.k8s_example.id
   name        = "TF_VAR_cluster_name"
   value       = "eks-cluster"
   write_only  = false
@@ -133,7 +133,7 @@ resource "spacelift_environment_variable" "cluster_name" {
 }
 
 resource "spacelift_environment_variable" "cluster_version" {
-  context_id  = spacelift_context.k8s-example.id
+  context_id  = spacelift_context.k8s_example.id
   name        = "TF_VAR_cluster_version"
   value       = "1.30"
   write_only  = false
@@ -148,7 +148,7 @@ resource "spacelift_context" "k8s_configuration" {
 }
 
 resource "spacelift_environment_variable" "aws_region_k8s" {
-  context_id  = spacelift_context.k8s-configuration.id
+  context_id  = spacelift_context.k8s_configuration.id
   name        = "REGION"
   value       = "eu-west-1"
   write_only  = false
