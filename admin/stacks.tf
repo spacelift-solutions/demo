@@ -1,5 +1,5 @@
 module "stack_gcp_iam" {
-  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs 
   description     = "Creates all the relevant roles, service accounts and permissions for the gcp environment"
@@ -34,14 +34,14 @@ module "stack_gcp_iam" {
   dependencies = {
     NETWORK = {
       child_stack_id = module.stack_gcp_networking.id
-      trigger_always     = true
+      trigger_always = true
     }
   }
 
 }
 
 module "stack_gcp_networking" {
-  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs 
   description     = "Creates all the relevant networking components for the GCP environment"
@@ -100,7 +100,7 @@ module "stack_gcp_networking" {
 }
 
 module "stack_gcp_gke" {
-  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs 
   description     = "Creates a basic demo-grade GKE cluster"
@@ -134,7 +134,7 @@ module "stack_gcp_gke" {
 }
 
 module "stack_gcp_db" {
-  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs 
   description     = "Creates a basic demo-grade DB instance, along a user and pass"
@@ -168,7 +168,7 @@ module "stack_gcp_db" {
 }
 # Azure Terraform Stack Deployment
 module "azure_linux_stack" {
-  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs 
   name            = "azure-terraform-stack"
@@ -220,7 +220,7 @@ module "azure_linux_stack" {
 }
 
 module "stack_aws_vpc" {
-  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs 
   description     = "stack that creates a VPC and handles networking"
@@ -259,7 +259,7 @@ module "stack_aws_vpc" {
 }
 
 module "stack_aws_ec2" {
-  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs 
   description     = "creates a simple EC2 instance"
@@ -277,4 +277,107 @@ module "stack_aws_ec2" {
   repository_branch = "main"
   tf_version        = "1.8.4"
   # worker_pool_id            = string
+}
+
+module "stack_aws_vpc_kubernetes_example" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  # Required inputs 
+  description     = "stack that creates a VPC for the Kubernetes Example"
+  name            = "kubernetes-vpc"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_terraform.id
+
+  # Optional inputs 
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "vpc"]
+  project_root      = "terraform/aws/vpc"
+  repository_branch = "main"
+  tf_version        = "1.5.7"
+  # worker_pool_id            = string
+  dependencies = {
+    EKS = {
+      child_stack_id = module.stack_aws_eks_kubernetes_example.id
+
+      references = {
+        VPC_ID = {
+          output_name    = "vpc_id"
+          input_name     = "TF_VAR_vpc_id"
+          trigger_always = true
+        }
+        SUBNET_IDS = {
+          output_name    = "private_subnets"
+          input_name     = "TF_VAR_subnet_ids"
+          trigger_always = true
+        }
+      }
+    }
+  }
+}
+
+module "stack_aws_eks_kubernetes_example" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  # Required inputs 
+  description     = "stack that creates an EKS Cluster for the Kubernetes Example"
+  name            = "eks-cluster"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_terraform.id
+
+  # Optional inputs 
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "kubernetes"]
+  project_root      = "terraform/aws/eks"
+  repository_branch = "main"
+  tf_version        = "1.5.7"
+  # worker_pool_id            = string
+
+  dependencies = {
+    KUBERNETES = {
+      child_stack_id = module.stack_aws_kubernetes_example_deployments.id
+
+      references = {
+        CLUSTER_NAME = {
+          output_name    = "cluster_name"
+          input_name     = "CLUSTER_NAME"
+          trigger_always = true
+        }
+      }
+    }
+  }
+}
+
+module "stack_aws_kubernetes_example_deployments" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  # Required inputs 
+  description     = "stack that creates Kubernetes Resources for the Kubernetes Example"
+  name            = "kubernetes-deployments"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_kubernetes.id
+
+  # Optional inputs 
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "kubernetes"]
+  project_root      = "kubernetes/aws"
+  repository_branch = "main"
+  workflow_tool     = "KUBERNETES"
+  # worker_pool_id            = string
+
+  hooks = {
+    before = {
+      init = [
+        "aws eks --region $REGION update-kubeconfig --name $CLUSTER_NAME"
+      ]
+    }
+  }
 }
