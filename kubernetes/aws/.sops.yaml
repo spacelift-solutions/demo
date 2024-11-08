@@ -1,0 +1,11 @@
+creation_rules:
+  - kms: arn:aws:kms:us-east-1:234878555361:key/54b96a99-ee11-4e46-93a7-7e3a130db583
+
+secrets:
+  - catalog/secret.yaml
+  - orders/secret.yaml
+  - rabbitmq/secret.yaml
+  - orders/mysql.yaml
+
+
+
