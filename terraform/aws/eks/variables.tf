@@ -9,3 +9,12 @@ variable "cluster_name" {
 variable "cluster_version" {
   description = "Kubernetes version of the EKS Cluster"
 }
+
+variable "vpc_id" {
+  description = "ID of the VPC"
+}
+
+variable "subnet_ids" {
+  description = "List of private subnets"
+  type        = list(string)
+}

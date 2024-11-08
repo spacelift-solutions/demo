@@ -21,8 +21,8 @@ module "eks" {
 
   cluster_enabled_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  vpc_id     = var.vpc_id
+  subnet_ids = var.subnet_ids
 
   create_cloudwatch_log_group   = false
   create_cluster_security_group = false
@@ -49,7 +49,7 @@ module "eks" {
       instance_types        = ["m5.large"]
       create_security_group = false
 
-      subnet_ids = module.vpc.private_subnets
+      subnet_ids = var.subnet_ids
 
       create_launch_template = true
       launch_template_os     = "amazonlinux2eks"
