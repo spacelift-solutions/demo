@@ -28,22 +28,6 @@ module "eks" {
   create_cluster_security_group = false
   create_node_security_group    = false
 
-  access_entries = {
-    spacelift = {
-      kubernetes_groups = []
-      principal_arn     = data.aws_caller_identity.current.arn
-
-      policy_associations = {
-        single = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = {
-            type = "cluster"
-          }
-        }
-      }
-    }
-  }
-
   eks_managed_node_groups = {
     initial = {
       instance_types        = ["m5.large"]
