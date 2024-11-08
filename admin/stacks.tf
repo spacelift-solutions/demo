@@ -367,7 +367,7 @@ module "stack_aws_kubernetes_example_deployments" {
     enabled = true
     id      = spacelift_aws_integration.demo.id
   }
-  labels            = ["aws", "eks", "kubernetes"]
+  labels            = ["aws", "eks", "kubernetes", "plugin_sops"]
   project_root      = "kubernetes/aws"
   repository_branch = "main"
   workflow_tool     = "KUBERNETES"
