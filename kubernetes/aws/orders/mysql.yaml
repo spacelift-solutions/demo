@@ -1,40 +1,54 @@
----
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: ENC[AES256_GCM,data:rN1O+E/tXQ==,iv:zJGYHvhYSNZ0wqpsaYkOt6+J5qDhF/atZMIPK6sWg5o=,tag:smVml2Q2YFXHlvHbTZH8IA==,type:str]
+kind: ENC[AES256_GCM,data:aM+SwndhkObfEA==,iv:2I9lsb4XlMfFbXgkgcJEMbaRuWSV9WOeysSxBsCQFw0=,tag:jZGuF13CshWL41wiCVZ1hQ==,type:str]
 metadata:
-  name: orders-mysql
-  labels:
-    app.kubernetes.io/name: orders
-    app.kubernetes.io/team: database
+    name: ENC[AES256_GCM,data:76y3HleZg2OX8pnj,iv:oxg5pb7CiHLC6O8+gS6V9Vsrm6HukkGa4BRunF/l5WM=,tag:sYrpo3hA6H+ZNwRzxd5FIA==,type:str]
+    labels:
+        app.kubernetes.io/name: ENC[AES256_GCM,data:hp+B5kT7,iv:brEXQiS0H0GiK7ZfMR7ELrKEColMwKrXkM8o/KPUYQA=,tag:/ocNReElz1H7MPn81yJOhg==,type:str]
+        app.kubernetes.io/team: ENC[AES256_GCM,data:YpjxoSuggGQ=,iv:TSYV4Vdn6ozANk8pPVY3cd2XAOVLsGkh6Zt/qWpJICE=,tag:JFEIRYAaA3DIMFRb0RVG3A==,type:str]
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: orders
-      app.kubernetes.io/instance: orders
-      app.kubernetes.io/component: mysql
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: orders
-        app.kubernetes.io/instance: orders
-        app.kubernetes.io/component: mysql
-        app.kubernetes.io/team: database
-    spec:
-      containers:
-      - name: mysql
-        image: "public.ecr.aws/docker/library/mysql:5.7"
-        imagePullPolicy: IfNotPresent
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: my-secret-pw
-        - name: MYSQL_DATABASE
-          value: orders
-        - name: MYSQL_USER
-          value: orders_user
-        - name: MYSQL_PASSWORD
-          value: default_password
-        ports:
-        - name: mysql
-          containerPort: 3306
-          protocol: TCP
+    replicas: ENC[AES256_GCM,data:gQ==,iv:msTj0vC5GusvP9/8sx2wkiIFDgdI3kiFjS1tMWBqgzo=,tag:Fbxw2Ca//mSzXQqf+6bdzQ==,type:int]
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: ENC[AES256_GCM,data:O3MpPRqk,iv:88Un6FMUi/WGYYeM3lHe6kghCrjzqE0FpOyDMaenLyM=,tag:nGu7HQP+jZKDiScTa1B9cQ==,type:str]
+            app.kubernetes.io/instance: ENC[AES256_GCM,data:Q+qj1nFd,iv:OqaKGmaKyIFCFL9Erfl2vRu1mcgonKqIiK0dPUdu284=,tag:Nj3Dz/Mn41tQB/lkjAHJ0w==,type:str]
+            app.kubernetes.io/component: ENC[AES256_GCM,data:6nT+sPk=,iv:J1GBn6FvssrnaIPcOOnurySrjjex2qiK4ie2C8MV7yE=,tag:kNVWgFpzSC0uN24XLp2ezg==,type:str]
+    template:
+        metadata:
+            labels:
+                app.kubernetes.io/name: ENC[AES256_GCM,data:ZMgxyTGl,iv:a3reFUppE3RDsiCMG8KvJifGgLfk6uALXx4ZpjUS7rA=,tag:b51USw+RnAWTaIwsx4+RyQ==,type:str]
+                app.kubernetes.io/instance: ENC[AES256_GCM,data:TChSQwkQ,iv:5NnyYIKpfrLXHgukNQdvvQjmDPBkW6J0eDUXOU2M2y8=,tag:Ln9imNLQqh8auG5b5oajVA==,type:str]
+                app.kubernetes.io/component: ENC[AES256_GCM,data:ney56LE=,iv:sGO2q0UG5R3o+fT2ACQqvbL3ICei8CW9YrVTEnzMiV0=,tag:vMhXIyN89mzYAWxMGsqqzg==,type:str]
+                app.kubernetes.io/team: ENC[AES256_GCM,data:UjqeYvpt6AI=,iv:U2QiO8UQ3hnK9pK9KztmJFoQfmBdebsgbP1bIcPx6FA=,tag:D79N5k5wOgmUYCbhsCX3DA==,type:str]
+        spec:
+            containers:
+                - name: ENC[AES256_GCM,data:oEzCs6M=,iv:pXezqOj3qcJsk/VQuuJhiP7Jkn+kwymAPnGw7jX7/Jc=,tag:iozeCnVnI65Eqy6ypWih1w==,type:str]
+                  image: ENC[AES256_GCM,data:B+zt0WZDaYYCF2spjVOC9XD47BlOiCSbhTM8SsJFD6F2YR4BPADk,iv:xfdpe90TSa+yM6V03ilIuUADpsBgbCAQuYTdyNG4pF0=,tag:w25qXQv6OBdXrDx5njj2Lg==,type:str]
+                  imagePullPolicy: ENC[AES256_GCM,data:uY75XaR5ubHS08m5,iv:mu8KB31UeC1tRGjKNWPbYsPr+L4VrwmwPDi8Lk2FJs8=,tag:yZiKkCVK+Tpsz/2x8+5C1g==,type:str]
+                  env:
+                    - name: ENC[AES256_GCM,data:s4sF7KqCXuU/2Unjv/kRWkJKnQ==,iv:6XQyZE8StiDIqshm2EQ8+0A5qrNFcThERPdtJJNv04w=,tag:ujXAMlrhEaOGtzFAT+s2Ug==,type:str]
+                      value: ENC[AES256_GCM,data:ZXSJZGry62PY+jQE,iv:mh2JShHwJAlRctrOUt6UsnqUivwQt/fpHjQ+c7NWF0w=,tag:xk/2At62cVQHia23U+Ahng==,type:str]
+                    - name: ENC[AES256_GCM,data:dAC2JGMisgSxZRGbKw0=,iv:9ZZxuCuoJB+ZjSxU+uc3ra7lyEK5LQVXB3TyJkv946o=,tag:6XT8NSF9L1gHtEI3BfaewA==,type:str]
+                      value: ENC[AES256_GCM,data:ZIuWIKiK,iv:vfti7EZ1fCMtTz9Vq6qdPVBBFFo0AQMSt6OcOY+b74s=,tag:bIQuHgR2N0uJhiLkceEeaw==,type:str]
+                    - name: ENC[AES256_GCM,data:oBWgPAMtLYM0Lg==,iv:u4WXiFfwjfD+tlwqWIPqgqBJAXbOW0/UQuQ0Evg4spQ=,tag:V7bwrFLyxgL/RHDO0TLx2g==,type:str]
+                      value: ENC[AES256_GCM,data:NCoPl3m4GtK19lg=,iv:XM3Sl7eFkV6XVqhlh0lK7GooToMT0IbLXhBVJk27HxQ=,tag:F4mtdyTXeCiwmfgF8LTwdg==,type:str]
+                    - name: ENC[AES256_GCM,data:5Nlx9BDbFoxxlUb9Pgs=,iv:fY7cv0R5H8LdWnBw3fAWqeSxMmU8otU++Hg+ElaKsFs=,tag:JZ8vFvfyglq612/VHhqaqQ==,type:str]
+                      value: ENC[AES256_GCM,data:ZXVt561GEjW+rHxzI3WAwg==,iv:I+BDo5vD/kIYtlZ+lpwHi8Ko6jRjMNpQEyFEjpk4Gs8=,tag:TI1bUxAuYtq7ThMAjVelDg==,type:str]
+                  ports:
+                    - name: ENC[AES256_GCM,data:IM9vpT4=,iv:buFUSW1VivFbdFLIHJsoFUNvzz6sRwH4DIh57+9iIs4=,tag:tD1L3t3CwSdB9EPmdQGF9g==,type:str]
+                      containerPort: ENC[AES256_GCM,data:WOEVeg==,iv:xbTO65j3XnchIBT/f6m6WmDWOfr6tKgriEqNpk6Tykk=,tag:mGvVuJzQrPTfZ65ue15BFA==,type:int]
+                      protocol: ENC[AES256_GCM,data:ZVoL,iv:O9iFGka6q+a0mWU9wSzABwARqRUwqPxGgxNm2iHVTno=,tag:C1Ind+CWkeprd+T2zmX+ww==,type:str]
+sops:
+    kms:
+        - arn: arn:aws:kms:us-east-1:234878555361:key/54b96a99-ee11-4e46-93a7-7e3a130db583
+          created_at: "2024-11-08T15:04:22Z"
+          enc: AQICAHhWR/cL6re9GRvzeHMPbvB69g/BhSB9ZWifRozqB8kD1wH6g3+hFc2FVCpT3p4c5y4IAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMUceRCWHAMH3mn/ahAgEQgDscanlNkTmgT+1tycClqyYQeAFYeCjiaWEln+rWX1vhLOCIpdzaG1GyO+rMG85vAA/8sQ8FvfMd1CtUig==
+          aws_profile: ""
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2024-11-08T15:04:23Z"
+    mac: ENC[AES256_GCM,data:FkQFVAX3HkORHqka96eGCRtxVVVbeoabTd3NoxF7QiBLjvKLTvRRad93/eDz2D8/18Oq7Mh1TOnDBC+pbtCXhjX1Q1batSwyN68nGMiRziZyC+Z7UNl8sQ6wBReiPJHXxNmBtR7ZiDPVxs27CqCNvKbTtuHU1lg3NgHAuAgz4d8=,iv:ggA4zs/G/C35A9YaFR9vIWZ7CuSOp3tywuYrgqQxt4o=,tag:qoeNuAJ4qlzmRID2ForfRg==,type:str]
+    pgp: []
+    unencrypted_suffix: _unencrypted
+    version: 3.9.1
