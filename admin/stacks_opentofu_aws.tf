@@ -1,5 +1,5 @@
 module "stack_opentofu_aws_s3" {
-  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs
   description     = "stack that creates s3 buckets"
