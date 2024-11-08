@@ -297,6 +297,7 @@ module "stack_aws_vpc_kubernetes_example" {
   project_root      = "terraform/aws/vpc"
   repository_branch = "main"
   tf_version        = "1.5.7"
+  workflow_tool     = "TERRAFORM_FOSS"
   # worker_pool_id            = string
   dependencies = {
     EKS = {
@@ -336,6 +337,7 @@ module "stack_aws_eks_kubernetes_example" {
   project_root      = "terraform/aws/eks"
   repository_branch = "main"
   tf_version        = "1.5.7"
+  workflow_tool     = "TERRAFORM_FOSS"
   # worker_pool_id            = string
 
   dependencies = {

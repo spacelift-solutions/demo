@@ -1,5 +1,5 @@
 module "stack_cloudformation_aws_kms" {
-  source  = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs
   description     = "stack that creates a kms key in aws with cloudformation"
