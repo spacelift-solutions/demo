@@ -20,7 +20,7 @@ resource "google_secret_manager_secret" "db_password" {
   project   = var.project_id
 
   replication {
-    automatic {}
+    auto = {}
   }
 
   labels = {
