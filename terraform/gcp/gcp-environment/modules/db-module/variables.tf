@@ -23,10 +23,10 @@ variable "network_id" {
   description = "The VPC network ID"
 }
 
-variable "network_id" {
-  type        = string
-  description = "The VPC network ID"
-}
+# variable "db_instance_id" {
+#   type        = string
+#   description = "The ID of the database instance."
+# }
 
 variable "db_tier" {
   type        = string
@@ -50,11 +50,11 @@ variable "secret_accessors" {
   type        = list(string)
   description = "List of members that can access the password secret"
   default     = [
-    "emina@spacelift.io",
-    "joeys@spacelift.io",
-    "jubrann@spacelift.io",
-    "maring@spacelift.io",
-    "chrisd@spacelift.io",
-    "aaronc@spacelift.io"
+    "user:emina@spacelift.io",
+    "user:joeys@spacelift.io",
+    "user:jubrann@spacelift.io",
+    "user:maring@spacelift.io",
+    "user:chrisd@spacelift.io",
+    "user:aaronc@spacelift.io"
   ]
 }

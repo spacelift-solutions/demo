@@ -7,6 +7,7 @@ module "stack_gcp_iam" {
   repository_name = "demo"
   space_id        = spacelift_space.gcp_terraform.id
   manage_state    = true
+  workflow_tool = "TERRAFORM_FOSS"
 
   # Optional inputs 
   administrative    = false
@@ -36,6 +37,10 @@ module "stack_gcp_iam" {
       child_stack_id = module.stack_gcp_networking.id
       trigger_always = true
     }
+    CLOUD_FUNC = {
+      child_stack_id = module.stack_gcp_cloud_functions.id
+      trigger_always = true
+    }
   }
 
 }
@@ -49,6 +54,7 @@ module "stack_gcp_networking" {
   repository_name = "demo"
   space_id        = spacelift_space.gcp_terraform.id
   manage_state    = true
+  workflow_tool = "TERRAFORM_FOSS"
 
   # Optional inputs 
   administrative    = false
@@ -108,6 +114,7 @@ module "stack_gcp_gke" {
   repository_name = "demo"
   space_id        = spacelift_space.gcp_terraform.id
   manage_state    = true
+  workflow_tool = "TERRAFORM_FOSS"
 
   # Optional inputs 
   administrative    = false
@@ -131,6 +138,18 @@ module "stack_gcp_gke" {
       value     = var.gcp_environment_type
     }
   }
+  dependencies = {
+    CLOUD_FUNC = {
+      child_stack_id = module.stack_gcp_cloud_functions.id
+      references = {
+        CLUSTER = {
+          trigger_always = true
+          output_name = "cluster_name"
+          input_name = "TF_VAR_cluster_name"
+        }
+      }
+    }
+  }
 }
 
 module "stack_gcp_db" {
@@ -142,6 +161,7 @@ module "stack_gcp_db" {
   repository_name = "demo"
   space_id        = spacelift_space.gcp_terraform.id
   manage_state    = true
+  workflow_tool = "TERRAFORM_FOSS"
 
   # Optional inputs 
   administrative    = false
@@ -165,7 +185,79 @@ module "stack_gcp_db" {
       value     = var.gcp_environment_type
     }
   }
+  dependencies = {
+    CLOUD_FUNC = {
+      child_stack_id = module.stack_gcp_cloud_functions.id
+      references = {
+        SQL = {
+          trigger_always = true 
+          output_name = "sql_instance_name"
+          input_name = "TF_VAR_sql_instance_name"
+        }
+        SUFFIX = {
+          trigger_always = true
+          output_name = "db_name_suffix"
+          input_name = "TF_VAR_db_suffix"
+        }
+      }
+    }
+  }
 }
+
+module "stack_gcp_cloud_functions" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  # Required inputs 
+  description     = "Creates a the required cloud functions for resource uptime scheduling"
+  name            = "gcp-cloud-functions"
+  repository_name = "demo"
+  space_id        = spacelift_space.gcp_terraform.id
+  manage_state    = true
+  workflow_tool = "TERRAFORM_FOSS"
+  
+  # Optional inputs 
+  administrative    = false
+  auto_deploy       = true
+  labels            = ["gcp", "cloud-functions"]
+  project_root      = "terraform/gcp/gcp-environment/modules/cloud-functions-module"
+  repository_branch = "main"
+  tf_version        = ">=1.5.7"
+
+  environment_variables = {
+    TF_VAR_project_id = {
+      sensitive = true
+      value     = var.project_id
+    }
+    TF_VAR_gcp_region = {
+      sensitive = true
+      value     = var.gcp_region
+    }
+    TF_VAR_gcp_environment_type = {
+      sensitive = false
+      value     = var.gcp_environment_type
+    }
+    TF_VAR_cluster_name = {
+      sensitive = false
+      value = var.gke_cluster_name
+    }
+    TF_VAR_sql_instance_name = {
+      sensitive = false
+      value = var.sql_instance_name
+    }
+    TF_VAR_db_name_suffix = {
+      sensitive = false
+      value = var.db_name_suffix
+    }
+  }
+  hooks = {
+    before = {
+      init = [
+        "terraform/gcp/gcp-environment/scripts/package-deploy.sh"
+      ]
+    }
+  }
+}
+
 # Azure Terraform Stack Deployment
 module "azure_linux_stack" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"

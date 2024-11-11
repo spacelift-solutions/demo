@@ -15,11 +15,28 @@ resource "google_project_service" "required_apis" {
     "iam.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "redis.googleapis.com",
-    "serviceusage.googleapis.com"  # Added this
+    "serviceusage.googleapis.com",
+    "secretmanager.googleapis.com",
+    "dns.googleapis.com",
+    "vpcaccess.googleapis.com",
+    "monitoring.googleapis.com",
+    "logging.googleapis.com",
+    "accesscontextmanager.googleapis.com",
+    "networkservices.googleapis.com",
+    "compute.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "pubsub.googleapis.com",
+    "secretmanager.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "cloudscheduler.googleapis.com"
   ])
   project                    = var.project_id
   service                    = each.value
   disable_dependent_services = false
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # Create custom DevOps role
@@ -84,7 +101,7 @@ resource "google_project_iam_custom_role" "devops_role" {
     
     # Logging and Monitoring
     "logging.logEntries.list",
-    "logging.logs.list",
+    "logging.logs.list",  
     "monitoring.timeSeries.list",
     "monitoring.groups.list"
   ]
