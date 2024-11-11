@@ -41,6 +41,16 @@ module "stack_gcp_iam" {
       child_stack_id = module.stack_gcp_cloud_functions.id
       trigger_always = true
     }
+    GKE = {
+      child_stack_id = module.stack_gcp_gke.id
+      references = {
+        SERVICE_ACC = {
+          trigger_always = true
+          output_name = "gke_service_account"
+          input_name = "TF_VAR_gke_service_account"
+        }
+      }
+    }
   }
 
 }
@@ -88,6 +98,11 @@ module "stack_gcp_networking" {
           trigger_always = true
           output_name    = "vpc_name"
           input_name     = "TF_VAR_network_name"
+        }
+        SUBNET = {
+          trigger_always = true
+          output_name = "subnet_name"
+          input_name = "TF_VAR_subnet_name"
         }
       }
     }

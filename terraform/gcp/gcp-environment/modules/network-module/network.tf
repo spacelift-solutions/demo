@@ -82,6 +82,7 @@ resource "google_compute_global_address" "private_ip_range" {
   address_type  = "INTERNAL"
   prefix_length = 16
   network       = google_compute_network.vpc.id
+  project = var.project_id
 
   lifecycle {
     prevent_destroy = true  # Prevent accidental deletion
