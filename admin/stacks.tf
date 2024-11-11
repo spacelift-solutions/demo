@@ -236,18 +236,6 @@ module "stack_gcp_cloud_functions" {
       sensitive = false
       value     = var.gcp_environment_type
     }
-    TF_VAR_cluster_name = {
-      sensitive = false
-      value = var.gke_cluster_name
-    }
-    TF_VAR_sql_instance_name = {
-      sensitive = false
-      value = var.sql_instance_name
-    }
-    TF_VAR_db_name_suffix = {
-      sensitive = false
-      value = var.db_name_suffix
-    }
   }
   hooks = {
     before = {
