@@ -42,6 +42,7 @@ resource "google_secret_manager_secret_version" "db_password" {
 # Reserve a range of IP addresses for VPC peering
 resource "google_compute_global_address" "private_ip_range" {
   name          = "${var.project_id}-private-ip-range"
+  project       = var.project_id
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 16  # Size of IP range for internal use
