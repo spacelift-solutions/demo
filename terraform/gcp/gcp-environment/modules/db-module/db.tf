@@ -20,7 +20,7 @@ resource "google_secret_manager_secret" "db_password" {
   project   = var.project_id
 
   replication {
-    user_managed = {
+    user_managed  {
       replicas = {
         location = "europe-west2"
       }
