@@ -85,7 +85,7 @@ resource "google_compute_global_address" "private_ip_range" {
   project       = var.project_id
 
   lifecycle {
-    prevent_destroy = false  # Prevent accidental deletion
+    prevent_destroy = false # Prevent accidental deletion
   }
 }
 
