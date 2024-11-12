@@ -1,17 +1,17 @@
 # Cloud Function
 resource "google_cloudfunctions_function" "manage_resources_function" {
-  name        = "manage-resources-function"
-  runtime     = "python310"
-  entry_point = "start_or_stop_resources"
+  name                  = "manage-resources-function"
+  runtime               = "python310"
+  entry_point           = "start_or_stop_resources"
   source_archive_bucket = google_storage_bucket.function_bucket.name
   source_archive_object = google_storage_bucket_object.function_zip.name
-  trigger_http = true
+  trigger_http          = true
 
   environment_variables = {
-    PROJECT_ID      = var.project_id
-    GKE_CLUSTER     = var.gke_cluster_name
-    REGION          = var.gke_region
-    SQL_INSTANCE    = var.sql_instance_name
+    PROJECT_ID   = var.project_id
+    GKE_CLUSTER  = var.gke_cluster_name
+    REGION       = var.gke_region
+    SQL_INSTANCE = var.sql_instance_name
   }
 }
 
@@ -48,28 +48,28 @@ resource "google_storage_bucket" "function_bucket" {
 resource "google_storage_bucket_object" "function_zip" {
   name   = "function.zip"
   bucket = google_storage_bucket.function_bucket.name
-  source = "${path.module}/function.zip"  
+  source = "${path.module}/function.zip"
 }
 # Cloud Scheduler to Trigger Cloud Function
 resource "google_cloud_scheduler_job" "start_gke_and_sql" {
-  name        = "start-gke-and-sql-job"
-  schedule    = "0 8 * * *"  # At 8 AM every day
-  time_zone   = var.scheduler_time_zone
+  name      = "start-gke-and-sql-job"
+  schedule  = "0 8 * * *" # At 8 AM every day
+  time_zone = var.scheduler_time_zone
   http_target {
-    uri          = google_cloudfunctions_function.manage_resources_function.https_trigger_url
-    http_method  = "POST"
-    body         = base64encode("{\"action\": \"start\"}")
+    uri         = google_cloudfunctions_function.manage_resources_function.https_trigger_url
+    http_method = "POST"
+    body        = base64encode("{\"action\": \"start\"}")
   }
 }
 
 resource "google_cloud_scheduler_job" "stop_gke_and_sql" {
-  name        = "stop-gke-and-sql-job"
-  schedule    = "0 20 * * *"  # At 8 PM every day
-  time_zone   = var.scheduler_time_zone
+  name      = "stop-gke-and-sql-job"
+  schedule  = "0 20 * * *" # At 8 PM every day
+  time_zone = var.scheduler_time_zone
   http_target {
-    uri          = google_cloudfunctions_function.manage_resources_function.https_trigger_url
-    http_method  = "POST"
-    body         = base64encode("{\"action\": \"stop\"}")
+    uri         = google_cloudfunctions_function.manage_resources_function.https_trigger_url
+    http_method = "POST"
+    body        = base64encode("{\"action\": \"stop\"}")
   }
 }
 

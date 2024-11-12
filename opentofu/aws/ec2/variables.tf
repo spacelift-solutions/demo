@@ -13,7 +13,6 @@ variable "public_key" {
   default = "/mnt/workspace/id_rsa.pub"
 }
 
-variable "subnetId" {
-  type    = string
-  default = ""
+variable "subnet_id" {
+  type = string
 }

@@ -15,5 +15,5 @@ provider "spacelift" {}
 
 provider "google" {
   project = var.project_id
-  region  = var.gcp_region
+  region  = local.gcp_region
 }

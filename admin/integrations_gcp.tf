@@ -1,10 +1,3 @@
-resource "spacelift_aws_integration" "demo" {
-  name             = "demo"
-  role_arn         = var.role_arn
-  space_id         = spacelift_space.aws.id
-  duration_seconds = 3600
-}
-
 resource "spacelift_gcp_service_account" "admin" {
   stack_id = data.spacelift_current_stack.admin.id
 
@@ -13,10 +6,6 @@ resource "spacelift_gcp_service_account" "admin" {
     "https://www.googleapis.com/auth/cloud-platform",
     "https://www.googleapis.com/auth/devstorage.full_control",
   ]
-}
-
-locals {
-  spacelift_hostname = "spacelift-solutions"
 }
 
 data "google_project" "project" {}
@@ -54,6 +43,7 @@ resource "google_service_account_iam_binding" "spacelift" {
   service_account_id = google_service_account.spacelift.name
   role               = "roles/iam.workloadIdentityUser"
 
-  members = ["principalSet://iam.googleapis.com/projects/${data.google_project.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.spacelift.workload_identity_pool_id}/*"
+  members = [
+    "principalSet://iam.googleapis.com/projects/${data.google_project.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.spacelift.workload_identity_pool_id}/*"
   ]
 }
