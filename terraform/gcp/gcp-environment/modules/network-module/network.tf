@@ -4,14 +4,14 @@
 
 # Create VPC
 resource "google_compute_network" "vpc" {
-  name                    = "${var.gcp_environment_type}-vpc"
+  name                    = "mainnet-${var.gcp_environment_type}-vpc"
   project                 = var.project_id
   auto_create_subnetworks = false
 }
 
 # Create subnet
 resource "google_compute_subnetwork" "subnet" {
-  name          = "${var.gcp_environment_type}-subnet"
+  name          = "mainnet-${var.gcp_environment_type}-subnet"
   project       = var.project_id
   region        = var.gcp_region
   network       = google_compute_network.vpc.id
@@ -29,14 +29,14 @@ resource "google_compute_subnetwork" "subnet" {
 
 # Create Cloud NAT for outbound internet access
 resource "google_compute_router" "router" {
-  name    = "${var.gcp_environment_type}-router"
+  name    = "mainnet-${var.gcp_environment_type}-router"
   project = var.project_id
   region  = var.gcp_region
   network = google_compute_network.vpc.id
 }
 
 resource "google_compute_router_nat" "nat" {
-  name                               = "${var.gcp_environment_type}-nat"
+  name                               = "mainnet-${var.gcp_environment_type}-nat"
   project                            = var.project_id
   router                             = google_compute_router.router.name
   region                             = var.gcp_region
@@ -46,7 +46,7 @@ resource "google_compute_router_nat" "nat" {
 
 # Basic firewall rules
 resource "google_compute_firewall" "allow_internal" {
-  name    = "${var.gcp_environment_type}-allow-internal"
+  name    = "mainnet-${var.gcp_environment_type}-allow-internal"
   project = var.project_id
   network = google_compute_network.vpc.id
 
@@ -64,7 +64,7 @@ resource "google_compute_firewall" "allow_internal" {
 }
 
 resource "google_compute_firewall" "allow_health_checks" {
-  name    = "${var.gcp_environment_type}-allow-health-checks"
+  name    = "mainnet-${var.gcp_environment_type}-allow-health-checks"
   project = var.project_id
   network = google_compute_network.vpc.id
 
