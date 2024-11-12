@@ -64,7 +64,7 @@ resource "google_project_iam_custom_role" "devops_role" {
     "compute.instances.start",
     "compute.instances.stop",
     "compute.instances.update",
-    
+
     # GKE permissions
     "container.clusters.get",
     "container.clusters.list",
@@ -73,14 +73,14 @@ resource "google_project_iam_custom_role" "devops_role" {
     "container.clusters.delete",
     "container.operations.get",
     "container.operations.list",
-    
+
     # Cloud SQL permissions
     "cloudsql.instances.get",
     "cloudsql.instances.list",
     "cloudsql.instances.update",
     "cloudsql.instances.create",
     "cloudsql.instances.delete",
-    
+
     # IAM permissions
     "iam.roles.get",
     "iam.roles.list",
@@ -92,16 +92,16 @@ resource "google_project_iam_custom_role" "devops_role" {
     "iam.serviceAccounts.delete",
     "iam.serviceAccounts.getIamPolicy",
     "iam.serviceAccounts.setIamPolicy",
-    
+
     # Storage permissions
     "storage.buckets.get",
     "storage.buckets.list",
     "storage.buckets.create",
     "storage.buckets.delete",
-    
+
     # Logging and Monitoring
     "logging.logEntries.list",
-    "logging.logs.list",  
+    "logging.logs.list",
     "monitoring.timeSeries.list",
     "monitoring.groups.list"
   ]
