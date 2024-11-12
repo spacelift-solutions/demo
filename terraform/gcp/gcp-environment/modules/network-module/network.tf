@@ -74,3 +74,21 @@ resource "google_compute_firewall" "allow_health_checks" {
 
   source_ranges = ["35.191.0.0/16", "130.211.0.0/22"]
 }
+
+# Fix the reference to use the VPC we created
+resource "google_compute_global_address" "private_ip_range" {
+  name          = "${var.project_id}-private-ip-range-${random_id.network_suffix.hex}"  # Add unique suffix
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = google_compute_network.vpc.id
+  project = var.project_id
+
+  lifecycle {
+    prevent_destroy = true  # Prevent accidental deletion
+  }
+}
+
+resource "random_id" "network_suffix" {
+  byte_length = 4
+}

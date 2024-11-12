@@ -26,3 +26,8 @@ output "subnet_cidr" {
   description = "The CIDR range of the subnet"
   value       = google_compute_subnetwork.subnet.ip_cidr_range
 }
+
+# Missing static outputs needed for Cloud Function
+output "gke_subnet_name" {
+  value = google_compute_subnetwork.subnet.name
+}
