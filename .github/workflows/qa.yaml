@@ -1,0 +1,18 @@
+name: QA
+on:
+  - pull_request
+permissions:
+  contents: write
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: OpenTofu - Setup Tofu
+        uses: opentofu/setup-opentofu@v1.0.4
+
+      - name: OpenTofu - Ensure fmt has ran
+        run: tofu fmt --recursive --check

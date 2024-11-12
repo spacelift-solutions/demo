@@ -31,7 +31,7 @@ variable "network_id" {
 variable "db_tier" {
   type        = string
   description = "The machine type for the database instance"
-  default     = "db-f1-micro"  # Demo-grade
+  default     = "db-f1-micro" # Demo-grade
 }
 
 variable "db_name" {
@@ -49,7 +49,7 @@ variable "db_user" {
 variable "secret_accessors" {
   type        = list(string)
   description = "List of members that can access the password secret"
-  default     = [
+  default = [
     "user:emina@spacelift.io",
     "user:joeys@spacelift.io",
     "user:jubrann@spacelift.io",

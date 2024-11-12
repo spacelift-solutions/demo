@@ -1,13 +1,11 @@
 module "stack_opentofu_aws_s3" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
-  # Required inputs
   description     = "stack that creates s3 buckets"
   name            = "opentofu-aws-s3"
   repository_name = "demo"
   space_id        = spacelift_space.aws_opentofu.id
 
-  # Optional inputs
   aws_integration = {
     enabled = true
     id      = spacelift_aws_integration.demo.id
@@ -15,4 +13,59 @@ module "stack_opentofu_aws_s3" {
   labels            = ["aws", "s3", "opentofu"]
   project_root      = "opentofu/aws/s3"
   repository_branch = "main"
+}
+
+module "stack_aws_vpc" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "stack that creates a VPC and handles networking"
+  name            = "networking"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "networking"]
+  project_root      = "opentofu/aws/vpc"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
+
+  dependencies = {
+    EC2 = {
+      child_stack_id = module.stack_aws_ec2.id
+
+      references = {
+        SUBNET = {
+          output_name    = "subnet_id"
+          input_name     = "TF_VAR_subnet_id"
+          trigger_always = true
+        }
+        SECURITY_GROUP = {
+          output_name    = "dev_sg"
+          input_name     = "TF_VAR_aws_security_group_id"
+          trigger_always = true
+        }
+      }
+    }
+  }
+}
+
+module "stack_aws_ec2" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "creates a simple EC2 instance"
+  name            = "ec2"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "ec2"]
+  project_root      = "opentofu/aws/ec2"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
 }

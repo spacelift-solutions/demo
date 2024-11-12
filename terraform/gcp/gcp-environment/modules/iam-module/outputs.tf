@@ -19,5 +19,5 @@ output "enabled_apis" {
 
 output "gke_service_account" {
   description = "gke service account for cluster management"
-  value = google_service_account.gke_sa
+  value       = google_service_account.gke_sa
 }

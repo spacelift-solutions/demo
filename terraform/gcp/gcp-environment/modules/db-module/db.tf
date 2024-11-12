@@ -25,7 +25,7 @@ resource "google_secret_manager_secret" "db_password" {
     #   replicas {
     #     location = "europe-west2"
     #   }
-    }
+  }
 
   labels = {
     environment = var.gcp_environment_type
@@ -45,7 +45,7 @@ resource "google_compute_global_address" "private_ip_range" {
   project       = var.project_id
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
-  prefix_length = 16  # Size of IP range for internal use
+  prefix_length = 16 # Size of IP range for internal use
   network       = var.network_id
 }
 
@@ -68,9 +68,9 @@ resource "google_sql_database_instance" "main" {
   region           = var.gcp_region
 
   settings {
-    tier       = var.db_tier
-    disk_size  = 10            # Minimum size to reduce SSD requirements
-    disk_type  = "PD_HDD" # Change to standard disk to avoid SSD quota
+    tier      = var.db_tier
+    disk_size = 10       # Minimum size to reduce SSD requirements
+    disk_type = "PD_HDD" # Change to standard disk to avoid SSD quota
 
     ip_configuration {
       ipv4_enabled    = false
@@ -83,8 +83,8 @@ resource "google_sql_database_instance" "main" {
     }
 
     maintenance_window {
-      day  = 7  # Sunday
-      hour = 3  # 3 AM
+      day  = 7 # Sunday
+      hour = 3 # 3 AM
     }
 
     database_flags {
@@ -94,7 +94,7 @@ resource "google_sql_database_instance" "main" {
   }
 
   deletion_protection = false
-  
+
   depends_on = [
     google_service_networking_connection.private_vpc_connection
   ]
