@@ -5,6 +5,7 @@ permissions:
   contents: write
 jobs:
   fmt:
+    name: Format With OpenTofu
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
