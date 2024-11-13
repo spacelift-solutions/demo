@@ -5,7 +5,7 @@
 # Create GKE cluster
 resource "google_container_cluster" "primary" {
   name     = "${var.gcp_environment_type}-gke-cluster"
-  location = "europe-west2-a"
+  location = "us-east1-b"
   project  = var.project_id
 
   remove_default_node_pool = true
@@ -48,7 +48,7 @@ resource "google_container_cluster" "primary" {
 # Create managed node pool
 resource "google_container_node_pool" "primary_nodes" {
   name       = "${var.gcp_environment_type}-node-pool"
-  location   = "europe-west2-a"
+  location   = "us-east1-b"
   cluster    = google_container_cluster.primary.name
   project    = var.project_id
   node_count = var.node_count
