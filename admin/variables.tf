@@ -13,6 +13,7 @@ variable "project_id" {
 variable "dd_api_key" {
   type        = string
   description = "API key for the DD integration"
+  sensitive   = true
 }
 
 variable "dd_site" {
