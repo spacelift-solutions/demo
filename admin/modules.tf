@@ -39,3 +39,17 @@ resource "spacelift_module" "sops_plugin_module" {
   public               = true
   labels               = ["module"]
 }
+
+resource "spacelift_module" "infracost_plugin_module" {
+  name                 = "plugin-infracost"
+  terraform_provider   = "spacelift"
+  administrative       = true
+  branch               = "main"
+  description          = "Plugin that creates the necessary context to integrate with infracost"
+  repository           = "plugin-infracost"
+  space_id             = "root"
+  workflow_tool        = "OPEN_TOFU"
+  enable_local_preview = true
+  public               = true
+  labels               = ["module"]
+}
