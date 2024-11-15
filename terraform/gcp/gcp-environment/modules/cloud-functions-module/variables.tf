@@ -20,7 +20,7 @@ variable "sql_instance_name" {
   description = "The Cloud SQL instance name."
 }
 
-variable "db_name_suffix" {
+variable "db_suffix" {
   type        = string
   description = "inherited db name suffix"
 }

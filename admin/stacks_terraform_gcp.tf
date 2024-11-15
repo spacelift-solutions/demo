@@ -150,7 +150,7 @@ module "stack_gcp_gke" {
         CLUSTER = {
           trigger_always = true
           output_name    = "cluster_name"
-          input_name     = "TF_VAR_cluster_name"
+          input_name     = "TF_VAR_gke_cluster_name"
         }
       }
     }
