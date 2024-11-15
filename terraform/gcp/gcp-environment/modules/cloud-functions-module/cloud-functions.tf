@@ -41,7 +41,7 @@ resource "google_service_account" "function_service_account" {
 
 # Storage Bucket to Upload Function Code
 resource "google_storage_bucket" "function_bucket" {
-  name     = "${var.project_id}-scheduler-scr-${var.db_name_suffix}"
+  name     = "${var.project_id}-scheduler-scr-${random_id.bucket_suffix.hex}" # Use random_id instead of db_name_suffix
   location = var.gke_region
 }
 
@@ -50,11 +50,12 @@ resource "google_storage_bucket_object" "function_zip" {
   bucket = google_storage_bucket.function_bucket.name
   source = "${path.module}/function.zip"
 }
+
 # Cloud Scheduler to Trigger Cloud Function
 resource "google_cloud_scheduler_job" "start_gke_and_sql" {
   name      = "start-gke-and-sql-job"
   schedule  = "0 8 * * *" # At 8 AM every day
-  time_zone = var.scheduler_time_zone
+  time_zone = "UTC"
   http_target {
     uri         = google_cloudfunctions_function.manage_resources_function.https_trigger_url
     http_method = "POST"
@@ -64,8 +65,8 @@ resource "google_cloud_scheduler_job" "start_gke_and_sql" {
 
 resource "google_cloud_scheduler_job" "stop_gke_and_sql" {
   name      = "stop-gke-and-sql-job"
-  schedule  = "0 20 * * *" # At 8 PM every day
-  time_zone = var.scheduler_time_zone
+  schedule  = "0 18 * * *" # At 6 PM every day
+  time_zone = "UTC"
   http_target {
     uri         = google_cloudfunctions_function.manage_resources_function.https_trigger_url
     http_method = "POST"
@@ -73,7 +74,7 @@ resource "google_cloud_scheduler_job" "stop_gke_and_sql" {
   }
 }
 
-# Add this at the top of cloud-functions.tf
+# Random ID for unique bucket name suffix
 resource "random_id" "bucket_suffix" {
   byte_length = 4
 }
