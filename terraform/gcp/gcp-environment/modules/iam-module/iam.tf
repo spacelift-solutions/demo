@@ -140,7 +140,9 @@ resource "google_project_iam_member" "gke_roles" {
   for_each = toset([
     "roles/container.nodeServiceAccount",
     "roles/logging.logWriter",
-    "roles/monitoring.metricWriter"
+    "roles/monitoring.metricWriter",
+    "roles/storage.objectViewer",
+    "roles/stackdriver.resourceMetadata.writer"
   ])
   project = var.project_id
   role    = each.value
