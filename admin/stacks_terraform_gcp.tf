@@ -237,7 +237,7 @@ module "stack_gcp_cloud_functions" {
   hooks = {
     before = {
       init = [
-        "/mnt/workspace/source/terraform/gcp/gcp-environment/scripts/package-deploy.sh"
+        "/mnt/workspace/source/terraform/gcp/gcp-environment/terraform/gcp/gcp-environment/scripts/package-deploy.sh"
       ]
     }
   }
