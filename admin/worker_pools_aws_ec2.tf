@@ -4,7 +4,7 @@ resource "random_string" "suffix" {
   special = false
 }
 
-resource "spacelift_worker_pool" "aws" {
+resource "spacelift_worker_pool" "aws_ec2_asg" {
   csr      = base64encode(tls_cert_request.main.cert_request_pem)
   name     = "AWS EC2 Worker Pool Example - ${random_string.suffix.id}"
   space_id = spacelift_space.aws.id

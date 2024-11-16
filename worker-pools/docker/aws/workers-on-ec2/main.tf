@@ -1,4 +1,4 @@
-module "my_workerpool" {
+module "aws_ec2_asg_worker_pool" {
   source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2?ref=v2.6.3"
 
   configuration = <<-EOT
