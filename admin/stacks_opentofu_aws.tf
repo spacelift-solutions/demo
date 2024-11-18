@@ -98,7 +98,7 @@ module "stack_aws_ec2_asg_worker_pool" {
         }
         WORKER_POOL_PRIVATE_KEY = {
           output_name = "ec2_worker_pool_private_key"
-          input_name  = "worker_pool_private_key"
+          input_name  = "TF_VAR_worker_pool_private_key"
         }
       }
     }
