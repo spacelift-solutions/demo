@@ -6,6 +6,8 @@ resource "google_cloudfunctions_function" "manage_resources_function" {
   source_archive_bucket = google_storage_bucket.function_bucket.name
   source_archive_object = google_storage_bucket_object.function_zip.name
   trigger_http          = true
+  project               = var.project_id
+  region                = var.gke_region
 
   environment_variables = {
     PROJECT_ID   = var.project_id
