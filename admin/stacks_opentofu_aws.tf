@@ -104,3 +104,38 @@ module "stack_aws_ec2_asg_worker_pool" {
     }
   }
 }
+
+module "stack_aws_eks_worker_pool" {
+  source          = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  description     = "stack to deploy private workers on AWS EKS"
+  name            = "worker pool on EKS"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "eks"]
+  project_root      = "worker-pools/kubernetes/aws"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
+  dependencies = {
+    ADMIN = {
+      parent_stack_id = data.spacelift_current_stack.admin.id
+      references = {
+        WORKER_POOL_ID = {
+          output_name = "eks_worker_pool_id"
+          input_name  = "TF_VAR_worker_pool_id"
+        }
+        WORKER_POOL_CONFIG = {
+          output_name = "eks_worker_pool_config"
+          input_name  = "TF_VAR_worker_pool_config"
+        }
+        WORKER_POOL_PRIVATE_KEY = {
+          output_name = "eks_worker_pool_private_key"
+          input_name  = "TF_VAR_worker_pool_private_key"
+        }
+      }
+    }
+  }
+}
