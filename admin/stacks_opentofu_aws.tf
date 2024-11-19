@@ -137,5 +137,19 @@ module "stack_aws_eks_worker_pool" {
         }
       }
     }
+    EKS = {
+      parent_stack_id = module.stack_aws_eks_kubernetes_example.id
+      references = {
+        CLUSTER_NAME = {
+          output_name = "cluster_name"
+          input_name  = "CLUSTER_NAME"
+        }
+      }
+    }
+  }
+  hooks = {
+    before = {
+      init = ["aws eks update-kubeconfig --region $REGION --name $CLUSTER_NAME"]
+    }
   }
 }
