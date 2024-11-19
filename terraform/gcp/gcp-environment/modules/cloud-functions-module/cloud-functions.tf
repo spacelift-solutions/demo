@@ -59,7 +59,7 @@ resource "google_cloud_scheduler_job" "start_gke_and_sql" {
   schedule  = "0 8 * * *" # At 8 AM every day
   time_zone = "UTC"
   project   = var.project_id
-  region  = var.gke_region
+  region    = var.gke_region
   http_target {
     uri         = google_cloudfunctions_function.manage_resources_function.https_trigger_url
     http_method = "POST"
@@ -72,7 +72,7 @@ resource "google_cloud_scheduler_job" "stop_gke_and_sql" {
   schedule  = "0 18 * * *" # At 6 PM every day
   time_zone = "UTC"
   project   = var.project_id
-  region  = var.gke_region
+  region    = var.gke_region
   http_target {
     uri         = google_cloudfunctions_function.manage_resources_function.https_trigger_url
     http_method = "POST"
