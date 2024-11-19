@@ -6,7 +6,7 @@ set -e
 # Install zip if not available
 if ! command -v zip &> /dev/null; then
     echo "Installing zip..."
-    apk add --no-cache zip
+    sudo apk add --no-cache zip
 fi
 
 # Set correct working directory
