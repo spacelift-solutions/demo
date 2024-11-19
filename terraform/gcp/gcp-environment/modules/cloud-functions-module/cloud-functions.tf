@@ -6,6 +6,8 @@ resource "google_cloudfunctions_function" "manage_resources_function" {
   source_archive_bucket = google_storage_bucket.function_bucket.name
   source_archive_object = google_storage_bucket_object.function_zip.name
   trigger_http          = true
+  project               = var.project_id
+  region                = var.gke_region
 
   environment_variables = {
     PROJECT_ID   = var.project_id
@@ -56,6 +58,8 @@ resource "google_cloud_scheduler_job" "start_gke_and_sql" {
   name      = "start-gke-and-sql-job"
   schedule  = "0 8 * * *" # At 8 AM every day
   time_zone = "UTC"
+  project   = var.project_id
+  region    = var.gke_region
   http_target {
     uri         = google_cloudfunctions_function.manage_resources_function.https_trigger_url
     http_method = "POST"
@@ -67,6 +71,8 @@ resource "google_cloud_scheduler_job" "stop_gke_and_sql" {
   name      = "stop-gke-and-sql-job"
   schedule  = "0 18 * * *" # At 6 PM every day
   time_zone = "UTC"
+  project   = var.project_id
+  region    = var.gke_region
   http_target {
     uri         = google_cloudfunctions_function.manage_resources_function.https_trigger_url
     http_method = "POST"
