@@ -111,6 +111,7 @@ module "stack_aws_eks_worker_pool" {
   name            = "worker pool on EKS"
   repository_name = "demo"
   space_id        = spacelift_space.aws_opentofu.id
+  worker_pool_id  = spacelift_worker_pool.aws_ec2_asg.id
   aws_integration = {
     enabled = true
     id      = spacelift_aws_integration.demo.id
