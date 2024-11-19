@@ -1,25 +1,36 @@
 #!/bin/bash
 
+# Exit on any error
+set -e
+
 # Set correct working directory
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR"
 
-export DB_NAME_SUFFIX="${TF_VAR_db_name_suffix}"
-export PROJECT_ID="${TF_VAR_project_id}"
-
-FUNCTION_NAME="./scheduler.py"
+# Define variables
+FUNCTION_NAME="scheduler.py"
+REQUIREMENTS="requirements.txt"
 ZIP_FILE="function.zip"
-GCS_BUCKET="${PROJECT_ID}-scheduler-scr-${DB_NAME_SUFFIX}"
+
+# Check if required files exist
+if [ ! -f "$FUNCTION_NAME" ]; then
+    echo "Error: $FUNCTION_NAME not found"
+    exit 1
+fi
+
+if [ ! -f "$REQUIREMENTS" ]; then
+    echo "Error: $REQUIREMENTS not found"
+    exit 1
+fi
 
 echo "Packaging Cloud Function code..."
 
 # Create zip with correct paths
-zip -j $ZIP_FILE ./scheduler.py ./requirements.txt
+zip -j "$ZIP_FILE" "$FUNCTION_NAME" "$REQUIREMENTS"
 
-echo "Uploading to Google Cloud Storage..."
-gsutil cp $ZIP_FILE gs://$GCS_BUCKET/
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to create zip file"
+    exit 1
+fi
 
-echo "Cleaning up local artifacts..."
-rm -f $ZIP_FILE
-
-echo "Package uploaded successfully"
+echo "Function code packaged successfully"
