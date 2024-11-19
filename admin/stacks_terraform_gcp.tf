@@ -238,6 +238,7 @@ module "stack_gcp_cloud_functions" {
     before = {
       init = [
         "ls -lah /mnt/workspace/source/terraform/gcp/gcp-environment/scripts/",
+        "apk add --no-cache zip --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main",
         "chmod +x /mnt/workspace/source/terraform/gcp/gcp-environment/scripts/package-deploy.sh",
         "/mnt/workspace/source/terraform/gcp/gcp-environment/scripts/package-deploy.sh"
       ]
