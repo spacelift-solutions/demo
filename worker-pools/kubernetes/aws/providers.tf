@@ -8,7 +8,9 @@ terraform {
 }
 
 provider "helm" {
-  # Configuration options
+  kubernetes {
+    config_path = "/home/spacelift/.kube/config"
+  }
 }
 
 resource "helm_release" "spacelift_kubernetes_workers" {
