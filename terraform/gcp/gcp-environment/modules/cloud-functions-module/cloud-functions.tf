@@ -44,6 +44,7 @@ resource "google_service_account" "function_service_account" {
 # Storage Bucket to Upload Function Code
 resource "google_storage_bucket" "function_bucket" {
   name     = "${var.project_id}-scheduler-scr-${random_id.bucket_suffix.hex}" # Use random_id instead of db_name_suffix
+  project  = var.project_id
   location = var.gke_region
 }
 
