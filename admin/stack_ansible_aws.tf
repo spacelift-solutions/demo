@@ -38,7 +38,7 @@ module "stack_aws_ansible" {
 
       references = {
         VPC = {
-          trigger_always = false
+          trigger_always = true
           output_name    = "instance_ip"
           input_name     = "host"
         }
