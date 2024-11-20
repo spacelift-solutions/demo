@@ -15,7 +15,7 @@ resource "spacelift_environment_variable" "ansible_remote_user" {
 resource "spacelift_environment_variable" "ansible_inventory" {
   context_id = spacelift_context.ansible_context.id
   name       = "ANSIBLE_INVENTORY"
-  value      = "/mnt/workspace/inventory.ini"
+  value      = "/mnt/workspace/inventory"
   write_only = false
 }
 
