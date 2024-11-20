@@ -3,41 +3,34 @@
   hosts: all
   remote_user: ubuntu
   become: yes
-  pre_tasks:
-    - name: Set SSH user for Ubuntu systems
-      set_fact:
-        ansible_user: ubuntu
-      when: ansible_os_family == "Debian"
+  roles:
+    - { role: geerlingguy.nginx }
 
-    - name: Set SSH user for RedHat systems
-      set_fact:
-        ansible_user: ec2-user
-      when: ansible_os_family == "RedHat"
+  vars:
+    nginx_vhosts:
+      - listen: "80"
+        server_name: '{{ inventory_hostname }}'
+        root: "/usr/share/nginx/html/"
+        index: "index.html"
 
   tasks:
-    - name: Wait for system to become reachable
-      ansible.builtin.wait_for_connection:
-          timeout: 180
-
-    - name: Install Nginx Redhat
-      ansible.builtin.yum:
-        name: nginx
-        state: present
-      when: ansible_os_family == "RedHat"
-      
-    - name: install nginx Debian
-      apt: name=nginx state=latest
-      when: ansible_os_family == "Debian"
-
     - name: Create index.html
       ansible.builtin.copy:
         dest: /usr/share/nginx/html/index.html
         content: |
           <!DOCTYPE html>
           <html>
-          <head><title>Server Details</title></head>
+          <head><title>Spacelift Ansible Demo</title></head>
           <body>
-          <h1>Served from {{ ansible_hostname }}</h1>
+          <div style="text-align: center;">
+            <h1>Served from {{ inventory_hostname }}</h1>
+            <p>Triggered from Spacelift via run:</p>
+            <p>
+              <a href="https://spacelift-solutions.app.spacelift.io/stack/ansible-ec2/run/{{ lookup('ansible.builtin.env', 'TF_VAR_spacelift_run_id') }}">
+                https://spacelift-solutions.app.spacelift.io/stack/ansible-ec2/run/{{ lookup('ansible.builtin.env', 'TF_VAR_spacelift_run_id') }}
+              </a>
+            </p>
+          </div>
           </body>
           </html>
         mode: '0644'

@@ -1,4 +1,4 @@
 output "instance_ip" {
   description = "Public IP of the ec2"
-  value       = aws_instance.sd_instance.id
+  value       = aws_instance.sd_instance.public_ip
 }

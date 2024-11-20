@@ -1,3 +1,11 @@
+locals {
+  ansible_stack_inventory_population_hook = [
+    "echo \"[webservers]\" > /mnt/workspace/inventory",
+    "echo \"  $host ansible_user=ubuntu ansible_port=22 ansible_ssh_private_key_file=/mnt/workspace/id_rsa\" >> /mnt/workspace/inventory",
+    "chmod 600 /mnt/workspace/id_rsa"
+  ]
+}
+
 module "stack_aws_ansible" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
@@ -16,6 +24,13 @@ module "stack_aws_ansible" {
   labels            = ["aws", "ansible"]
   project_root      = "ansible/aws"
   repository_branch = "main"
+
+  hooks = {
+    before = {
+      init  = local.ansible_stack_inventory_population_hook
+      apply = local.ansible_stack_inventory_population_hook
+    }
+  }
 
   dependencies = {
     ec2 = {
