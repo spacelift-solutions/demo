@@ -182,3 +182,9 @@ resource "google_project_iam_member" "function_service_account_sql_admin" {
   role    = "roles/cloudsql.admin"
   member  = "serviceAccount:${google_service_account.function_service_account.email}"
 }
+
+resource "google_project_iam_member" "function_admin" {
+  project = var.project_id
+  role    = "roles/cloudfunctions.admin"
+  member  = "serviceAccount:${google_service_account.function_service_account.email}"
+}
