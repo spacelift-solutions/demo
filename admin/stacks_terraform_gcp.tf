@@ -37,9 +37,9 @@ module "stack_gcp_iam" {
       child_stack_id = module.stack_gcp_cloud_functions.id
       references = {
         SERVICE_ACC = {
-           trigger_always = true
-           output_name = "function_service_account_email"
-           input_name = "TF_VAR_function_service_account_email"
+          trigger_always = true
+          output_name    = "function_service_account_email"
+          input_name     = "TF_VAR_function_service_account_email"
         }
       }
     }
