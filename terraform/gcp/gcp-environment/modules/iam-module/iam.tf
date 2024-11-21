@@ -217,7 +217,7 @@ resource "google_project_iam_member" "sql_roles" {
   member  = "serviceAccount:${google_service_account.sql_sa.email}"
 }
 
-resource "google_project_iam_member" "function_service_account_custom_role" {
+resource "google_project_iam_member" "cloud_functions_acc_custom" {
   project = var.project_id
   role    = google_project_iam_custom_role.cloud_functions_acc.id
   member  = "serviceAccount:${google_service_account.function_service_account.email}"
