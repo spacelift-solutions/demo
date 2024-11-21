@@ -8,6 +8,7 @@ resource "google_cloudfunctions_function" "manage_resources_function" {
   trigger_http          = true
   project               = var.project_id
   region                = var.gke_region
+  service_account_email = var.function_service_account_email
 
   environment_variables = {
     PROJECT_ID   = var.project_id
@@ -15,30 +16,6 @@ resource "google_cloudfunctions_function" "manage_resources_function" {
     REGION       = var.gke_region
     SQL_INSTANCE = var.sql_instance_name
   }
-}
-
-# Separate IAM bindings
-resource "google_cloudfunctions_function_iam_member" "function_container_admin" {
-  project        = var.project_id
-  region         = var.gke_region
-  cloud_function = google_cloudfunctions_function.manage_resources_function.name
-  role           = "roles/container.admin"
-  member         = "serviceAccount:${google_service_account.function_service_account.email}"
-}
-
-resource "google_cloudfunctions_function_iam_member" "function_sql_admin" {
-  project        = var.project_id
-  region         = var.gke_region
-  cloud_function = google_cloudfunctions_function.manage_resources_function.name
-  role           = "roles/cloudsql.admin"
-  member         = "serviceAccount:${google_service_account.function_service_account.email}"
-}
-
-# IAM Service Account for Cloud Function
-resource "google_service_account" "function_service_account" {
-  account_id   = "function-service-account"
-  display_name = "Service Account for managing GCP resources."
-  project      = var.project_id
 }
 
 # Storage Bucket to Upload Function Code
@@ -51,7 +28,7 @@ resource "google_storage_bucket" "function_bucket" {
 resource "google_storage_bucket_object" "function_zip" {
   name   = "function.zip"
   bucket = google_storage_bucket.function_bucket.name
-  source = "${path.module}/function.zip"
+  source = "/mnt/workspace/source/terraform/gcp/gcp-environment/scripts/function.zip"
 }
 
 # Cloud Scheduler to Trigger Cloud Function

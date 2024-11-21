@@ -21,3 +21,8 @@ output "gke_service_account" {
   description = "gke service account for cluster management"
   value       = google_service_account.gke_sa.email
 }
+
+output "function_service_account_email" {
+  description = "The email of the function service account"
+  value       = google_service_account.function_service_account.email
+}

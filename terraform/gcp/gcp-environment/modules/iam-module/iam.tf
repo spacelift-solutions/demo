@@ -28,7 +28,8 @@ resource "google_project_service" "required_apis" {
     "pubsub.googleapis.com",
     "secretmanager.googleapis.com",
     "cloudfunctions.googleapis.com",
-    "cloudscheduler.googleapis.com"
+    "cloudscheduler.googleapis.com",
+    "cloudbuild.googleapis.com"
   ])
   project                    = var.project_id
   service                    = each.value
@@ -135,6 +136,16 @@ resource "google_service_account" "sql_sa" {
   ]
 }
 
+resource "google_service_account" "function_service_account" {
+  account_id   = "function-service-account"
+  display_name = "Service Account for managing GCP resources."
+  project      = var.project_id
+
+  depends_on = [
+    google_project_service.required_apis
+  ]
+}
+
 # Basic roles for service accounts
 resource "google_project_iam_member" "gke_roles" {
   for_each = toset([
@@ -157,4 +168,16 @@ resource "google_project_iam_member" "sql_roles" {
   project = var.project_id
   role    = each.value
   member  = "serviceAccount:${google_service_account.sql_sa.email}"
+}
+
+resource "google_project_iam_member" "function_service_account_container_admin" {
+  project = var.project_id
+  role    = "roles/container.admin"
+  member  = "serviceAccount:${google_service_account.function_service_account.email}"
+}
+
+resource "google_project_iam_member" "function_service_account_sql_admin" {
+  project = var.project_id
+  role    = "roles/cloudsql.admin"
+  member  = "serviceAccount:${google_service_account.function_service_account.email}"
 }
