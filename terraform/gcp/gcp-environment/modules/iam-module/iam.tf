@@ -110,7 +110,7 @@ resource "google_project_iam_custom_role" "devops_role" {
 }
 
 # Create custom role for Cloud Function Service Account
-resource "google_project_iam_custom_role" "function_custom_role" {
+resource "google_project_iam_custom_role" "cloud_functions_acc" {
   project     = var.project_id
   role_id     = "cloudFunctionManagerRole"
   title       = "Cloud Function Manager Role"
@@ -150,7 +150,7 @@ resource "google_project_iam_custom_role" "function_custom_role" {
 # Attach custom role to Cloud Function Service Account
 resource "google_project_iam_member" "function_service_account_custom_role" {
   project = var.project_id
-  role    = google_project_iam_custom_role.function_custom_role.id
+  role    = google_project_iam_custom_role.cloud_functions_acc.id
   member  = "serviceAccount:${google_service_account.function_service_account.email}"
 }
 
@@ -219,6 +219,6 @@ resource "google_project_iam_member" "sql_roles" {
 
 resource "google_project_iam_member" "function_service_account_custom_role" {
   project = var.project_id
-  role    = google_project_iam_custom_role.function_custom_role.id
+  role    = google_project_iam_custom_role.cloud_functions_acc.id
   member  = "serviceAccount:${google_service_account.function_service_account.email}"
 }
