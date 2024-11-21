@@ -8,6 +8,7 @@
 # Enable necessary APIs
 resource "google_project_service" "required_apis" {
   for_each = toset([
+    # list all necessary api's here
     "compute.googleapis.com",
     "container.googleapis.com",
     "servicenetworking.googleapis.com",
