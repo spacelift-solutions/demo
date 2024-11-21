@@ -35,7 +35,13 @@ module "stack_gcp_iam" {
     }
     CLOUD_FUNC = {
       child_stack_id = module.stack_gcp_cloud_functions.id
-      trigger_always = true
+      references = {
+        SERVICE_ACC = {
+          trigger_always = true
+          output_name    = "function_service_account_email"
+          input_name     = "TF_VAR_function_service_account_email"
+        }
+      }
     }
     GKE = {
       child_stack_id = module.stack_gcp_gke.id
@@ -232,15 +238,6 @@ module "stack_gcp_cloud_functions" {
     }
     TF_VAR_gcp_environment_type = {
       value = local.gcp_environment_type
-    }
-  }
-  hooks = {
-    before = {
-      init = [
-        "ls -lah /mnt/workspace/source/terraform/gcp/gcp-environment/scripts/",
-        "chmod +x /mnt/workspace/source/terraform/gcp/gcp-environment/scripts/package-deploy.sh",
-        "/mnt/workspace/source/terraform/gcp/gcp-environment/scripts/package-deploy.sh"
-      ]
     }
   }
 }
