@@ -50,6 +50,11 @@ module "stack_aws_vpc" {
       }
     }
   }
+  drift_detection = {
+    enabled   = true
+    schedule  = ["0 0 * * *"]
+    reconcile = true
+  }
 }
 
 module "stack_aws_ec2" {
