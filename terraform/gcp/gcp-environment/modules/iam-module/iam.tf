@@ -109,6 +109,52 @@ resource "google_project_iam_custom_role" "devops_role" {
   ]
 }
 
+# Create custom role for Cloud Function Service Account
+resource "google_project_iam_custom_role" "cloud_functions_acc" {
+  project     = var.project_id
+  role_id     = "cloudFunctionManagerRole"
+  title       = "Cloud Function Manager Role"
+  description = "Custom role for managing GCP resources required by Cloud Functions"
+  permissions = [
+    # Cloud Functions permissions
+    "cloudfunctions.functions.get",
+    "cloudfunctions.functions.update",
+    "cloudfunctions.functions.create",
+    "cloudfunctions.functions.call",
+
+    # Service Account permissions
+    "iam.serviceAccounts.actAs",
+
+    # Storage permissions
+    "storage.buckets.get",
+    "storage.buckets.list",
+    "storage.objects.get",
+    "storage.objects.create",
+    "storage.objects.delete",
+
+    # Pub/Sub permissions (if needed)
+    "pubsub.topics.publish",
+
+    # Cloud SQL permissions
+    "cloudsql.instances.connect",
+    "cloudsql.instances.get",
+    "cloudsql.instances.update",
+
+    # GKE permissions
+    "container.clusters.get",
+    "container.clusters.update",
+    "container.nodePools.update"
+  ]
+}
+
+# Attach custom role to Cloud Function Service Account
+resource "google_project_iam_member" "function_service_account_custom_role" {
+  project = var.project_id
+  role    = google_project_iam_custom_role.cloud_functions_acc.id
+  member  = "serviceAccount:${google_service_account.function_service_account.email}"
+}
+
+
 # Attach principals to DevOps role
 resource "google_project_iam_binding" "devops_role_binding" {
   project = var.project_id
@@ -171,14 +217,8 @@ resource "google_project_iam_member" "sql_roles" {
   member  = "serviceAccount:${google_service_account.sql_sa.email}"
 }
 
-resource "google_project_iam_member" "function_service_account_container_admin" {
+resource "google_project_iam_member" "cloud_functions_acc_custom" {
   project = var.project_id
-  role    = "roles/container.admin"
-  member  = "serviceAccount:${google_service_account.function_service_account.email}"
-}
-
-resource "google_project_iam_member" "function_service_account_sql_admin" {
-  project = var.project_id
-  role    = "roles/cloudsql.admin"
+  role    = google_project_iam_custom_role.cloud_functions_acc.id
   member  = "serviceAccount:${google_service_account.function_service_account.email}"
 }
