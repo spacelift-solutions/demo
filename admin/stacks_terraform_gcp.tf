@@ -240,13 +240,4 @@ module "stack_gcp_cloud_functions" {
       value = local.gcp_environment_type
     }
   }
-  hooks = {
-    before = {
-      init = [
-        "ls -lah /mnt/workspace/source/terraform/gcp/gcp-environment/scripts/",
-        "chmod +x /mnt/workspace/source/terraform/gcp/gcp-environment/scripts/package-deploy.sh",
-        "/mnt/workspace/source/terraform/gcp/gcp-environment/scripts/package-deploy.sh"
-      ]
-    }
-  }
 }
