@@ -150,12 +150,15 @@ module "stack_aws_eks_worker_pool" {
           output_name = "cluster_name"
           input_name  = "CLUSTER_NAME"
         }
+        CLUSTER_ENDPOINT = {
+          output_name = "cluster_endpoint"
+          input_name  = "TF_VAR_cluster_endpoint"
+        }
+        CLUSTER_CA_DATA = {
+          output_name = "cluster_certificate_authority_data"
+          input_name  = "TF_VAR_cluster_certificate_authority_data"
+        }
       }
-    }
-  }
-  hooks = {
-    before = {
-      init = ["aws eks update-kubeconfig --region $REGION --name $CLUSTER_NAME"]
     }
   }
 }
