@@ -7,7 +7,7 @@ resource "random_string" "eks_suffix" {
 resource "spacelift_worker_pool" "aws_eks" {
   csr      = base64encode(tls_cert_request.eks_cert.cert_request_pem)
   name     = "AWS EKS Worker Pool Example - ${random_string.suffix.id}"
-  space_id = spacelift_space.aws.id
+  space_id = "root"
 }
 
 # The private key and certificate are generated in Terraform for convenience in this demo.
