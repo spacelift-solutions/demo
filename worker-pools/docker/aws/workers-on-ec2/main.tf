@@ -4,6 +4,7 @@ module "aws_ec2_asg_worker_pool" {
   configuration = <<-EOT
     export SPACELIFT_TOKEN="${var.worker_pool_config}"
     export SPACELIFT_POOL_PRIVATE_KEY="${var.worker_pool_private_key}"
+    export SPACELIFT_SENSITIVE_OUTPUT_UPLOAD_ENABLED=true
   EOT
 
   min_size                   = 1
