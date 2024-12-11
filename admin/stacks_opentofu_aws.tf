@@ -148,7 +148,7 @@ module "stack_aws_eks_worker_pool" {
       references = {
         CLUSTER_NAME = {
           output_name = "cluster_name"
-          input_name  = "CLUSTER_NAME"
+          input_name  = "TF_VAR_cluster_name"
         }
         CLUSTER_ENDPOINT = {
           output_name = "cluster_endpoint"
