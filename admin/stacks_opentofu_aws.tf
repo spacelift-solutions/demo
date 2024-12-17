@@ -172,13 +172,18 @@ module "stack_aws_audit_event_collector" {
   repository_branch = "main"
   space_id          = spacelift_space.aws_opentofu.id
   worker_pool_id    = spacelift_worker_pool.aws_ec2_asg.id
+  project_root      = "opentofu/aws/audit_trail"
   aws_integration = {
-    enabled = true
-    id      = spacelift_aws_integration.demo.id
+    tf_version = "1.8.4"
+    enabled    = true
+    id         = spacelift_aws_integration.demo.id
   }
-  labels       = ["aws", "s3", "lambda"]
-  project_root = "opentofu/aws/audit_trail"
-  tf_version   = "1.8.4"
+  environment_variables = {
+    TF_VAR_audit_trail_secret = {
+      sensitive = true
+      value     = ""
+    }
+  }
   # this dependecy needs to be defined after this stack is applied in order to get around the chicken and egg situation
   # dependencies = {
   #   ADMIN = {
@@ -195,4 +200,5 @@ module "stack_aws_audit_event_collector" {
   #     }
   #   }
   # }
+  labels = ["aws", "s3", "lambda"]
 }
