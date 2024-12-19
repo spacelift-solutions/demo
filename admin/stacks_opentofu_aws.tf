@@ -162,3 +162,43 @@ module "stack_aws_eks_worker_pool" {
     }
   }
 }
+
+
+module "stack_aws_audit_event_collector" {
+  source            = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+  description       = "stack to configure the aws events collector for audit trail"
+  name              = "AWS events collector"
+  repository_name   = "demo"
+  repository_branch = "main"
+  space_id          = spacelift_space.aws_opentofu.id
+  worker_pool_id    = spacelift_worker_pool.aws_ec2_asg.id
+  project_root      = "opentofu/aws/audit_trail"
+  aws_integration = {
+    tf_version = "1.8.4"
+    enabled    = true
+    id         = spacelift_aws_integration.demo.id
+  }
+  environment_variables = {
+    TF_VAR_audit_trail_secret = {
+      sensitive = true
+      value     = ""
+    }
+  }
+  # this dependecy needs to be defined after this stack is applied in order to get around the chicken and egg situation
+  # dependencies = {
+  #   ADMIN = {
+  #     child_stack_id = data.spacelift_current_stack.admin.id
+  #     references = {
+  #       ENDPOINT = {
+  #         output_name = "courier_url"
+  #         input_name  = "TF_VAR_audit_trail_endpoint"
+  #       }
+  #       SECRET = {
+  #         output_name = "audit_trail_secret"
+  #         input_name  = "TF_VAR_audit_trail_secret"
+  #       }
+  #     }
+  #   }
+  # }
+  labels = ["aws", "s3", "lambda"]
+}
