@@ -24,6 +24,7 @@
           <body>
           <div style="text-align: center;">
             <h1>Served from {{ inventory_hostname }}</h1>
+            <h2>Hello friends!</h2>
             <p>Triggered from Spacelift via run:</p>
             <p>
               <a href="https://spacelift-solutions.app.spacelift.io/stack/ansible-ec2/run/{{ lookup('ansible.builtin.env', 'TF_VAR_spacelift_run_id') }}">
