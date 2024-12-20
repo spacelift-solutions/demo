@@ -185,20 +185,20 @@ module "stack_aws_audit_event_collector" {
     }
   }
   # this dependecy needs to be defined after this stack is applied in order to get around the chicken and egg situation
-  # dependencies = {
-  #   ADMIN = {
-  #     child_stack_id = data.spacelift_current_stack.admin.id
-  #     references = {
-  #       ENDPOINT = {
-  #         output_name = "courier_url"
-  #         input_name  = "TF_VAR_audit_trail_endpoint"
-  #       }
-  #       SECRET = {
-  #         output_name = "audit_trail_secret"
-  #         input_name  = "TF_VAR_audit_trail_secret"
-  #       }
-  #     }
-  #   }
-  # }
+  dependencies = {
+    ADMIN = {
+      child_stack_id = data.spacelift_current_stack.admin.id
+      references = {
+        ENDPOINT = {
+          output_name = "courier_url"
+          input_name  = "TF_VAR_audit_trail_endpoint"
+        }
+        SECRET = {
+          output_name = "audit_trail_secret"
+          input_name  = "TF_VAR_audit_trail_secret"
+        }
+      }
+    }
+  }
   labels = ["aws", "s3", "lambda"]
 }
