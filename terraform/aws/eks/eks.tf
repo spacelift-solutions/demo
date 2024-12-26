@@ -30,7 +30,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     initial = {
-      instance_types        = ["m5.large"]
+      instance_types        = ["m5.xlarge"]
       create_security_group = false
 
       subnet_ids = var.subnet_ids
@@ -38,9 +38,9 @@ module "eks" {
       create_launch_template = true
       launch_template_os     = "amazonlinux2eks"
 
-      min_size     = 2
+      min_size     = 1
       max_size     = 5
-      desired_size = 2
+      desired_size = 1
     }
   }
 
