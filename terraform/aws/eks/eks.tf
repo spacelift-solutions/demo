@@ -38,9 +38,9 @@ module "eks" {
       create_launch_template = true
       launch_template_os     = "amazonlinux2eks"
 
-      min_size     = 1
+      min_size     = 2
       max_size     = 5
-      desired_size = 1
+      desired_size = 3
     }
   }
 
@@ -48,6 +48,7 @@ module "eks" {
     Name = var.cluster_name
   }
 }
+
 
 #---------------------------------------------------------------
 # Cluster Auth
