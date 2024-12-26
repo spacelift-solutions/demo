@@ -5,5 +5,5 @@ resource "helm_release" "spacelift_kubernetes_workers" {
   chart      = "spacelift-workerpool-controller"
 
   namespace        = "spacelift-worker-controller-system"
-  create_namespace = true 
+  create_namespace = true
 }
