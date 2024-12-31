@@ -12,6 +12,10 @@ resource "kubectl_manifest" "worker_pool_controller" {
   yaml_body = file("./manifests.yaml")
 }
 
+resource "kubectl_manifest" "worker_pool_namespace" {
+  yaml_body = file("./namespace.yaml")
+}
+
 resource "kubectl_manifest" "worker_pool_secret" {
   yaml_body = file("./secret.yaml")
 }
