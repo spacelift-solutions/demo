@@ -39,10 +39,10 @@ spec:
       resources:
         requests:
           cpu: 500m
-          memory: 200Mi
+          memory: 512Mi
         # Setting too low limits on the worker container can cause problems executing
         # your IaC tool (e.g. OpenTofu, Terraform, etc), causing runs to fail during
         # planning, applying or destroying phases.
-        # limits:
-        #   cpu: 500m
-        #   memory: 200Mi
+        limits:
+          cpu: 1000m
+          memory: 2048Mi

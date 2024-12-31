@@ -8,6 +8,10 @@ resource "helm_release" "spacelift_kubernetes_workers" {
   create_namespace = true
 }
 
-resource "kubectl_manifest" "spacelift_kubernetes_workers" {
-  yaml_body = file("./manifests.yaml")
+resource "kubectl_manifest" "worker_pool_secret" {
+  yaml_body = file("./secret.yaml")
+}
+
+resource "kubectl_manifest" "worker_pool" {
+  yaml_body = file("./workerpool.yaml")
 }
