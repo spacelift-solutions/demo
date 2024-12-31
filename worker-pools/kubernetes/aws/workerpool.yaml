@@ -2,6 +2,7 @@ apiVersion: workers.spacelift.io/v1beta1
 kind: WorkerPool
 metadata:
   name: test-pool
+  namespace: spacelift-workers
 spec:
   poolSize: 2
   token:
