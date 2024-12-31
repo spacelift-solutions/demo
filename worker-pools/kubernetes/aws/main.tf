@@ -9,7 +9,7 @@
 # }
 
 resource "kubectl_manifest" "worker_pool_controller" {
-  yaml_body = file("./secret.yaml")
+  yaml_body = file("./manifests.yaml")
 }
 
 resource "kubectl_manifest" "worker_pool_secret" {
