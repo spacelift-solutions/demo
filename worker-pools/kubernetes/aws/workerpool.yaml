@@ -1,0 +1,48 @@
+apiVersion: workers.spacelift.io/v1beta1
+kind: WorkerPool
+metadata:
+  name: test-pool
+spec:
+  poolSize: 2
+  token:
+    secretKeyRef:
+      name: pool-credentials
+      key: token
+  privateKey:
+    secretKeyRef:
+      name: pool-credentials
+      key: privateKey
+  pod:
+    initContainer:
+      resources:
+        requests:
+          cpu: 500m
+          memory: 200Mi
+        # Please note: we recommend being very cautious when adding resource limits
+        # to your containers. Setting too low a limit on the init container can cause
+        # runs to fail during the preparing phase.
+        # limits:
+        #   cpu: 100m
+        #   memory: 50Mi
+    grpcServerContainer:
+      resources:
+        requests:
+          cpu: 500m
+          memory: 200Mi
+        # Setting too low limits on the grpc server container can cause runs to fail
+        # when moving into the unconfirmed stage, as well as problems like not being
+        # able to stop/cancel runs.
+        # limits:
+        #   cpu: 100m
+        #   memory: 50Mi
+    workerContainer:
+      resources:
+        requests:
+          cpu: 500m
+          memory: 200Mi
+        # Setting too low limits on the worker container can cause problems executing
+        # your IaC tool (e.g. OpenTofu, Terraform, etc), causing runs to fail during
+        # planning, applying or destroying phases.
+        # limits:
+        #   cpu: 500m
+        #   memory: 200Mi
