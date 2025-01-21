@@ -12,7 +12,7 @@ variable "gke_cluster_name" {
 variable "gke_region" {
   type        = string
   description = "The GCP region for the GKE cluster."
-  default     = "europe-west2-a"
+  default     = "europe-west1"
 }
 
 variable "sql_instance_name" {
