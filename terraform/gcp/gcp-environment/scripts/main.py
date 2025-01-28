@@ -1,135 +1,198 @@
+# function/main.py
+
 import googleapiclient.discovery
 import os
 import logging
+import json
 from googleapiclient.errors import HttpError
 from flask import Request
 from time import sleep
+from typing import Callable, Dict, Tuple, Any
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure logging with more detailed format
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
-def retry_with_backoff(func, max_retries=3):
-    """Retry a function with exponential backoff."""
+def retry_with_backoff(func: Callable, max_retries: int = 3) -> Any:
+    """
+    Retry a function with exponential backoff.
+    
+    Args:
+        func: The function to retry
+        max_retries: Maximum number of retry attempts
+        
+    Returns:
+        The result of the function call
+        
+    Raises:
+        Exception: If all retry attempts fail
+    """
     for retry in range(max_retries):
         try:
             return func()
         except Exception as e:
             if retry == max_retries - 1:
+                logger.error(f"All retry attempts failed: {str(e)}")
                 raise
             sleep_time = (2 ** retry) + 1
             logger.warning(f"Attempt {retry + 1} failed. Retrying in {sleep_time} seconds...")
             sleep(sleep_time)
 
-def start_or_stop_resources(request: Request):
-    """HTTP Cloud Function to manage GCP resources.
-    Args:
-        request (flask.Request): The request object.
-    Returns:
-        tuple: A response string and status code.
+def validate_environment() -> Dict[str, str]:
     """
+    Validate all required environment variables are set.
     
-    # Get environment variables
-    project = os.getenv('PROJECT_ID')
-    region = os.getenv('REGION')
-    gke_cluster = os.getenv('GKE_CLUSTER')
-    sql_instance = os.getenv('SQL_INSTANCE')
-
-    # Validate environment variables
-    required_env_vars = {
-        "PROJECT_ID": project,
-        "REGION": region,
-        "GKE_CLUSTER": gke_cluster,
-        "SQL_INSTANCE": sql_instance
+    Returns:
+        Dict containing environment variables
+        
+    Raises:
+        ValueError: If any required environment variable is missing
+    """
+    required_vars = {
+        "PROJECT_ID": os.getenv('PROJECT_ID'),
+        "REGION": os.getenv('REGION'),
+        "GKE_CLUSTER": os.getenv('GKE_CLUSTER'),
+        "SQL_INSTANCE": os.getenv('SQL_INSTANCE')
     }
 
-    for var_name, value in required_env_vars.items():
-        if not value:
-            error_msg = f"Environment variable '{var_name}' is not set"
-            logger.error(error_msg)
-            return {"error": error_msg}, 500
+    missing_vars = [var for var, value in required_vars.items() if not value]
+    if missing_vars:
+        raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
+        
+    return required_vars
 
-    # Extract action from request
-    try:
-        request_json = request.get_json(silent=True)
-        if not request_json:
-            raise ValueError("Request body is empty")
-        action = request_json.get('action')
-        if not action:
-            raise ValueError("'action' field is missing")
-    except Exception as e:
-        error_msg = f"Failed to parse request: {str(e)}"
-        logger.error(error_msg)
-        return {"error": error_msg}, 400
-
-    if action not in ['start', 'stop']:
-        error_msg = "Invalid action. Use 'start' or 'stop'"
-        logger.error(error_msg)
-        return {"error": error_msg}, 400
-
-    # Initialize API clients
+def init_google_clients() -> Tuple[Any, Any]:
+    """
+    Initialize Google API clients.
+    
+    Returns:
+        Tuple of (container_service, sql_service)
+        
+    Raises:
+        Exception: If client initialization fails
+    """
     try:
         container_service = googleapiclient.discovery.build('container', 'v1')
         sql_service = googleapiclient.discovery.build('sqladmin', 'v1')
+        return container_service, sql_service
     except Exception as e:
-        error_msg = f"Failed to initialize Google API clients: {str(e)}"
-        logger.error(error_msg)
-        return {"error": error_msg}, 500
+        logger.error(f"Failed to initialize Google API clients: {str(e)}")
+        raise
 
+def manage_gke_cluster(container_service: Any, project: str, region: str, 
+                      cluster: str, action: str) -> None:
+    """
+    Manage GKE cluster nodes.
+    
+    Args:
+        container_service: Google Container Engine service client
+        project: GCP project ID
+        region: GCP region
+        cluster: GKE cluster name
+        action: Either 'start' or 'stop'
+    """
+    node_count = 3 if action == 'start' else 0
+    
+    def modify_nodes():
+        return container_service.projects().locations().clusters().nodePools().setSize(
+            name=f'projects/{project}/locations/{region}/clusters/{cluster}/nodePools/default-pool',
+            body={"nodeCount": node_count}
+        ).execute()
+    
+    retry_with_backoff(modify_nodes)
+    logger.info(f"Successfully {'scaled up' if action == 'start' else 'scaled down'} "
+                f"GKE cluster {cluster}")
+
+def manage_sql_instance(sql_service: Any, project: str, instance: str, 
+                       action: str) -> None:
+    """
+    Manage Cloud SQL instance.
+    
+    Args:
+        sql_service: Google Cloud SQL service client
+        project: GCP project ID
+        instance: SQL instance name
+        action: Either 'start' or 'stop'
+    """
+    activation_policy = "ALWAYS" if action == 'start' else "NEVER"
+    
+    def modify_instance():
+        return sql_service.instances().patch(
+            project=project,
+            instance=instance,
+            body={"settings": {"activationPolicy": activation_policy}}
+        ).execute()
+    
+    retry_with_backoff(modify_instance)
+    logger.info(f"Successfully {'started' if action == 'start' else 'stopped'} "
+                f"SQL instance {instance}")
+
+def start_or_stop_resources(request: Request) -> Tuple[Dict[str, str], int]:
+    """
+    HTTP Cloud Function to manage GCP resources.
+    
+    Args:
+        request: Flask request object
+        
+    Returns:
+        Tuple of (response_dict, status_code)
+    """
     try:
-        if action == 'start':
-            logger.info(f"Starting resources in project {project}")
+        # Validate environment variables
+        env_vars = validate_environment()
+        
+        # Validate request content type
+        if request.headers.get('content-type') != 'application/json':
+            raise ValueError("Content-Type must be application/json")
+        
+        # Parse and validate request
+        request_json = request.get_json(silent=True)
+        logger.info(f"Received request body: {request_json}")
+        
+        if not request_json:
+            raise ValueError("Request body is empty or not valid JSON")
             
-            # Start GKE cluster
-            def start_gke():
-                return container_service.projects().locations().clusters().nodePools().setSize(
-                    name=f'projects/{project}/locations/{region}/clusters/{gke_cluster}/nodePools/default-pool',
-                    body={"nodeCount": 3}
-                ).execute()
+        action = request_json.get('action')
+        if not action:
+            raise ValueError("'action' field is missing in request body")
             
-            retry_with_backoff(start_gke)
-            logger.info(f"Successfully scaled up GKE cluster {gke_cluster}")
-
-            # Start Cloud SQL
-            def start_sql():
-                return sql_service.instances().patch(
-                    project=project,
-                    instance=sql_instance,
-                    body={"settings": {"activationPolicy": "ALWAYS"}}
-                ).execute()
-            
-            retry_with_backoff(start_sql)
-            logger.info(f"Successfully started SQL instance {sql_instance}")
-
-        elif action == 'stop':
-            logger.info(f"Stopping resources in project {project}")
-            
-            # Stop GKE cluster
-            def stop_gke():
-                return container_service.projects().locations().clusters().nodePools().setSize(
-                    name=f'projects/{project}/locations/{region}/clusters/{gke_cluster}/nodePools/default-pool',
-                    body={"nodeCount": 0}
-                ).execute()
-            
-            retry_with_backoff(stop_gke)
-            logger.info(f"Successfully scaled down GKE cluster {gke_cluster}")
-
-            # Stop Cloud SQL
-            def stop_sql():
-                return sql_service.instances().patch(
-                    project=project,
-                    instance=sql_instance,
-                    body={"settings": {"activationPolicy": "NEVER"}}
-                ).execute()
-            
-            retry_with_backoff(stop_sql)
-            logger.info(f"Successfully stopped SQL instance {sql_instance}")
-
+        if action not in ['start', 'stop']:
+            raise ValueError("Invalid action. Use 'start' or 'stop'")
+        
+        # Initialize API clients
+        container_service, sql_service = init_google_clients()
+        
+        # Execute requested action
+        logger.info(f"Starting {action} operation for resources in project {env_vars['PROJECT_ID']}")
+        
+        manage_gke_cluster(
+            container_service, 
+            env_vars['PROJECT_ID'], 
+            env_vars['REGION'], 
+            env_vars['GKE_CLUSTER'], 
+            action
+        )
+        
+        manage_sql_instance(
+            sql_service, 
+            env_vars['PROJECT_ID'], 
+            env_vars['SQL_INSTANCE'], 
+            action
+        )
+        
+        success_msg = f"Successfully completed {action} operation"
+        logger.info(success_msg)
+        return {"message": success_msg}, 200
+        
+    except ValueError as e:
+        error_msg = f"Request validation failed: {str(e)}"
+        logger.error(error_msg)
+        return {"error": error_msg}, 400
+        
     except Exception as e:
-        error_msg = f"Failed to {action} resources: {str(e)}"
+        error_msg = f"Operation failed: {str(e)}"
         logger.error(error_msg)
         return {"error": error_msg}, 500
-
-    success_msg = f"Successfully completed {action} operation"
-    logger.info(success_msg)
-    return {"message": success_msg}, 200

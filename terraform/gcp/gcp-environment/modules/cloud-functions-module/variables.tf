@@ -29,3 +29,31 @@ variable "function_service_account_email" {
   type        = string
   description = "The email of the service account that the Cloud Function will use."
 }
+
+variable "environment" {
+  description = "Environment name (e.g., dev, prod)"
+  type        = string
+  default     = "dev"
+}
+
+variable "scheduler_timezone" {
+  description = "Timezone for the Cloud Scheduler jobs"
+  type        = string
+  default     = "UTC"
+}
+
+# outputs.tf
+output "function_url" {
+  description = "The URL of the deployed Cloud Function"
+  value       = google_cloudfunctions_function.manage_resources_function.https_trigger_url
+}
+
+output "function_name" {
+  description = "The name of the deployed Cloud Function"
+  value       = google_cloudfunctions_function.manage_resources_function.name
+}
+
+output "bucket_name" {
+  description = "The name of the storage bucket containing the function code"
+  value       = google_storage_bucket.function_bucket.name
+}
