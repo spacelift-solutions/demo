@@ -7,17 +7,17 @@ locals {
 resource "google_cloudfunctions_function" "manage_resources_function" {
   name                  = local.function_name
   runtime               = "python310"
-  entry_point          = "start_or_stop_resources"
+  entry_point           = "start_or_stop_resources"
   source_archive_bucket = google_storage_bucket.function_bucket.name
   source_archive_object = google_storage_bucket_object.function_zip.name
   trigger_http          = true
-  project              = var.project_id
-  region               = var.gke_region
+  project               = var.project_id
+  region                = var.gke_region
   service_account_email = var.function_service_account_email
-  
-  min_instances = 0
-  max_instances = 3
-  timeout       = 540
+
+  min_instances       = 0
+  max_instances       = 3
+  timeout             = 540
   available_memory_mb = 256
 
   environment_variables = {
@@ -55,9 +55,9 @@ resource "google_storage_bucket" "function_bucket" {
 }
 
 resource "google_storage_bucket_object" "function_zip" {
-  name   = "function.zip"  # Original name without hash
+  name   = "function.zip" # Original name without hash
   bucket = google_storage_bucket.function_bucket.name
-  source = "/mnt/workspace/source/terraform/gcp/gcp-environment/scripts/function.zip"  # Original path
+  source = "/mnt/workspace/source/terraform/gcp/gcp-environment/scripts/function.zip" # Original path
 }
 
 resource "google_cloud_scheduler_job" "start_gke_and_sql" {
@@ -73,16 +73,16 @@ resource "google_cloud_scheduler_job" "start_gke_and_sql" {
     min_backoff_duration = "1s"
     max_backoff_duration = "10s"
     max_retry_duration   = "0s"
-    max_doublings       = 2
+    max_doublings        = 2
   }
 
   http_target {
     uri         = google_cloudfunctions_function.manage_resources_function.https_trigger_url
     http_method = "POST"
-    body        = base64encode(jsonencode({
+    body = base64encode(jsonencode({
       action = "start"
     }))
-    
+
     headers = {
       "Content-Type" = "application/json"
     }
@@ -106,16 +106,16 @@ resource "google_cloud_scheduler_job" "stop_gke_and_sql" {
     min_backoff_duration = "1s"
     max_backoff_duration = "10s"
     max_retry_duration   = "0s"
-    max_doublings       = 2
+    max_doublings        = 2
   }
 
   http_target {
     uri         = google_cloudfunctions_function.manage_resources_function.https_trigger_url
     http_method = "POST"
-    body        = base64encode(jsonencode({
+    body = base64encode(jsonencode({
       action = "stop"
     }))
-    
+
     headers = {
       "Content-Type" = "application/json"
     }
