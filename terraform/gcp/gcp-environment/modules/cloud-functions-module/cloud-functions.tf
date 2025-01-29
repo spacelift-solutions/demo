@@ -31,6 +31,12 @@ resource "google_storage_bucket_object" "function_zip" {
   source = "/mnt/workspace/source/terraform/gcp/gcp-environment/scripts/function.zip"
 }
 
+resource "google_storage_bucket_iam_member" "function_bucket_access" {
+  bucket = google_storage_bucket.function_bucket.name
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${var.function_service_account_email}"
+}
+
 # Cloud Scheduler to Trigger Cloud Function
 resource "google_cloud_scheduler_job" "start_gke_and_sql" {
   name      = "start-gke-and-sql-job"
