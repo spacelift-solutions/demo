@@ -134,6 +134,19 @@ resource "google_cloudfunctions_function_iam_member" "invoker" {
   member         = "serviceAccount:${var.function_service_account_email}"
 }
 
+resource "google_storage_bucket_iam_member" "function_bucket_admin" {
+  bucket = google_storage_bucket.function_bucket.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:spacelift@*****.iam.gserviceaccount.com"
+}
+
+# You might also need this for full admin access
+resource "google_storage_bucket_iam_member" "function_bucket_object_admin" {
+  bucket = google_storage_bucket.function_bucket.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:spacelift@*****.iam.gserviceaccount.com"
+}
+
 resource "random_id" "bucket_suffix" {
   byte_length = 4
 }
