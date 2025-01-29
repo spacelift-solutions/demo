@@ -28,6 +28,7 @@ variable "db_suffix" {
 variable "function_service_account_email" {
   type        = string
   description = "The email of the service account that the Cloud Function will use."
+  default     = "spacelift@swift-climate-439711-s0.iam.gserviceaccount.com"
 }
 
 variable "environment" {

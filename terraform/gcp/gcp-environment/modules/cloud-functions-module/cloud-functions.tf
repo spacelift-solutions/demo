@@ -1,11 +1,9 @@
-# main.tf
-locals {
-  function_name = "manage-resources-function"
-  bucket_name   = "${var.project_id}-scheduler-scr-${random_id.bucket_suffix.hex}"
-}
+///---CLOUD FUNCTIONS MODULE---///
+
+// This module is part of a larger GCP environment. It aims to create the cloud functions (serverless) component of the environment
 
 resource "google_cloudfunctions_function" "manage_resources_function" {
-  name                  = local.function_name
+  name                  = "manage-resources-function"
   runtime               = "python310"
   entry_point           = "start_or_stop_resources"
   source_archive_bucket = google_storage_bucket.function_bucket.name
@@ -35,29 +33,16 @@ resource "google_cloudfunctions_function" "manage_resources_function" {
 }
 
 resource "google_storage_bucket" "function_bucket" {
-  name                        = local.bucket_name
-  project                     = var.project_id
-  location                    = "US"
-  uniform_bucket_level_access = true
-
-  versioning {
-    enabled = true
-  }
-
-  lifecycle_rule {
-    condition {
-      age = 30
-    }
-    action {
-      type = "Delete"
-    }
-  }
+  name     = "${var.project_id}-scheduler-scr-${random_id.bucket_suffix.hex}"
+  project  = var.project_id
+  location = "US"
 }
 
+# Keep the simple object configuration
 resource "google_storage_bucket_object" "function_zip" {
-  name   = "function.zip" # Original name without hash
+  name   = "function.zip"
   bucket = google_storage_bucket.function_bucket.name
-  source = "/mnt/workspace/source/terraform/gcp/gcp-environment/scripts/function.zip" # Original path
+  source = "/mnt/workspace/source/terraform/gcp/gcp-environment/scripts/function.zip"
 }
 
 resource "google_cloud_scheduler_job" "start_gke_and_sql" {
@@ -134,17 +119,10 @@ resource "google_cloudfunctions_function_iam_member" "invoker" {
   member         = "serviceAccount:${var.function_service_account_email}"
 }
 
-resource "google_storage_bucket_iam_member" "function_bucket_admin" {
+resource "google_storage_bucket_iam_member" "function_bucket_access" {
   bucket = google_storage_bucket.function_bucket.name
-  role   = "roles/storage.objectViewer"
-  member = "serviceAccount:spacelift@*****.iam.gserviceaccount.com"
-}
-
-# You might also need this for full admin access
-resource "google_storage_bucket_iam_member" "function_bucket_object_admin" {
-  bucket = google_storage_bucket.function_bucket.name
-  role   = "roles/storage.objectAdmin"
-  member = "serviceAccount:spacelift@*****.iam.gserviceaccount.com"
+  role   = "roles/storage.admin" # This gives full access to the bucket
+  member = "serviceAccount:spacelift@swift-climate-439711-s0.iam.gserviceaccount.com"
 }
 
 resource "random_id" "bucket_suffix" {
