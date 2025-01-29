@@ -137,9 +137,9 @@ resource "google_project_iam_custom_role" "cloud_functions_manager" {
 
     # GKE permissions
     "container.clusters.get",
-    "container.clusters.update",
-    "container.nodePools.update",
-    "container.nodePools.get"
+    "container.clusters.list",
+    "container.nodes.list",
+    "container.nodes.update"
   ]
 }
 
