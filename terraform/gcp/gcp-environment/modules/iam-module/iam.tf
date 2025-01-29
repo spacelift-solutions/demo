@@ -29,7 +29,8 @@ resource "google_project_service" "required_apis" {
     "secretmanager.googleapis.com",
     "cloudfunctions.googleapis.com",
     "cloudscheduler.googleapis.com",
-    "cloudbuild.googleapis.com"
+    "cloudbuild.googleapis.com",
+    "storage.googleapis.com"
   ])
   project                    = var.project_id
   service                    = each.value
