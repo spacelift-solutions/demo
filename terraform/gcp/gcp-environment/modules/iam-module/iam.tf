@@ -8,7 +8,6 @@
 # Enable necessary APIs
 resource "google_project_service" "required_apis" {
   for_each = toset([
-    # list all necessary api's here
     "compute.googleapis.com",
     "container.googleapis.com",
     "servicenetworking.googleapis.com",
@@ -120,7 +119,7 @@ resource "google_project_iam_custom_role" "cloud_functions_manager" {
     "cloudfunctions.functions.get",
     "cloudfunctions.functions.update",
     "cloudfunctions.functions.create",
-    "cloudfunctions.functions.call",
+    "cloudfunctions.functions.invoke",
 
     # Service Account permissions
     "iam.serviceAccounts.actAs",
@@ -133,13 +132,14 @@ resource "google_project_iam_custom_role" "cloud_functions_manager" {
     "storage.objects.delete",
 
     # Cloud SQL permissions
-    "cloudsql.instances.connect",
     "cloudsql.instances.get",
     "cloudsql.instances.update",
 
-    # GKE permissions (revised)
+    # GKE permissions
     "container.clusters.get",
-    "container.clusters.update"
+    "container.clusters.update",
+    "container.nodePools.update",
+    "container.nodePools.get"
   ]
 }
 
@@ -150,7 +150,6 @@ resource "google_project_iam_member" "cloud_functions_manager_attache" {
   member  = "serviceAccount:${google_service_account.function_service_account.email}"
 }
 
-
 # Attach principals to DevOps role
 resource "google_project_iam_binding" "devops_role_binding" {
   project = var.project_id
@@ -158,7 +157,7 @@ resource "google_project_iam_binding" "devops_role_binding" {
   members = var.devops_principals
 }
 
-# Service accounts (keeping these for specific service requirements)
+# Service accounts
 resource "google_service_account" "gke_sa" {
   account_id   = "gke-cluster-sa"
   display_name = "GKE Cluster Service Account"
