@@ -29,8 +29,7 @@ resource "google_project_service" "required_apis" {
     "secretmanager.googleapis.com",
     "cloudfunctions.googleapis.com",
     "cloudscheduler.googleapis.com",
-    "cloudbuild.googleapis.com",
-    "storage.googleapis.com"
+    "cloudbuild.googleapis.com"
   ])
   project                    = var.project_id
   service                    = each.value
@@ -138,14 +137,30 @@ resource "google_project_iam_custom_role" "cloud_functions_manager" {
 
     # GKE permissions
     "container.clusters.get",
-    "container.clusters.list",
-    "container.nodes.list",
-    "container.nodes.update"
+    "container.clusters.update",
+    "container.clusters.list",             # Added this
+    "container.nodes.list",                # Changed from nodePools.get
+    "container.nodes.update"               # Changed from nodePools.update
   ]
 }
 
-# Attach custom role to Cloud Function Service Account
-resource "google_project_iam_member" "cloud_functions_manager_attache" {
+# # Attach custom role to Cloud Function Service Account
+# resource "google_project_iam_member" "cloud_functions_manager_attache" {
+#   project = var.project_id
+#   role    = google_project_iam_custom_role.cloud_functions_manager.id
+#   member  = "serviceAccount:${google_service_account.function_service_account.email}"
+# }
+resource "google_service_account" "function_service_account" {
+  account_id   = "function-service-account"
+  display_name = "Service Account for managing GCP resources."
+  project      = var.project_id
+
+  depends_on = [
+    google_project_service.required_apis
+  ]
+}
+
+resource "google_project_iam_member" "cloud_functions_role_assignment" {
   project = var.project_id
   role    = google_project_iam_custom_role.cloud_functions_manager.id
   member  = "serviceAccount:${google_service_account.function_service_account.email}"
@@ -172,16 +187,6 @@ resource "google_service_account" "gke_sa" {
 resource "google_service_account" "sql_sa" {
   account_id   = "cloudsql-sa"
   display_name = "Cloud SQL Service Account"
-  project      = var.project_id
-
-  depends_on = [
-    google_project_service.required_apis
-  ]
-}
-
-resource "google_service_account" "function_service_account" {
-  account_id   = "function-service-account"
-  display_name = "Service Account for managing GCP resources."
   project      = var.project_id
 
   depends_on = [

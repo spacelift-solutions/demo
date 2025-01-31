@@ -1,12 +1,11 @@
-# Variables
 variable "project_id" {
   type        = string
-  description = "The GCP project ID."
+  description = "GCP Project ID"
 }
 
 variable "gke_cluster_name" {
   type        = string
-  description = "The name of the GKE cluster."
+  description = "Cluster name, used by the function"
 }
 
 variable "gke_region" {
@@ -17,7 +16,7 @@ variable "gke_region" {
 
 variable "sql_instance_name" {
   type        = string
-  description = "The Cloud SQL instance name."
+  description = "Cloud SQL instance name"
 }
 
 variable "db_suffix" {
@@ -27,17 +26,5 @@ variable "db_suffix" {
 
 variable "function_service_account_email" {
   type        = string
-  description = "The email of the service account that the Cloud Function will use."
-}
-
-variable "environment" {
-  description = "Environment name (e.g., dev, prod)"
-  type        = string
-  default     = "dev"
-}
-
-variable "scheduler_timezone" {
-  description = "Timezone for the Cloud Scheduler jobs"
-  type        = string
-  default     = "UTC"
+  description = "Email of the service account used by the Cloud Function"
 }
