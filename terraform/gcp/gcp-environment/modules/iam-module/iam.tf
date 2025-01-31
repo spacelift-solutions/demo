@@ -4,6 +4,7 @@
 // Author: MG
 // Anyone can add additional resources 
 // With the modules, the regular "modular" approach of files is followed, due to the expected growing size.
+// 
 
 # Enable necessary APIs
 resource "google_project_service" "required_apis" {
@@ -36,7 +37,7 @@ resource "google_project_service" "required_apis" {
   disable_dependent_services = false
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
 

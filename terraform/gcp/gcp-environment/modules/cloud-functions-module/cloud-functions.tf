@@ -81,6 +81,7 @@ resource "google_cloudfunctions_function_iam_member" "invoker" {
   ]
 }
 
+# Cloud Scheduler job to START GKE & SQL
 resource "google_cloud_scheduler_job" "start_gke_and_sql" {
   name        = "start-gke-and-sql-job"
   description = "Starts GKE cluster and Cloud SQL instance on weekdays"
