@@ -81,14 +81,6 @@ resource "google_cloudfunctions_function_iam_member" "invoker" {
   ]
 }
 
-# Cloud Scheduler jobs (unchanged)
-# ...
-
-<<<<<<< Updated upstream
-# Cloud Scheduler to Trigger Cloud Function
-=======
-# Cloud Scheduler job to START GKE & SQL
->>>>>>> Stashed changes
 resource "google_cloud_scheduler_job" "start_gke_and_sql" {
   name        = "start-gke-and-sql-job"
   description = "Starts GKE cluster and Cloud SQL instance on weekdays"
