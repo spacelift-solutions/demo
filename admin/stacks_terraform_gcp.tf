@@ -240,4 +240,12 @@ module "stack_gcp_cloud_functions" {
       value = local.gcp_environment_type
     }
   }
+
+  hooks = {
+    before = {
+      plan = [
+        "terraform apply -auto-approve -target 'google_storage_bucket_iam_member.spacelift_bucket_admin'"
+      ]
+    }
+  }
 }
