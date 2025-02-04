@@ -6,7 +6,7 @@ variable "project_id" {
 variable "gcp_environment_type" {
   type        = string
   description = "Environment name (e.g., dev, staging, prod)"
-  default     = "dev"
+  default     = "demo_cluster"
 }
 
 variable "gcp_region" {
@@ -45,10 +45,16 @@ variable "node_count" {
 variable "machine_type" {
   type        = string
   description = "Machine type for nodes"
-  default     = "e2-medium" # Demo-grade
+  default     = "e2-small" # Demo-grade
 }
 
 variable "gke_service_account" {
   type        = string
   description = "The service account email for GKE nodes"
+}
+
+variable "cluster_location" {
+  type        = string
+  description = "The cluster's location"
+  default     = "europe-west4"
 }

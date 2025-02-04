@@ -1,4 +1,3 @@
-
 variable "project_id" {
   type        = string
   description = "GCP Project ID"
@@ -9,10 +8,9 @@ variable "gke_cluster_name" {
   description = "Cluster name, used by the function"
 }
 
-variable "gke_region" {
+variable "cluster_location" {
   type        = string
   description = "The GCP region for the GKE cluster."
-  default     = "europe-west1"
 }
 
 variable "sql_instance_name" {

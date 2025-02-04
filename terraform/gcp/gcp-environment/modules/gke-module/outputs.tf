@@ -19,3 +19,13 @@ output "node_pool_name" {
   description = "Name of the node pool"
   value       = google_container_node_pool.primary_nodes.name
 }
+
+output "cluster_location" {
+  description = "the location of the Clsuter (zonal / regional)"
+  value       = google_container_cluster.primary.location
+}
+
+output "node_location" {
+  description = "the location of the Clsuter (zonal / regional)"
+  value       = google_container_node_pool.primary_nodes.location
+}
