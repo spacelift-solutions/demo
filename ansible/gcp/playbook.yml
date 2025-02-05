@@ -1,0 +1,27 @@
+---
+- name: Configure Windows Instance via WinRM
+  hosts: windows
+  gather_facts: yes
+  connection: winrm
+  remote_user: Administrator
+
+  vars:
+    # These variables are expected to come via the dynamic inventory.
+    # They can also be overridden in a vault if needed.
+    ansible_winrm_transport: ntlm
+    ansible_winrm_server_cert_validation: ignore
+    ansible_port: 5986
+
+  tasks:
+    - name: Test connectivity using win_ping
+      win_ping:
+
+    - name: Create a demo file on the Windows machine
+      win_shell: |
+        New-Item -Path C:\Demo -ItemType Directory -Force
+        "Hello from Ansible, run ID: $(Get-Date)" | Out-File -FilePath C:\Demo\hello.txt
+      register: demo_result
+
+    - name: Display output of file creation
+      debug:
+        msg: "{{ demo_result.stdout }}"

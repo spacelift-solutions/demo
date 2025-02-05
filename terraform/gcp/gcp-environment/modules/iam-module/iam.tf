@@ -1,10 +1,7 @@
-////////////////////////////
 ###---MODULE RESOURCES---###
-////////////////////////////
+
 // Author: MG
-// Anyone can add additional resources 
-// With the modules, the regular "modular" approach of files is followed, due to the expected growing size.
-// 
+// All relevant API's and IAM roles are to be defined here.
 
 # Enable necessary APIs
 resource "google_project_service" "required_apis" {
