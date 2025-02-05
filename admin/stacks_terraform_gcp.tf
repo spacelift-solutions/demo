@@ -150,13 +150,18 @@ module "stack_gcp_gke" {
     }
   }
   dependencies = {
-    CLOUD_FUNC = {
+    CLOUD_FUNCTIONS = {
       child_stack_id = module.stack_gcp_cloud_functions.id
       references = {
-        CLUSTER = {
+        CLUSTER_NAME = {
           trigger_always = true
           output_name    = "cluster_name"
           input_name     = "TF_VAR_gke_cluster_name"
+        }
+        CLUSTER_LOCATION = {
+          trigger_always = true
+          output_name    = "cluster_location"
+          input_name     = "TF_VAR_cluster_location"
         }
       }
     }

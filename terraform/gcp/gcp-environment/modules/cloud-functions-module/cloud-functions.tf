@@ -59,7 +59,7 @@ resource "google_cloudfunctions_function" "manage_resources_function" {
   environment_variables = {
     PROJECT_ID   = var.project_id
     GKE_CLUSTER  = var.gke_cluster_name
-    REGION       = var.gke_region
+    REGION       = var.cluster_location
     SQL_INSTANCE = var.sql_instance_name
   }
 
@@ -86,9 +86,13 @@ resource "google_cloud_scheduler_job" "start_gke_and_sql" {
   name        = "start-gke-and-sql-job"
   description = "Starts GKE cluster and Cloud SQL instance on weekdays"
   schedule    = "0 8 * * 1-5" # 08:00 UTC, Mon-Fri
-  time_zone   = "UTC"
+  time_zone   = "Europe/Sofia"
   project     = var.project_id
-  region      = var.gke_region
+  region      = var.cluster_region
+
+  retry_config {
+    retry_count = 3
+  }
 
   http_target {
     uri         = google_cloudfunctions_function.manage_resources_function.https_trigger_url
@@ -104,6 +108,10 @@ resource "google_cloud_scheduler_job" "start_gke_and_sql" {
       audience              = google_cloudfunctions_function.manage_resources_function.https_trigger_url
     }
   }
+  depends_on = [
+    google_cloudfunctions_function.manage_resources_function,
+    google_cloudfunctions_function_iam_member.invoker
+  ]
 }
 
 # Cloud Scheduler job to STOP GKE & SQL
@@ -111,9 +119,13 @@ resource "google_cloud_scheduler_job" "stop_gke_and_sql" {
   name        = "stop-gke-and-sql-job"
   description = "Stops GKE cluster and Cloud SQL instance on weekdays"
   schedule    = "0 18 * * 1-5" # 18:00 UTC, Mon-Fri
-  time_zone   = "UTC"
+  time_zone   = "Europe/Sofia"
   project     = var.project_id
-  region      = var.gke_region
+  region      = var.cluster_region
+
+  retry_config {
+    retry_count = 3
+  }
 
   http_target {
     uri         = google_cloudfunctions_function.manage_resources_function.https_trigger_url
@@ -129,4 +141,11 @@ resource "google_cloud_scheduler_job" "stop_gke_and_sql" {
       audience              = google_cloudfunctions_function.manage_resources_function.https_trigger_url
     }
   }
+
+  depends_on = [
+    google_cloudfunctions_function.manage_resources_function,
+    google_cloudfunctions_function_iam_member.invoker,
+    google_cloud_scheduler_job.start_gke_and_sql
+  ]
+
 }
