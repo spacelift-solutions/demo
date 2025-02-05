@@ -18,6 +18,7 @@ module "stack_ansible_ce_gcp" {
   manage_state     = true
   workflow_tool    = "ANSIBLE"
   ansible_playbook = "playbook.yml"
+  worker_pool_id   = spacelift_worker_pool.gcp_ce_worker.id
 
   administrative    = false
   auto_deploy       = true

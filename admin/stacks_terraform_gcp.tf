@@ -282,6 +282,7 @@ module "stack_gcp_ce_win" {
   space_id        = spacelift_space.gcp_terraform.id
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
+  worker_pool_id  = spacelift_worker_pool.gcp_ce_worker.id
 
   administrative    = false
   auto_deploy       = true
