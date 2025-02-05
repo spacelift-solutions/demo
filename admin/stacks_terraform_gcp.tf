@@ -1,3 +1,15 @@
+###--- GCP STACKS ---###
+
+/* 
+
+CE: Compute Engine
+GKE: Google Kubernetes Engine
+
+*/
+
+// Environment #1 components //
+
+// IAM
 module "stack_gcp_iam" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
@@ -57,6 +69,7 @@ module "stack_gcp_iam" {
 
 }
 
+// Networking
 module "stack_gcp_networking" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
@@ -118,6 +131,7 @@ module "stack_gcp_networking" {
   }
 }
 
+// K8s Clusters
 module "stack_gcp_gke" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
@@ -168,6 +182,7 @@ module "stack_gcp_gke" {
   }
 }
 
+// Databases
 module "stack_gcp_db" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
@@ -216,6 +231,7 @@ module "stack_gcp_db" {
   }
 }
 
+// Serverless
 module "stack_gcp_cloud_functions" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
@@ -251,6 +267,106 @@ module "stack_gcp_cloud_functions" {
       plan = [
         "terraform apply -auto-approve -target 'google_storage_bucket_iam_member.spacelift_bucket_admin'"
       ]
+    }
+  }
+}
+// Compute Engine Instances //
+
+// Windows Instance
+module "stack_gcp_ce_win" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "Creates simple ce instance with windows for demo and testing purposes"
+  name            = "gcp-ce-win"
+  repository_name = "demo"
+  space_id        = spacelift_space.gcp_terraform.id
+  manage_state    = true
+  workflow_tool   = "TERRAFORM_FOSS"
+  worker_pool_id  = spacelift_worker_pool.gcp_ce_worker.id
+
+  administrative    = false
+  auto_deploy       = true
+  labels            = ["gcp", "compute-engine", "win", "demo"]
+  project_root      = "terraform/gcp/gcp-environment/compute-engine"
+  repository_branch = "main"
+  tf_version        = ">=1.5.7"
+
+  environment_variables = {
+    TF_VAR_project_id = {
+      sensitive = true
+      value     = var.project_id
+    }
+    TF_VAR_gcp_region = {
+      value = local.gcp_region
+    }
+    TF_VAR_gcp_environment_type = {
+      value = local.gcp_environment_type
+    }
+  }
+  dependencies = {
+    ANSIBLE_INT = {
+      child_stack_id = module.stack_ansible_ce_gcp.id
+      references = {
+        HOST_IP = {
+          trigger_always = true
+          output_name    = "instance_ip"
+          input_name     = "HOST_IP"
+        }
+      }
+    }
+  }
+}
+
+// Worker Pools //
+module "stack_gcp_ce_worker_pool" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "Creates a worker pool residing on a compute engine"
+  name            = "gcp-ce-worker-pool"
+  repository_name = "demo"
+  space_id        = spacelift_space.gcp_terraform.id
+  worker_pool_id  = spacelift_worker_pool.gcp_ce_worker.id
+  manage_state    = true
+  workflow_tool   = "TERRAFORM_FOSS"
+  runner_image    = "gcr.io/swift-climate-439711-s0/demo-winrm-image"
+
+  administrative    = false
+  auto_deploy       = false
+  labels            = ["gcp", "worker-pool", "win"]
+  project_root      = "terraform/admin"
+  repository_branch = "main"
+  tf_version        = ">=1.5.7"
+
+  environment_variables = {
+    TF_VAR_project_id = {
+      sensitive = true
+      value     = var.project_id
+    }
+    TF_VAR_gcp_region = {
+      value = local.gcp_region
+    }
+    TF_VAR_gcp_environment_type = {
+      value = local.gcp_environment_type
+    }
+  }
+
+  dependencies = {
+    ADMIN = {
+      parent_stack_id = data.spacelift_current_stack.admin.id
+      references = {
+        WORKER_POOL_ID = {
+          output_name = "gcp_ce_worker_pool_id"
+          input_name  = "TF_VAR_ce_worker_pool_id"
+        }
+        WORKER_POOL_CONFIG = {
+          output_name = "gcp_ce_worker_pool_config"
+          input_name  = "TF_VAR_ce_worker_pool_config"
+        }
+        WORKER_POOL_PRIVATE_KEY = {
+          output_name = "gcp_ce_worker_pool_private_key"
+          input_name  = "TF_VAR_ce_worker_pool_private_key"
+        }
+      }
     }
   }
 }
