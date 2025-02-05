@@ -20,8 +20,8 @@ module "gcp_ce_workerpool" {
   region  = locals.gcp_region # "us-central1"
   zone    = "us-central1-a"
   size    = 1
-#   email   = "abc@xyz.iam.gserviceaccount.com"
-  
+  #   email   = "abc@xyz.iam.gserviceaccount.com"
+
   providers = {
     google = google
   }
