@@ -325,7 +325,6 @@ module "stack_gcp_ce_worker_pool" {
   name            = "gcp-ce-worker-pool"
   repository_name = "demo"
   space_id        = spacelift_space.gcp_terraform.id
-  worker_pool_id  = spacelift_worker_pool.gcp_ce_worker.id
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
   runner_image    = "gcr.io/swift-climate-439711-s0/demo-winrm-image"
@@ -333,7 +332,7 @@ module "stack_gcp_ce_worker_pool" {
   administrative    = false
   auto_deploy       = false
   labels            = ["gcp", "worker-pool", "win"]
-  project_root      = "terraform/admin"
+  project_root      = "worker-pools/docker/gcp/ce_workers
   repository_branch = "main"
   tf_version        = ">=1.5.7"
 
