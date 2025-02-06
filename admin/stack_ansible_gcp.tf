@@ -23,7 +23,7 @@ module "stack_ansible_ce_gcp" {
   manage_state      = true
   workflow_tool     = "ANSIBLE"
   ansible_playbook  = "playbook.yml"
-  worker_pool_id    = spacelift_worker_pool.gcp_ce_worker.id
+#  worker_pool_id    = spacelift_worker_pool.gcp_ce_worker.id
   runner_image      = "gcr.io/swift-climate-439711-s0/ansible-winrm-image"
   administrative    = false
   auto_deploy       = true
