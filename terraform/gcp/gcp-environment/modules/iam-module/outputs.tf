@@ -26,3 +26,14 @@ output "function_service_account_email" {
   description = "The email of the function service account"
   value       = google_service_account.function_service_account.email
 }
+
+output "worker_pool_service_account_email" {
+  description = "The email of the function service account"
+  value       = google_service_account.worker_pool_service_account.email
+}
+
+output "worker_pool_sa_key" {
+  description = "the SA key required to authenticate docker image pulling for the worker pool"
+  value       = google_service_account_key.worker_pool_sa_key.private_key
+  sensitive   = true
+}

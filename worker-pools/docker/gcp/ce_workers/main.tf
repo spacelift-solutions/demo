@@ -15,14 +15,15 @@ module "gcp_ce_workerpool" {
     export SPACELIFT_POOL_PRIVATE_KEY="${var.ce_worker_pool_private_key}"
   EOT
 
-  image   = "gcr.io/swift-climate-439711-s0/demo-winrm-image"
   network = "default"
-  region  = locals.gcp_region # "us-central1"
+  region  = "us-central1"
   zone    = "us-central1-a"
   size    = 1
-  #   email   = "abc@xyz.iam.gserviceaccount.com"
+  email   = var.worker_pool_service_account_email
 
   providers = {
     google = google
   }
 }
+
+# export WORKER_POOL_SA_KEY = "${var.worker_pool_sa_key}"
