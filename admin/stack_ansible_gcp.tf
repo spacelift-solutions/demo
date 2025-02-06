@@ -16,14 +16,14 @@ locals {
 module "stack_ansible_ce_gcp" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
-  description       = "Creates an ansible stack that configures an existing windows host"
-  name              = "ansible-ce-gcp"
-  repository_name   = "demo"
-  space_id          = spacelift_space.gcp_ansible.id
-  manage_state      = true
-  workflow_tool     = "ANSIBLE"
-  ansible_playbook  = "playbook.yml"
-#  worker_pool_id    = spacelift_worker_pool.gcp_ce_worker.id
+  description      = "Creates an ansible stack that configures an existing windows host"
+  name             = "ansible-ce-gcp"
+  repository_name  = "demo"
+  space_id         = spacelift_space.gcp_ansible.id
+  manage_state     = true
+  workflow_tool    = "ANSIBLE"
+  ansible_playbook = "playbook.yml"
+  #  worker_pool_id    = spacelift_worker_pool.gcp_ce_worker.id
   runner_image      = "gcr.io/swift-climate-439711-s0/ansible-winrm-image"
   administrative    = false
   auto_deploy       = true
