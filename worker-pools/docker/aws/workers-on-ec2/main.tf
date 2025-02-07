@@ -1,5 +1,5 @@
 module "aws_ec2_asg_worker_pool" {
-  source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2?ref=v2.9.1"
+  source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2?ref=ratelimit-check"
 
   configuration = <<-EOT
     export SPACELIFT_TOKEN="${var.worker_pool_config}"
