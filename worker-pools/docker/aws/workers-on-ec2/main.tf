@@ -15,4 +15,6 @@ module "aws_ec2_asg_worker_pool" {
   spacelift_api_key_endpoint = var.spacelift_api_key_endpoint
   spacelift_api_key_id       = var.spacelift_api_key_id
   spacelift_api_key_secret   = var.spacelift_api_key_secret
+
+  autoscaler_version = "v1.0.3"
 }
