@@ -9,6 +9,21 @@ GKE: Google Kubernetes Engine
 
 // Environment #1 components //
 
+// ADMIN Level
+
+# locals {
+#   # This hook populates an inventory file for a Windows host.
+#   ansible_ce_inventory_population_hook = [
+#     "echo \"[windows]\" > /mnt/workspace/inventory",
+#     "echo \"  $HOST_IP ansible_connection=winrm ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_user=Administrator ansible_password=$ANSIBLE_WINRM_PASSWORD ansible_port=5986\" >> /mnt/workspace/inventory"
+#   ]
+#   image_authentication = [
+#     "echo \"$WORKER_POOL_SA_KEY\" > /tmp/worker-pool-sa-key.json",
+#     "gcloud auth activate-service-account --key-file=/tmp/worker-pool-sa-key.json",
+#     "gcloud auth configure-docker"
+#   ]
+# }
+
 // IAM
 module "stack_gcp_iam" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
@@ -65,8 +80,37 @@ module "stack_gcp_iam" {
         }
       }
     }
+    WORKER_POOL = {
+      child_stack_id = module.stack_gcp_ce_worker_pool.id
+      references = {
+        SERVICE_ACC_KEY = {
+          trigger_always = true
+          output_name    = "worker_pool_sa_key"
+          input_name     = "TF_VAR_worker_pool_sa_key"
+        }
+        SERVICE_ACC_EMAIL = {
+          trigger_always = true
+          output_name    = "worker_pool_service_account_email"
+          input_name     = "TF_VAR_worker_pool_service_account_email"
+        }
+      }
+    }
+    ANSIBLE_STACK = {
+      child_stack_id = module.stack_ansible_ce_gcp.id
+      references = {
+        SERVICE_ACC_KEY = {
+          trigger_always = true
+          output_name    = "worker_pool_sa_key"
+          input_name     = "TF_VAR_worker_pool_sa_key"
+        }
+        SERVICE_ACC_EMAIL = {
+          trigger_always = true
+          output_name    = "worker_pool_service_account_email"
+          input_name     = "TF_VAR_worker_pool_service_account_email"
+        }
+      }
+    }
   }
-
 }
 
 // Networking
@@ -282,8 +326,7 @@ module "stack_gcp_ce_win" {
   space_id        = spacelift_space.gcp_terraform.id
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
-  worker_pool_id  = spacelift_worker_pool.gcp_ce_worker.id
-
+  # optional:  worker_pool_id  = spacelift_worker_pool.gcp_ce_worker.id
   administrative    = false
   auto_deploy       = true
   labels            = ["gcp", "compute-engine", "win", "demo"]
@@ -327,7 +370,7 @@ module "stack_gcp_ce_worker_pool" {
   space_id        = spacelift_space.gcp_terraform.id
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
-  runner_image    = "gcr.io/swift-climate-439711-s0/demo-winrm-image"
+  #  runner_image    = "gcr.io/swift-climate-439711-s0/demo-winrm-image"
 
   administrative    = false
   auto_deploy       = false
@@ -348,6 +391,16 @@ module "stack_gcp_ce_worker_pool" {
       value = local.gcp_environment_type
     }
   }
+  // This block is optional here. It is necessary in the ansible stack.
+  # hooks = {
+  #   before = {
+  #     plan = [
+  #       "echo \"$WORKER_POOL_SA_KEY\" > /tmp/worker-pool-sa-key.json",
+  #       "gcloud auth activate-service-account --key-file=/tmp/worker-pool-sa-key.json",
+  #       "gcloud auth configure-docker"
+  #     ]
+  #   }
+  # }
 
   dependencies = {
     ADMIN = {
@@ -361,10 +414,10 @@ module "stack_gcp_ce_worker_pool" {
           output_name = "gcp_ce_worker_pool_config"
           input_name  = "TF_VAR_ce_worker_pool_config"
         }
-        WORKER_POOL_PRIVATE_KEY = {
-          output_name = "gcp_ce_worker_pool_private_key"
-          input_name  = "TF_VAR_ce_worker_pool_private_key"
-        }
+        # WORKER_POOL_PRIVATE_KEY = {
+        #   output_name = "gcp_ce_worker_pool_private_key"
+        #   input_name  = "TF_VAR_ce_worker_pool_private_key"
+        # }
       }
     }
   }

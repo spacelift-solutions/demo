@@ -143,22 +143,6 @@ resource "google_project_iam_custom_role" "cloud_functions_manager" {
   ]
 }
 
-# # Attach custom role to Cloud Function Service Account
-# resource "google_project_iam_member" "cloud_functions_manager_attache" {
-#   project = var.project_id
-#   role    = google_project_iam_custom_role.cloud_functions_manager.id
-#   member  = "serviceAccount:${google_service_account.function_service_account.email}"
-# }
-resource "google_service_account" "function_service_account" {
-  account_id   = "function-service-account"
-  display_name = "Service Account for managing GCP resources."
-  project      = var.project_id
-
-  depends_on = [
-    google_project_service.required_apis
-  ]
-}
-
 resource "google_project_iam_member" "cloud_functions_role_assignment" {
   project = var.project_id
   role    = google_project_iam_custom_role.cloud_functions_manager.id
@@ -191,6 +175,41 @@ resource "google_service_account" "sql_sa" {
   depends_on = [
     google_project_service.required_apis
   ]
+}
+
+resource "google_service_account" "function_service_account" {
+  account_id   = "function-service-account"
+  display_name = "Service Account for managing GCP resources."
+  project      = var.project_id
+
+  depends_on = [
+    google_project_service.required_apis
+  ]
+}
+
+resource "google_service_account" "worker_pool_service_account" {
+  account_id   = "function-service-account"
+  display_name = "Service Account for managing GCP resources."
+  project      = var.project_id
+
+  depends_on = [
+    google_project_service.required_apis
+  ]
+}
+
+resource "google_service_account_key" "worker_pool_sa_key" {
+  service_account_id = google_service_account.worker_pool_service_account.name
+  public_key_type    = "TYPE_X509_PEM_FILE"
+}
+
+resource "google_project_iam_member" "worker_pool_role_assignment" {
+  for_each = toset([
+    "roles/storage.objectViewer",
+    "roles/artifactregistry.reader"
+  ])
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.worker_pool_service_account.email}"
 }
 
 # Basic roles for service accounts
