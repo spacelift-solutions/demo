@@ -1,17 +1,7 @@
-variable "vpc_id" {
-  description = "The VPC ID in which to create the instance."
-  type        = string
-}
-
-variable "subnet_ids" {
-  description = "The subnet IDs in which to create the instance."
-  type        = list(string)
-}
-
 resource "aws_security_group" "this" {
   name        = "win2019"
   description = "Used in the terraform"
-  vpc_id      = var.vpc_id
+  vpc_id      = "vpc-024d5a8db42fd8456"
 
   ingress {
     description = "WinRM Access"
@@ -34,7 +24,7 @@ resource "aws_instance" "windows_server" {
   ami                    = data.aws_ami.windows-2019.id
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.this.id]
-  subnet_id              = var.subnet_ids[0]
+  subnet_id              = "subnet-0a45a85910f775d1d"
 
   root_block_device {
     volume_type           = "gp2"

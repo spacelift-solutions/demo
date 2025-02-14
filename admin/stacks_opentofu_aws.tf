@@ -229,23 +229,4 @@ module "stack_aws_winrm" {
       value     = var.windows_instance_password
     }
   }
-
-  dependencies = {
-    VPC = {
-      parent_stack_id = module.stack_aws_vpc_kubernetes_example.id
-
-      references = {
-        VPC_ID = {
-          output_name    = "vpc_id"
-          input_name     = "TF_VAR_vpc_id"
-          trigger_always = true
-        }
-        SUBNET_IDS = {
-          output_name    = "private_subnets"
-          input_name     = "TF_VAR_subnet_ids"
-          trigger_always = true
-        }
-      }
-    }
-  }
 }
