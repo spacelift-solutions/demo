@@ -1,7 +1,13 @@
 locals {
   ansible_stack_inventory_population_hook = [
     "echo \"[webservers]\" > /mnt/workspace/inventory",
-    "echo \"  $host ansible_user=ubuntu ansible_port=22 ansible_ssh_private_key_file=/mnt/workspace/id_rsa\" >> /mnt/workspace/inventory",
+    "echo \"  $host ansible_user=ubuntu ansible_port=22 ansible_connection=winrm ansible_winrm_transport=basic\" >> /mnt/workspace/inventory",
+    "chmod 600 /mnt/workspace/id_rsa"
+  ]
+
+  ansible_stack_winrm_inventory_population_hook = [
+    "echo \"[webservers]\" > /mnt/workspace/inventory",
+    "echo \"  $host ansible_port=5986\" >> /mnt/workspace/inventory",
     "chmod 600 /mnt/workspace/id_rsa"
   ]
 }
@@ -66,6 +72,13 @@ module "stack_aws_ansible_winrm" {
   labels            = ["aws", "ansible"]
   project_root      = "ansible/aws/winrm_example"
   repository_branch = "main"
+
+  hooks = {
+    before = {
+      init  = local.ansible_stack_winrm_inventory_population_hook
+      apply = local.ansible_stack_winrm_inventory_population_hook
+    }
+  }
 
   environment_variables = {
     ANSIBLE_USER = {

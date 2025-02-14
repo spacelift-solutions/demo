@@ -5,8 +5,6 @@
   vars:
     ansible_user: "{{ lookup('env', 'ANSIBLE_USER') }}"
     ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
-    ansible_connection: winrm
-    ansible_winrm_transport: basic
 
   tasks:
     - name: Download the 7-Zip package
