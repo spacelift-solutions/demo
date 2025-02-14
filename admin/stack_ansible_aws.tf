@@ -22,7 +22,7 @@ module "stack_aws_ansible" {
     id      = spacelift_aws_integration.demo.id
   }
   labels            = ["aws", "ansible"]
-  project_root      = "ansible/aws"
+  project_root      = "ansible/aws/nginx"
   repository_branch = "main"
 
   hooks = {
@@ -43,6 +43,51 @@ module "stack_aws_ansible" {
           input_name     = "host"
         }
       }
+    }
+  }
+}
+
+
+module "stack_aws_ansible" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "creates an ansible stack to showcase winrm"
+  name            = "ansible-ec2-winrm"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_ansible.id
+
+  workflow_tool    = "ANSIBLE"
+  ansible_playbook = "playbook.yml"
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "ansible"]
+  project_root      = "ansible/aws/winrm_example"
+  repository_branch = "main"
+
+  environment_variables = {
+    ANSIBLE_USER = {
+      value = var.windows_instance_username
+    }
+    ANSIBLE_PASSWORD = {
+      sensitive = true
+      value     = var.windows_instance_password
+    }
+  }
+
+  dependencies = {
+    HOST = {
+        parent_stack_id = module.stack_aws_winrm.id
+
+        references = {
+            HOST = {
+              trigger_always = true
+              output_name    = "private_ip"
+              input_name     = "host"
+            }
+        }
     }
   }
 }

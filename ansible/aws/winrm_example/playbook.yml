@@ -1,0 +1,15 @@
+---
+- name: Install and Configure Nginx
+  hosts: all
+
+  vars:
+    ansible_user: "{{ lookup('env', 'ANSIBLE_USER') }}"
+    ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
+    ansible_connection: winrm
+    ansible_winrm_transport: basic
+
+  tasks:
+    - name: Download the 7-Zip package
+      win_get_url:
+        url: https://www.7-zip.org/a/7z1701-x64.msi
+        dest: C:\temp\7z.msi
