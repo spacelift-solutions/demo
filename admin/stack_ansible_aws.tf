@@ -48,7 +48,7 @@ module "stack_aws_ansible" {
 }
 
 
-module "stack_aws_ansible" {
+module "stack_aws_ansible_winrm" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   description     = "creates an ansible stack to showcase winrm"
