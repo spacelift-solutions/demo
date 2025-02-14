@@ -24,13 +24,17 @@ resource "aws_instance" "windows_server" {
   ami                    = data.aws_ami.windows-2019.id
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.this.id]
-  subnet_id              = "subnet-0a45a85910f775d1d"
+  subnet_id              = "subnet-03d1fb0274894b1da"
 
   root_block_device {
     volume_type           = "gp2"
     volume_size           = 35
     iops                  = 0
     delete_on_termination = true
+  }
+
+  tags = {
+    Name = "Windows Server WinRM Example"
   }
 
   user_data = data.template_file.windows-userdata.rendered
