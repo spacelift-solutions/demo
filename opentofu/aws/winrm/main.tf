@@ -1,7 +1,7 @@
 resource "aws_security_group" "this" {
   name        = "win2019"
   description = "Used in the terraform"
-  vpc_id      = "vpc-024d5a8db42fd8456"
+  vpc_id      = "vpc-05526a82c3e70cc73"
 
   ingress {
     description = "WinRM Access"
@@ -24,7 +24,7 @@ resource "aws_instance" "windows_server" {
   ami                    = data.aws_ami.windows-2019.id
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.this.id]
-  subnet_id              = "subnet-03d1fb0274894b1da"
+  subnet_id              = "subnet-03bf64b24af404d2a"
 
   root_block_device {
     volume_type           = "gp2"
