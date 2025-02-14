@@ -7,7 +7,7 @@ locals {
 
   ansible_stack_winrm_inventory_population_hook = [
     "echo \"[webservers]\" > /mnt/workspace/inventory",
-    "echo \"  $host ansible_port=5986 ansible_connection=winrm ansible_winrm_transport=basic\" >> /mnt/workspace/inventory",
+    "echo \"  $host ansible_port=5985 ansible_connection=winrm ansible_winrm_transport=basic\" >> /mnt/workspace/inventory",
     "/usr/bin/python -m pip install pywinrm --break-system-packages"
   ]
 }
