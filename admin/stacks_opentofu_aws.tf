@@ -218,7 +218,7 @@ module "stack_aws_winrm" {
   labels            = ["aws", "winrm"]
   project_root      = "opentofu/aws/winrm"
   repository_branch = "main"
-  tf_version        = "1.5.7"
+  tf_version        = "1.9.0"
 
   environment_variables = {
     TF_VAR_instance_username = {
