@@ -330,7 +330,7 @@ module "stack_gcp_ce_win" {
   administrative    = false
   auto_deploy       = true
   labels            = ["gcp", "compute-engine", "win", "demo"]
-  project_root      = "terraform/gcp/gcp-environment/compute-engine"
+  project_root      = "terraform/gcp/compute-engines"
   repository_branch = "main"
   tf_version        = ">=1.5.7"
 
