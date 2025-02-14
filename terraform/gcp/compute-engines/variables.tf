@@ -1,14 +1,3 @@
-variable "project_id" {
-  description = "The GCP project ID where the instance will be created."
-  type        = string
-}
-
-variable "region" {
-  description = "The GCP region for the instance."
-  type        = string
-  default     = locals.gcp_region
-}
-
 variable "zone" {
   description = "The GCP zone to deploy the instance."
   type        = string

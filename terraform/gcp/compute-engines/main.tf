@@ -25,10 +25,11 @@ resource "google_compute_instance" "windows_instance" {
     }
   }
 
-  metadata = {
-    # This metadata key is specific for Windows startup scripts (PowerShell).
-    windows-startup-script-ps1 = var.startup_script
-  }
+
+  # metadata = {
+  #   # This metadata key is specific for Windows startup scripts (PowerShell).
+  #   windows-startup-script-ps1 = var.startup_script
+  # }
 
   tags = var.instance_tags
 }
