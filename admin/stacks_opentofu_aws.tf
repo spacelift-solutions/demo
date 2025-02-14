@@ -202,3 +202,50 @@ module "stack_aws_audit_event_collector" {
   }
   labels = ["aws", "s3", "lambda"]
 }
+
+module "stack_aws_winrm" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "stack that creates an ec2 instance of windows with winrm enabled"
+  name            = "tofu-winrm"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "winrm"]
+  project_root      = "opentofu/aws/winrm"
+  repository_branch = "main"
+  tf_version        = "1.5.7"
+
+  environment_variables = {
+    TF_VAR_instance_username = {
+      value = var.windows_instance_username
+    }
+    TF_VAR_instance_password = {
+      sensitive = true
+      value     = var.windows_instance_password
+    }
+  }
+
+  dependencies = {
+    VPC = {
+      parent_stack_id = module.stack_aws_vpc_kubernetes_example.id
+
+      references = {
+        VPC_ID = {
+          output_name    = "vpc_id"
+          input_name     = "TF_VAR_vpc_id"
+          trigger_always = true
+        }
+        SUBNET_IDS = {
+          output_name    = "private_subnets"
+          input_name     = "TF_VAR_subnet_ids"
+          trigger_always = true
+        }
+      }
+    }
+  }
+}

@@ -30,3 +30,14 @@ variable "audit_trail_secret" {
   type        = string
   description = "Secret we define to send with the audit trail events"
 }
+
+variable "windows_instance_username" {
+  type        = string
+  description = "username to connect to the windows instance"
+}
+
+variable "windows_instance_password" {
+  type        = string
+  description = "password to connect to the windows instance"
+  sensitive   = true
+}
