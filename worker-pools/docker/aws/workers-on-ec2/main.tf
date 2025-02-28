@@ -1,15 +1,17 @@
+resource "aws_kms_key" "secure_strings" {}
+
 module "aws_ec2_asg_worker_pool" {
   source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2?ref=security-updates"
-
-  configuration = <<-EOT
-    export SPACELIFT_SENSITIVE_OUTPUT_UPLOAD_ENABLED=true
-  EOT
 
   secure_strings = {
     SPACELIFT_TOKEN = var.worker_pool_config,
     SPACELIFT_POOL_PRIVATE_KEY = var.worker_pool_private_key
   }
   secure_strings_kms_key_id = aws_kms_key.secure_strings.arn
+
+  configuration = <<-EOT
+    export SPACELIFT_SENSITIVE_OUTPUT_UPLOAD_ENABLED=true
+  EOT
 
   min_size                   = 1
   max_size                   = 5
@@ -20,5 +22,3 @@ module "aws_ec2_asg_worker_pool" {
   spacelift_api_key_id       = var.spacelift_api_key_id
   spacelift_api_key_secret   = var.spacelift_api_key_secret
 }
-
-resource "aws_kms_key" "secure_strings" {}
