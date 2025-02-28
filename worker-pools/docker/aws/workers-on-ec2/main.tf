@@ -10,12 +10,16 @@ resource "aws_secretsmanager_secret_version" "workerpool_config" {
   })
 }
 
+locals {
+  secret_command = "aws secretsmanager get-secret-value --secret-id workerpool-config-%s --query SecretString --output text | jq -r '.%s'"
+}
+
 module "aws_ec2_asg_worker_pool" {
   source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2"
 
   configuration = <<-EOT
-    export SPACELIFT_TOKEN="$(aws secretsmanager get-secret-value --secret-id workerpool-config-${var.worker_pool_id} --query SecretString.SPACELIFT_TOKEN --output text)"
-    export SPACELIFT_POOL_PRIVATE_KEY="$(aws secretsmanager get-secret-value --secret-id workerpool-config-${var.worker_pool_id} --query SecretString.SPACELIFT_POOL_PRIVATE_KEY --output text)"
+    export SPACELIFT_TOKEN="$(${format(local.secret_command, var.worker_pool_id, "SPACELIFT_TOKEN")})"
+    export SPACELIFT_POOL_PRIVATE_KEY="$(${format(local.secret_command, var.worker_pool_id, "SPACELIFT_POOL_PRIVATE_KEY")})"
     export SPACELIFT_SENSITIVE_OUTPUT_UPLOAD_ENABLED=true
   EOT
 
