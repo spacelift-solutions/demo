@@ -4,7 +4,7 @@ module "stack_opentofu_spacelift_tofusible" {
   description     = "Stack that creates EC2 Servers"
   name            = "Tofusible - Administrative"
   repository_name = "tofusible"
-  space_id        = "root"
+  space_id        = spacelift_space.aws_opentofu.id
 
   auto_deploy    = true
   administrative = true
