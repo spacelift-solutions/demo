@@ -67,3 +67,18 @@ resource "spacelift_module" "signed_runs_plugin_module" {
   public               = true
   labels               = ["module"]
 }
+
+resource "spacelift_module" "tofusible_host_module" {
+  name                 = "tofusible-host"
+  terraform_provider   = "spacelift"
+  administrative       = true
+  branch               = "main"
+  description          = "Spacelift module for creating hosts for Tofusible"
+  repository           = "tofusible"
+  project_root         = "modules/tofusible_host"
+  space_id             = "root"
+  workflow_tool        = "OPEN_TOFU"
+  enable_local_preview = true
+  public               = true
+  labels               = ["module"]
+}
