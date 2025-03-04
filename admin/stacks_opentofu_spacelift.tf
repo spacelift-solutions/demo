@@ -6,7 +6,8 @@ module "stack_opentofu_spacelift_tofusible" {
   repository_name = "tofusible"
   space_id        = spacelift_space.aws_opentofu.id
 
-  auto_deploy = true
+  auto_deploy    = true
+  administrative = true
 
   aws_integration = {
     enabled = true
