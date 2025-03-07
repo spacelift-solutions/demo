@@ -92,15 +92,15 @@ module "stack_aws_ansible_winrm" {
 
   dependencies = {
     HOST = {
-        parent_stack_id = module.stack_aws_winrm.id
+      parent_stack_id = module.stack_aws_winrm.id
 
-        references = {
-            HOST = {
-              trigger_always = true
-              output_name    = "private_ip"
-              input_name     = "host"
-            }
+      references = {
+        HOST = {
+          trigger_always = true
+          output_name    = "private_ip"
+          input_name     = "host"
         }
+      }
     }
   }
 }

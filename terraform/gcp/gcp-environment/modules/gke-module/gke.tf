@@ -14,6 +14,8 @@ resource "google_container_cluster" "primary" {
   # Network configuration
   network    = var.network_name
   subnetwork = var.subnet_name
+  # Setting protection to false for dynamic testing
+  deletion_protection = false
 
   # Basic Auth disabled for security
   master_auth {
@@ -43,6 +45,7 @@ resource "google_container_cluster" "primary" {
     enable_private_nodes    = true
     master_ipv4_cidr_block  = "172.16.0.0/28"
   }
+
 }
 
 # Create managed node pool

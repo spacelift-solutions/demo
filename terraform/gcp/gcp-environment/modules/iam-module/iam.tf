@@ -188,7 +188,7 @@ resource "google_service_account" "function_service_account" {
 }
 
 resource "google_service_account" "worker_pool_service_account" {
-  account_id   = "function-service-account"
+  account_id   = "worker-pool-service-account"
   display_name = "Service Account for managing GCP resources."
   project      = var.project_id
 

@@ -1,4 +1,4 @@
-###--- GCP STACKS ---###
+#---# GCP STACKS #---#
 
 /* 
 
@@ -8,21 +8,6 @@ GKE: Google Kubernetes Engine
 */
 
 // Environment #1 components //
-
-// ADMIN Level
-
-# locals {
-#   # This hook populates an inventory file for a Windows host.
-#   ansible_ce_inventory_population_hook = [
-#     "echo \"[windows]\" > /mnt/workspace/inventory",
-#     "echo \"  $HOST_IP ansible_connection=winrm ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_user=Administrator ansible_password=$ANSIBLE_WINRM_PASSWORD ansible_port=5986\" >> /mnt/workspace/inventory"
-#   ]
-#   image_authentication = [
-#     "echo \"$WORKER_POOL_SA_KEY\" > /tmp/worker-pool-sa-key.json",
-#     "gcloud auth activate-service-account --key-file=/tmp/worker-pool-sa-key.json",
-#     "gcloud auth configure-docker"
-#   ]
-# }
 
 // IAM
 module "stack_gcp_iam" {
@@ -391,16 +376,6 @@ module "stack_gcp_ce_worker_pool" {
       value = local.gcp_environment_type
     }
   }
-  // This block is optional here. It is necessary in the ansible stack.
-  # hooks = {
-  #   before = {
-  #     plan = [
-  #       "echo \"$WORKER_POOL_SA_KEY\" > /tmp/worker-pool-sa-key.json",
-  #       "gcloud auth activate-service-account --key-file=/tmp/worker-pool-sa-key.json",
-  #       "gcloud auth configure-docker"
-  #     ]
-  #   }
-  # }
 
   dependencies = {
     ADMIN = {
