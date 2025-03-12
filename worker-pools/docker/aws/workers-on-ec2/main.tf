@@ -1,9 +1,15 @@
+resource "aws_kms_key" "secure_strings" {}
+
 module "aws_ec2_asg_worker_pool" {
-  source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2?ref=ratelimit-check"
+  source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2?ref=security-updates"
+
+  secure_strings = {
+    SPACELIFT_TOKEN = var.worker_pool_config,
+    SPACELIFT_POOL_PRIVATE_KEY = var.worker_pool_private_key
+  }
+  secure_strings_kms_key_id = aws_kms_key.secure_strings.arn
 
   configuration = <<-EOT
-    export SPACELIFT_TOKEN="${var.worker_pool_config}"
-    export SPACELIFT_POOL_PRIVATE_KEY="${var.worker_pool_private_key}"
     export SPACELIFT_SENSITIVE_OUTPUT_UPLOAD_ENABLED=true
   EOT
 
