@@ -389,10 +389,10 @@ module "stack_gcp_ce_worker_pool" {
           output_name = "gcp_ce_worker_pool_config"
           input_name  = "TF_VAR_ce_worker_pool_config"
         }
-        # WORKER_POOL_PRIVATE_KEY = {
-        #   output_name = "gcp_ce_worker_pool_private_key"
-        #   input_name  = "TF_VAR_ce_worker_pool_private_key"
-        # }
+        WORKER_POOL_PRIVATE_KEY = {
+          output_name = "gcp_ce_worker_pool_private_key"
+          input_name  = "TF_VAR_ce_worker_pool_private_key"
+        }
       }
     }
   }
