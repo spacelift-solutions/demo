@@ -1,1 +1,0 @@
-gcp.json gcp-worker-pool-sa-key.json filter=git-crypt diff=git-crypt
