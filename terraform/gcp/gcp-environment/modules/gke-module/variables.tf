@@ -56,5 +56,5 @@ variable "gke_service_account" {
 variable "cluster_location" {
   type        = string
   description = "The cluster's location"
-  default     = "europe-west4"
+  default     = "europe-west4-a"
 }

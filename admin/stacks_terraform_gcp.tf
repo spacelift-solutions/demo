@@ -359,7 +359,7 @@ module "stack_gcp_ce_worker_pool" {
 
   administrative    = false
   auto_deploy       = false
-  labels            = ["gcp", "worker-pool", "win"]
+  labels            = ["gcp", "gcp-worker-pool", "win"]
   project_root      = "worker-pools/docker/gcp/ce_workers"
   repository_branch = "main"
   tf_version        = ">=1.5.7"

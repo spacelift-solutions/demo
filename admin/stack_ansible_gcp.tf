@@ -6,8 +6,8 @@ locals {
     "echo \"  $HOST_IP ansible_connection=winrm ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_user=Administrator ansible_password=$ANSIBLE_WINRM_PASSWORD ansible_port=5986\" >> /mnt/workspace/inventory"
   ]
   image_authentication = [
-    "echo \"$WORKER_POOL_SA_KEY\" > /tmp/worker-pool-sa-key.json",
-    "gcloud auth activate-service-account --key-file=/tmp/worker-pool-sa-key.json",
+    "echo \"$WORKER_POOL_SA_KEY\" > /tmp/gcp-worker-pool-sa-key.json",
+    "gcloud auth activate-service-account --key-file=/tmp/gcp-worker-pool-sa-key.json",
     "gcloud auth configure-docker"
   ]
 }
@@ -27,7 +27,7 @@ module "stack_ansible_ce_gcp" {
   runner_image      = "gcr.io/swift-climate-439711-s0/ansible-winrm-image"
   administrative    = false
   auto_deploy       = true
-  labels            = ["gcp", "ansible", "demo", "win"]
+  labels            = ["gcp", "gcp-ansible", "demo", "win"]
   project_root      = "ansible/gcp"
   repository_branch = "main"
 
