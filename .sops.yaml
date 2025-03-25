@@ -1,0 +1,3 @@
+creation_rules:
+  - pgp: '10CE 7ACC EC37 8DE4 6493  B39D 6DB0 8FEF D363 7C58'
+    path_regex: \.json$
