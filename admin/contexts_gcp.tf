@@ -23,9 +23,9 @@ resource "spacelift_environment_variable" "gcp" {
 
 resource "spacelift_context" "worker_pool_sa" {
   description = "SA required for the worker pool accocunt"
-  name = "gcp-worker-pool-sa"
-  labels = ["gcp", "autoattach:gcp-worker-pool", "autoattach:gcp-ansible"]
-  space_id = spacelift_space.gcp.id 
+  name        = "gcp-worker-pool-sa"
+  labels      = ["gcp", "autoattach:gcp-worker-pool", "autoattach:gcp-ansible"]
+  space_id    = spacelift_space.gcp.id
 }
 
 resource "spacelift_mounted_file" "worker_pool_sa" {
