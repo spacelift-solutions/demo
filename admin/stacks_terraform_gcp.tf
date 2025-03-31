@@ -365,7 +365,7 @@ module "stack_gcp_ce_worker_pool" {
   tf_version        = ">=1.5.7"
 
   environment_variables = {
-    TF_VAR_project_id = {
+    TF_VAR_project = {
       sensitive = true
       value     = var.project_id
     }

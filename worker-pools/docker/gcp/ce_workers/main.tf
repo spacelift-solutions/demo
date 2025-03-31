@@ -25,5 +25,3 @@ module "gcp_ce_workerpool" {
     google = google
   }
 }
-
-# export WORKER_POOL_SA_KEY = "${var.worker_pool_sa_key}"
