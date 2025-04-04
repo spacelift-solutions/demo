@@ -4,4 +4,7 @@ module "datadog" {
   # insert the 1 required variable here
   dd_api_key = var.dd_api_key
   dd_site    = var.dd_site
+
+  send_metrics = false
+  send_logs = false
 }
