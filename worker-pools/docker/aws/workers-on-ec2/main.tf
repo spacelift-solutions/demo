@@ -7,7 +7,7 @@ module "aws_ec2_asg_worker_pool" {
     SPACELIFT_TOKEN            = var.worker_pool_config,
     SPACELIFT_POOL_PRIVATE_KEY = var.worker_pool_private_key
   }
-  secure_env_vars_kms_key_id = aws_kms_key.secure_env_vars.arn
+  # secure_env_vars_kms_key_id = aws_kms_key.secure_env_vars.arn
 
   configuration = <<-EOT
     export SPACELIFT_SENSITIVE_OUTPUT_UPLOAD_ENABLED=true
@@ -20,7 +20,6 @@ module "aws_ec2_asg_worker_pool" {
   vpc_subnets     = data.aws_subnets.dev_subnet.ids
 
   autoscaling_configuration = {
-
     api_key_endpoint = var.spacelift_api_key_endpoint
     api_key_id       = var.spacelift_api_key_id
     api_key_secret   = var.spacelift_api_key_secret
