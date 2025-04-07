@@ -1,13 +1,13 @@
 resource "aws_kms_key" "secure_env_vars" {}
 
 module "aws_ec2_asg_worker_pool" {
-  source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2?ref=master"
+  source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2?ref=v3.0.2"
 
   secure_env_vars = {
     SPACELIFT_TOKEN            = var.worker_pool_config,
     SPACELIFT_POOL_PRIVATE_KEY = var.worker_pool_private_key
   }
-  # secure_env_vars_kms_key_id = aws_kms_key.secure_env_vars.arn
+  secure_env_vars_kms_key_id = aws_kms_key.secure_env_vars.arn
 
   configuration = <<-EOT
     export SPACELIFT_SENSITIVE_OUTPUT_UPLOAD_ENABLED=true
