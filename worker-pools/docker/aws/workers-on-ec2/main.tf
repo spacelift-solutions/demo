@@ -1,7 +1,7 @@
 resource "aws_kms_key" "secure_env_vars" {}
 
 module "aws_ec2_asg_worker_pool" {
-  source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2"
+  source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2?ref=3.0.1"
 
   secure_env_vars = {
     SPACELIFT_TOKEN            = var.worker_pool_config,
