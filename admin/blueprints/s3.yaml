@@ -1,0 +1,43 @@
+inputs:
+  - id: bucket_name
+    name: The name of the bucket
+  - id: team_identifier
+    name: The name of your team
+    type: select
+    options:
+      - Cloud Team
+      - Security Team
+      - Application Team
+stack:
+  name: blueprint-bucket ${{ inputs.bucket_name }}
+  space: root
+  description: >
+    Creates an arbitrary s3 bucket
+  attachments:
+    clouds:
+      aws:
+        id: 
+        read: true
+        write: true
+  labels:
+    - "blueprint"
+    - "team:${{ inputs.team_identifier }}"
+    - "bucket:${{ inputs.bucket_name }}"
+  auto_deploy: true
+  local_preview_enabled: true
+  environment:
+    variables:
+      - name: TF_VAR_bucket_name
+        value: ${{ inputs.bucket_name }}
+  vcs:
+    branch: main
+    repository: "spacelift-solutions/demo"
+    provider: GITHUB
+    project_root: "opentofu/aws/s3"
+  vendor:
+    terraform:
+      manage_state: true
+      version: "1.9.1"
+      workflow_tool: OPEN_TOFU
+options:
+  trigger_run: true
