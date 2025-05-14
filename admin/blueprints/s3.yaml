@@ -15,8 +15,8 @@ stack:
     Creates an arbitrary s3 bucket
   attachments:
     clouds:
-      aws:
-        id: 
+      aws: 
+        id: 01JAZPBRW3K2YB0K7F58NZSDY6
         read: true
         write: true
   labels:
