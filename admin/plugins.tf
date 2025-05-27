@@ -11,6 +11,6 @@ module "plugin_infracost" {
   infracost_api_key = var.infracost_api_key
 
   policies = {
-    DEFAULT = file("${path.module}/plan/infracost_cost_restriction.rego")
+    DEFAULT = file("${path.module}/policies/plan/infracost_cost_restriction.rego")
   }
 }
