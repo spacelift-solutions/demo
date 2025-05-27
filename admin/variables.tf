@@ -43,3 +43,9 @@ variable "windows_instance_password" {
   description = "password to connect to the windows instance"
   sensitive   = true
 }
+
+variable "infracost_api_key" {
+  type        = string
+  description = "Infracost API Key"
+  sensitive   = true
+}

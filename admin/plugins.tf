@@ -3,3 +3,14 @@ module "plugin_sops" {
   name     = "plugin_sops"
   space_id = "root"
 }
+
+module "plugin_infracost" {
+  source = "spacelift.io/spacelift-solutions/plugin-infracost/spacelift"
+
+  space_id          = "root"
+  infracost_api_key = var.infracost_api_key
+
+  policies = {
+    DEFAULT = file("${path.module}/plan/infracost_cost_restriction.rego")
+  }
+}
