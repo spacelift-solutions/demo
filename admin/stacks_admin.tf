@@ -1,0 +1,13 @@
+module "stack_example_admin_vars" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "Creates an admin stack for the env vars yaml example"
+  name            = "env vars admin"
+  repository_name = "examples"
+  space_id        = spacelift_space.examples.id
+
+  labels            = ["example"]
+  project_root      = "env_vars"
+  repository_branch = "main"
+  administrative    = true
+}
