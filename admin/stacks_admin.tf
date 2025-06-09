@@ -10,4 +10,6 @@ module "stack_example_admin_vars" {
   project_root      = "env_vars"
   repository_branch = "main"
   administrative    = true
+
+  additional_project_globs = ["env_vars/*.yaml", "env_vars/*.yml"]
 }
