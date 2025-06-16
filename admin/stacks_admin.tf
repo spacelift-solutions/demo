@@ -12,4 +12,10 @@ module "stack_example_admin_vars" {
   administrative    = true
 
   additional_project_globs = ["env_vars/*.yaml", "env_vars/*.yml"]
+
+  hooks = {
+    before = {
+      init = ["python -m pip install pyyaml", "python trigger_stacks.py"]
+    }
+  }
 }
