@@ -15,7 +15,7 @@ module "stack_example_admin_vars" {
 
   hooks = {
     after = {
-      init = [
+      plan = [
         "python -m venv ./venv",
         "source ./venv/bin/activate",
         "python -m pip install pyyaml",
