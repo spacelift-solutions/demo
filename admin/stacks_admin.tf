@@ -13,6 +13,12 @@ module "stack_example_admin_vars" {
 
   additional_project_globs = ["env_vars/*.yaml", "env_vars/*.yml"]
 
+  environment_variables = {
+    SPACELIFT_DOMAIN = {
+      value = "spacelift-solutions.app.spacelift.io"
+    }
+  }
+
   hooks = {
     after = {
       plan = [
