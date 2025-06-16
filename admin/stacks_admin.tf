@@ -14,7 +14,7 @@ module "stack_example_admin_vars" {
   additional_project_globs = ["env_vars/*.yaml", "env_vars/*.yml"]
 
   hooks = {
-    before = {
+    after = {
       init = [
         "python -m venv ./venv",
         "source ./venv/bin/activate",
