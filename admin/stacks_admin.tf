@@ -15,7 +15,12 @@ module "stack_example_admin_vars" {
 
   hooks = {
     before = {
-      init = ["python -m pip install pyyaml", "python trigger_stacks.py"]
+      init = [
+        "python -m venv ./venv",
+        "source ./venv/bin/activate",
+        "python -m pip install pyyaml",
+        "python trigger_stacks.py"
+      ]
     }
   }
 }
