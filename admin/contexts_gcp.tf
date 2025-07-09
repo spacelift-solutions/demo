@@ -19,18 +19,34 @@ resource "spacelift_environment_variable" "gcp" {
 
 // GCP Monitoring Context
 
-data "spacelift_context" "monitoring" {
-  context_id = "spacelift-monitoring"
+resource "spacelift_context" "monitoring" {
+  description = "Configuration for Spacelift monitoring stack"
+  name        = "spacelift-monitoring"
+  space_id    = spacelift_space.gcp.id
+}
+
+resource "spacelift_environment_variable" "spacelift_api_key_id" {
+  context_id = spacelift_context.monitoring.id
+  name       = "TF_VAR_spacelift_api_key_id"
+  value      = "PLACEHOLDER_SET_VIA_UI"
+  write_only = true
+}
+
+resource "spacelift_environment_variable" "spacelift_api_key_secret" {
+  context_id = spacelift_context.monitoring.id
+  name       = "TF_VAR_spacelift_api_key_secret"
+  value      = "PLACEHOLDER_SET_VIA_UI"
+  write_only = true
 }
 
 resource "spacelift_context_attachment" "monitoring_admin" {
-  context_id = data.spacelift_context.monitoring.id
+  context_id = spacelift_context.monitoring.id
   stack_id   = data.spacelift_current_stack.admin.id
   priority   = 0
 }
 
 resource "spacelift_context_attachment" "monitoring_stack" {
-  context_id = data.spacelift_context.monitoring.id
+  context_id = spacelift_context.monitoring.id
   stack_id   = module.stack_gcp_monitoring.id
   priority   = 0
 }

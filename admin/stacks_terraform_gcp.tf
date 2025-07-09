@@ -555,18 +555,13 @@ module "stack_gcp_gke_control" {
   hooks = {
     after = {
       apply = [
-        "# Export environment variables for the scripts",
         "export GCP_PROJECT_ID=$TF_VAR_project_id",
         "export GCP_REGION=$TF_VAR_gcp_region",
         "export GKE_CLUSTER_NAME=$TF_VAR_cluster_name",
         "export GKE_CLUSTER_LOCATION=$TF_VAR_cluster_location",
         "export GKE_NODE_POOL_NAME=$TF_VAR_node_pool_name",
         "export GKE_NODE_COUNT=$TF_VAR_desired_node_count",
-        "",
-        "# Set gcloud project",
         "gcloud config set project $TF_VAR_project_id",
-        "",
-        "# Execute the appropriate script based on desired state",
         "if [ \"$TF_VAR_desired_state\" = \"running\" ]; then",
         "  echo \"Starting GKE cluster and resources...\"",
         "  chmod +x terraform/gcp/gcp-environment/scripts/gcp-start-resources.sh",
@@ -579,7 +574,6 @@ module "stack_gcp_gke_control" {
         "  echo \"Invalid desired_state: $TF_VAR_desired_state. Use 'running' or 'stopped'\"",
         "  exit 1",
         "fi",
-        "",
         "echo \"Cluster control operation completed successfully\""
       ]
     }
