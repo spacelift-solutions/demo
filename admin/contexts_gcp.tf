@@ -23,22 +23,14 @@ data "spacelift_context" "monitoring" {
   context_id = "spacelift-monitoring"
 }
 
-resource "spacelift_context" "monitoring_with_labels" {
-  context_id  = data.spacelift_context.monitoring.id
-  name        = data.spacelift_context.monitoring.name
-  description = data.spacelift_context.monitoring.description
-  space_id    = data.spacelift_context.monitoring.space_id
-  labels      = ["autoattach:monitoring"]
-}
-
 resource "spacelift_context_attachment" "monitoring_admin" {
-  context_id = spacelift_context.monitoring_with_labels.id
+  context_id = data.spacelift_context.monitoring.id
   stack_id   = data.spacelift_current_stack.admin.id
   priority   = 0
 }
 
 resource "spacelift_context_attachment" "monitoring_stack" {
-  context_id = spacelift_context.monitoring_with_labels.id
+  context_id = data.spacelift_context.monitoring.id
   stack_id   = module.stack_gcp_monitoring.id
   priority   = 0
 }
