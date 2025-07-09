@@ -5,7 +5,7 @@
 # Create GKE cluster
 resource "google_container_cluster" "primary" {
   name     = "${var.gcp_environment_type}-gke-cluster"
-  location = var.cluster_location
+  location = var.gcp_region # Use region to match subnet region
   project  = var.project_id
 
   remove_default_node_pool = true
@@ -14,6 +14,7 @@ resource "google_container_cluster" "primary" {
   # Network configuration
   network    = var.network_name
   subnetwork = var.subnet_name
+
   # Setting protection to false for dynamic testing
   deletion_protection = false
 
@@ -51,7 +52,7 @@ resource "google_container_cluster" "primary" {
 # Create managed node pool
 resource "google_container_node_pool" "primary_nodes" {
   name       = "${var.gcp_environment_type}-node-pool"
-  location   = var.cluster_location
+  location   = var.gcp_region # Use region to match cluster and subnet
   cluster    = google_container_cluster.primary.name
   project    = var.project_id
   node_count = var.node_count

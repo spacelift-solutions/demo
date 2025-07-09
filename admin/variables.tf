@@ -1,4 +1,4 @@
-///---GCP---/// >
+///---GCP ENV---/// >
 variable "role_arn" {
   type        = string
   description = "role arn required for the AWS cloud integration"
@@ -10,8 +10,7 @@ variable "project_id" {
   description = "default project for the GCP integration via workload identity"
   sensitive   = true
 }
-///---GCP---/// <
-
+// <
 variable "dd_api_key" {
   type        = string
   description = "API key for the DD integration"

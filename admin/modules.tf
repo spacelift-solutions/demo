@@ -96,3 +96,19 @@ resource "spacelift_module" "loki_plugin_module" {
   public               = true
   labels               = ["module"]
 }
+
+//---GRAFANA-PROMETHEUS MODULE---//
+
+resource "spacelift_module" "grafana_monitoring_module" {
+  name                 = "grafana-monitoring"
+  terraform_provider   = "spacelift"
+  administrative       = true
+  branch               = "main"
+  description          = "Spacelift Grafana monitoring module for observability stack on GKE"
+  repository           = "spacelift-grafana-monitoring-module"
+  space_id             = "root"
+  workflow_tool        = "OPEN_TOFU"
+  enable_local_preview = true
+  public               = true
+  labels               = ["module", "monitoring", "grafana"]
+}
