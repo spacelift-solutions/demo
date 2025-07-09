@@ -327,7 +327,7 @@ module "stack_gcp_db" {
 #       ]
 #     }
 #   }
-# }
+# 
 // Compute Engine Instances //
 
 // Windows Instance
@@ -423,6 +423,165 @@ module "stack_gcp_ce_worker_pool" {
           input_name  = "TF_VAR_ce_worker_pool_private_key"
         }
       }
+    }
+  }
+}
+
+// Monitoring Stack //
+module "stack_gcp_monitoring" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "Creates Grafana monitoring stack for Spacelift observability on GKE"
+  name            = "gcp-monitoring"
+  repository_name = "demo"
+  space_id        = spacelift_space.gcp_terraform.id
+  manage_state    = true
+  workflow_tool   = "TERRAFORM_FOSS"
+
+  administrative    = false
+  auto_deploy       = true
+  labels            = ["gcp", "monitoring", "grafana", "prometheus"]
+  project_root      = "terraform/gcp/gcp-environment/modules/gcp-monitoring-module"
+  repository_branch = "main"
+  tf_version        = ">=1.5.7"
+
+  environment_variables = {
+    TF_VAR_project_id = {
+      sensitive = true
+      value     = var.project_id
+    }
+    TF_VAR_gcp_region = {
+      value = local.gcp_region
+    }
+    TF_VAR_gcp_environment_type = {
+      value = local.gcp_environment_type
+    }
+    TF_VAR_spacelift_hostname = {
+      value = local.spacelift_hostname
+    }
+    # API credentials (TF_VAR_spacelift_api_key_id and TF_VAR_spacelift_api_key_secret) 
+    # are provided via the monitoring context attachment
+  }
+
+  dependencies = {
+    GKE = {
+      parent_stack_id = module.stack_gcp_gke.id
+      references = {
+        CLUSTER_NAME = {
+          trigger_always = true
+          output_name    = "cluster_name"
+          input_name     = "TF_VAR_cluster_name"
+        }
+        CLUSTER_LOCATION = {
+          trigger_always = true
+          output_name    = "cluster_location"
+          input_name     = "TF_VAR_cluster_location"
+        }
+        CLUSTER_ENDPOINT = {
+          trigger_always = true
+          output_name    = "cluster_endpoint"
+          input_name     = "TF_VAR_cluster_endpoint"
+        }
+        CLUSTER_CA_CERTIFICATE = {
+          trigger_always = true
+          output_name    = "cluster_ca_certificate"
+          input_name     = "TF_VAR_cluster_ca_certificate"
+        }
+      }
+    }
+  }
+}
+
+// GKE Cluster Control Stack //
+module "stack_gcp_gke_control" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "Manual control stack for starting/stopping GKE cluster during work hours"
+  name            = "gcp-gke-control"
+  repository_name = "demo"
+  space_id        = spacelift_space.gcp_terraform.id
+  manage_state    = true
+  workflow_tool   = "TERRAFORM_FOSS"
+
+  administrative    = false
+  auto_deploy       = false # Important: Manual execution only
+  labels            = ["gcp", "gke", "control", "manual"]
+  project_root      = "terraform/gcp/gcp-environment/modules/gke-cluster-control"
+  repository_branch = "main"
+  tf_version        = ">=1.5.7"
+
+  environment_variables = {
+    TF_VAR_project_id = {
+      sensitive = true
+      value     = var.project_id
+    }
+    TF_VAR_gcp_region = {
+      value = local.gcp_region
+    }
+    TF_VAR_desired_state = {
+      value = "stopped" # Default to stopped for cost control
+    }
+    TF_VAR_desired_node_count = {
+      value = "1"
+    }
+    TF_VAR_force_execution = {
+      value = "false"
+    }
+  }
+
+  dependencies = {
+    GKE = {
+      parent_stack_id = module.stack_gcp_gke.id
+      references = {
+        CLUSTER_NAME = {
+          trigger_always = false # Don't auto-trigger
+          output_name    = "cluster_name"
+          input_name     = "TF_VAR_cluster_name"
+        }
+        CLUSTER_LOCATION = {
+          trigger_always = false
+          output_name    = "cluster_location"
+          input_name     = "TF_VAR_cluster_location"
+        }
+        NODE_POOL_NAME = {
+          trigger_always = false
+          output_name    = "node_pool_name"
+          input_name     = "TF_VAR_node_pool_name"
+        }
+      }
+    }
+  }
+
+  hooks = {
+    after = {
+      apply = [
+        "# Export environment variables for the scripts",
+        "export GCP_PROJECT_ID=$TF_VAR_project_id",
+        "export GCP_REGION=$TF_VAR_gcp_region",
+        "export GKE_CLUSTER_NAME=$TF_VAR_cluster_name",
+        "export GKE_CLUSTER_LOCATION=$TF_VAR_cluster_location",
+        "export GKE_NODE_POOL_NAME=$TF_VAR_node_pool_name",
+        "export GKE_NODE_COUNT=$TF_VAR_desired_node_count",
+        "",
+        "# Set gcloud project",
+        "gcloud config set project $TF_VAR_project_id",
+        "",
+        "# Execute the appropriate script based on desired state",
+        "if [ \"$TF_VAR_desired_state\" = \"running\" ]; then",
+        "  echo \"Starting GKE cluster and resources...\"",
+        "  chmod +x terraform/gcp/gcp-environment/scripts/gcp-start-resources.sh",
+        "  terraform/gcp/gcp-environment/scripts/gcp-start-resources.sh",
+        "elif [ \"$TF_VAR_desired_state\" = \"stopped\" ]; then",
+        "  echo \"Stopping GKE cluster and resources...\"",
+        "  chmod +x terraform/gcp/gcp-environment/scripts/gcp-stop-resources.sh",
+        "  terraform/gcp/gcp-environment/scripts/gcp-stop-resources.sh",
+        "else",
+        "  echo \"Invalid desired_state: $TF_VAR_desired_state. Use 'running' or 'stopped'\"",
+        "  exit 1",
+        "fi",
+        "",
+        "echo \"Cluster control operation completed successfully\""
+      ]
     }
   }
 }
