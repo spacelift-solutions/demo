@@ -22,7 +22,7 @@ resource "spacelift_environment_variable" "gcp" {
 resource "spacelift_context" "monitoring" {
   description = "Configuration for Spacelift monitoring stack"
   name        = "spacelift-monitoring"
-  space_id    = spacelift_space.gcp.id
+  space_id    = "root"
 }
 
 resource "spacelift_environment_variable" "spacelift_api_key_id" {
