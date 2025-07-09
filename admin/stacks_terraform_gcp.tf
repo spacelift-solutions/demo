@@ -45,16 +45,19 @@ module "stack_gcp_iam" {
       child_stack_id = module.stack_gcp_networking.id
       trigger_always = true
     }
-    CLOUD_FUNC = {
-      child_stack_id = module.stack_gcp_cloud_functions.id
-      references = {
-        SERVICE_ACC = {
-          trigger_always = true
-          output_name    = "function_service_account_email"
-          input_name     = "TF_VAR_function_service_account_email"
-        }
-      }
-    }
+    // Commenting out cloud-functions for now 
+
+    # CLOUD_FUNC = {
+    #   child_stack_id = module.stack_gcp_cloud_functions.id
+    #   references = {
+    #     SERVICE_ACC = {
+    #       trigger_always = true
+    #       output_name    = "function_service_account_email"
+    #       input_name     = "TF_VAR_function_service_account_email"
+    #     }
+    #   }
+    # }
+
     GKE = {
       child_stack_id = module.stack_gcp_gke.id
       references = {
@@ -193,20 +196,34 @@ module "stack_gcp_gke" {
     }
   }
   dependencies = {
-    CLOUD_FUNCTIONS = {
-      child_stack_id = module.stack_gcp_cloud_functions.id
-      references = {
-        CLUSTER_NAME = {
-          trigger_always = true
-          output_name    = "cluster_name"
-          input_name     = "TF_VAR_gke_cluster_name"
-        }
-        CLUSTER_LOCATION = {
-          trigger_always = true
-          output_name    = "cluster_location"
-          input_name     = "TF_VAR_cluster_location"
-        }
-      }
+    // Disabling cloud-functions at the moment.
+
+    # CLOUD_FUNCTIONS = {
+    #   child_stack_id = module.stack_gcp_cloud_functions.id
+    #   references = {
+    #     CLUSTER_NAME = {
+    #       trigger_always = true
+    #       output_name    = "cluster_name"
+    #       input_name     = "TF_VAR_gke_cluster_name"
+    #     }
+    #     CLUSTER_LOCATION = {
+    #       trigger_always = true
+    #       output_name    = "cluster_location"
+    #       input_name     = "TF_VAR_cluster_location"
+    #     }
+    #   }
+    # }
+  }
+
+  hooks = {
+    after = {
+      apply = [
+        "chmod +x scripts/gcp-stop-resources.sh",
+        "export GCP_PROJECT_ID=$TF_VAR_project_id",
+        "export GKE_CLUSTER_NAME=$TF_VAR_gke_cluster_name",
+        "export GKE_CLUSTER_LOCATION=$TF_VAR_cluster_location",
+        "./scripts/gcp-stop-resources.sh"
+      ]
     }
   }
 }
@@ -242,63 +259,75 @@ module "stack_gcp_db" {
     }
   }
   dependencies = {
-    CLOUD_FUNC = {
-      child_stack_id = module.stack_gcp_cloud_functions.id
-      references = {
-        SQL = {
-          trigger_always = true
-          output_name    = "sql_instance_name"
-          input_name     = "TF_VAR_sql_instance_name"
-        }
-        SUFFIX = {
-          trigger_always = true
-          output_name    = "db_name_suffix"
-          input_name     = "TF_VAR_db_suffix"
-        }
-      }
+    // Disabling cloud-functions for now
+
+    # CLOUD_FUNC = {
+    #   child_stack_id = module.stack_gcp_cloud_functions.id
+    #   references = {
+    #     SQL = {
+    #       trigger_always = true
+    #       output_name    = "sql_instance_name"
+    #       input_name     = "TF_VAR_sql_instance_name"
+    #     }
+    #     SUFFIX = {
+    #       trigger_always = true
+    #       output_name    = "db_name_suffix"
+    #       input_name     = "TF_VAR_db_suffix"
+    #     }
+    #   }
+    # }
+  }
+
+  hooks = {
+    after = {
+      apply = [
+        "chmod +x scripts/gcp-stop-resources.sh",
+        "export GCP_PROJECT_ID=$TF_VAR_project_id",
+        "./scripts/gcp-stop-resources.sh"
+      ]
     }
   }
 }
 
 // Serverless
-module "stack_gcp_cloud_functions" {
-  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+# module "stack_gcp_cloud_functions" {
+#   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
-  description     = "Creates a the required cloud functions for resource uptime scheduling"
-  name            = "gcp-cloud-functions"
-  repository_name = "demo"
-  space_id        = spacelift_space.gcp_terraform.id
-  manage_state    = true
-  workflow_tool   = "TERRAFORM_FOSS"
+#   description     = "Creates a the required cloud functions for resource uptime scheduling"
+#   name            = "gcp-cloud-functions"
+#   repository_name = "demo"
+#   space_id        = spacelift_space.gcp_terraform.id
+#   manage_state    = true
+#   workflow_tool   = "TERRAFORM_FOSS"
 
-  administrative    = false
-  auto_deploy       = true
-  labels            = ["gcp", "cloud-functions"]
-  project_root      = "terraform/gcp/gcp-environment/modules/cloud-functions-module"
-  repository_branch = "main"
-  tf_version        = ">=1.5.7"
+#   administrative    = false
+#   auto_deploy       = true
+#   labels            = ["gcp", "cloud-functions"]
+#   project_root      = "terraform/gcp/gcp-environment/modules/cloud-functions-module"
+#   repository_branch = "main"
+#   tf_version        = ">=1.5.7"
 
-  environment_variables = {
-    TF_VAR_project_id = {
-      sensitive = true
-      value     = var.project_id
-    }
-    TF_VAR_gcp_region = {
-      value = local.gcp_region
-    }
-    TF_VAR_gcp_environment_type = {
-      value = local.gcp_environment_type
-    }
-  }
+#   environment_variables = {
+#     TF_VAR_project_id = {
+#       sensitive = true
+#       value     = var.project_id
+#     }
+#     TF_VAR_gcp_region = {
+#       value = local.gcp_region
+#     }
+#     TF_VAR_gcp_environment_type = {
+#       value = local.gcp_environment_type
+#     }
+#   }
 
-  hooks = {
-    before = {
-      plan = [
-        "terraform apply -auto-approve -target 'google_storage_bucket_iam_member.spacelift_bucket_admin'"
-      ]
-    }
-  }
-}
+#   hooks = {
+#     before = {
+#       plan = [
+#         "terraform apply -auto-approve -target 'google_storage_bucket_iam_member.spacelift_bucket_admin'"
+#       ]
+#     }
+#   }
+# }
 // Compute Engine Instances //
 
 // Windows Instance
