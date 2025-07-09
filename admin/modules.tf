@@ -105,10 +105,10 @@ resource "spacelift_module" "grafana_monitoring_module" {
   administrative       = true
   branch               = "main"
   description          = "Spacelift Grafana monitoring module for observability stack on GKE"
-  repository           = "MarcusScipio/spacelift-grafana-monitoring-module"
+  repository           = "grafana-monitoring"
   space_id             = "root"
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true
-  labels               = ["module", "monitoring", "grafana"]
+  labels               = ["module"]
 }
