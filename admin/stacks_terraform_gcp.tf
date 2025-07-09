@@ -260,7 +260,7 @@ module "stack_gcp_db" {
   }
   dependencies = {
     // Disabling cloud-functions for now
-    
+
     # CLOUD_FUNC = {
     #   child_stack_id = module.stack_gcp_cloud_functions.id
     #   references = {
