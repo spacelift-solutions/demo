@@ -6,3 +6,7 @@ output "subnet_id" {
 output "dev_sg" {
   value = aws_security_group.allow_access.id
 }
+
+output "jake_bug" {
+  value = "Jake's bug is fixed"
+}
