@@ -3,7 +3,7 @@ resource "aws_vpc" "dev_vpc" {
   enable_dns_hostnames = true
 
   tags = {
-    Name = "dev"
+    Name = "jake-bug-test"
   }
 
 }
