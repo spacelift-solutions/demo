@@ -15,3 +15,12 @@ resource "spacelift_policy" "tag_driven_module_version_release" {
   space_id    = "root"
   labels      = ["autoattach:module"]
 }
+
+resource "spacelift_policy" "require_approval_from_fork" {
+  name        = "Require approval from fork"
+  body        = file("./policies/approval/require_approval_from_fork.rego")
+  type        = "APPROVAL"
+  description = "This policy will require at least one approval for runs that are being triggered from forks"
+  space_id    = "root"
+  labels      = ["autpattach:module"]
+}
