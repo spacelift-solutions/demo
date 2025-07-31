@@ -1,28 +1,28 @@
-resource "aws_vpc" "dev_vpc" {
+resource "aws_vpc" "tofu_vpc" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
 
   tags = {
-    Name = "dev"
+    Name = "tofu"
   }
 
 }
 
-resource "aws_subnet" "dev_public_subnet" {
-  vpc_id                  = aws_vpc.dev_vpc.id
+resource "aws_subnet" "tofu_public_subnet" {
+  vpc_id                  = aws_vpc.tofu_vpc.id
   cidr_block              = "10.0.0.0/16"
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1a"
 
   tags = {
-    Name = "dev-public-subnet"
+    Name = "tofu-public-subnet"
   }
 }
 
 resource "aws_security_group" "allow_access" {
-  name        = "dev-sg"
+  name        = "tofu-sg"
   description = "Allow SSH, HTTP and HTTPS traffic"
-  vpc_id      = aws_vpc.dev_vpc.id
+  vpc_id      = aws_vpc.tofu_vpc.id
   ingress {
     description = "SSH"
     from_port   = 22
@@ -61,33 +61,33 @@ resource "aws_security_group" "allow_access" {
   }
 
   tags = {
-    Name = "dev-sg"
+    Name = "tofu-sg"
   }
 }
 
-resource "aws_internet_gateway" "dev_internet_gateway" {
-  vpc_id = aws_vpc.dev_vpc.id
+resource "aws_internet_gateway" "tofu_internet_gateway" {
+  vpc_id = aws_vpc.tofu_vpc.id
 
   tags = {
-    Name = "dev_igw"
+    Name = "tofu_igw"
   }
 }
 
-resource "aws_route_table" "dev_public_rt" {
-  vpc_id = aws_vpc.dev_vpc.id
+resource "aws_route_table" "tofu_public_rt" {
+  vpc_id = aws_vpc.tofu_vpc.id
 
   tags = {
-    Name = "dev_public_rt"
+    Name = "tofu_public_rt"
   }
 }
 
 resource "aws_route" "default_route" {
-  route_table_id         = aws_route_table.dev_public_rt.id
+  route_table_id         = aws_route_table.tofu_public_rt.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.dev_internet_gateway.id
+  gateway_id             = aws_internet_gateway.tofu_internet_gateway.id
 }
 
-resource "aws_route_table_association" "dev_public_assoc" {
-  subnet_id      = aws_subnet.dev_public_subnet.id
-  route_table_id = aws_route_table.dev_public_rt.id
+resource "aws_route_table_association" "tofu_public_assoc" {
+  subnet_id      = aws_subnet.tofu_public_subnet.id
+  route_table_id = aws_route_table.tofu_public_rt.id
 }
