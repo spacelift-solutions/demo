@@ -1,0 +1,210 @@
+#User Inputs for Blueprint
+inputs:
+  - id: instance_type
+    name: EC2 Instance Type
+    type: short_text
+    default: t3.medium
+
+  - id: s3_bucket
+    name: Existing S3 Bucket for Saves
+    type: short_text
+    default: minesible-world-backup
+
+  - id: motd
+    name: Server MOTD
+    type: short_text
+    default: "Welcome to Minesible!"
+
+  - id: max_players
+    name: Max Players
+    type: number
+    default: "5"
+
+#Stack Array Config
+stacks:
+
+#Stack 1: Opentofu Stack
+
+#Opentofu Stack Metadata
+- name: Minesible-Opentofu-Blueprint-${{ context.random_string }}
+  space: opentofu-01JB2XV5E3ZR3NDTKCN80KS6RH #AWS/opentofu space ID
+  worker_pool: 01JCZY4WD38EJS5S94B64E0V1Z
+  description: >
+    Minecraft server infra stack created from blueprint by ${{ context.user.name }}.
+  labels:
+    - minesible #Used for search and view filtering
+  key: stack1 #Used for stack dependency
+  
+  #Opentofu VCS Config
+  vcs:
+    branch: main
+    repository: minesible
+    provider: GITHUB
+    project_root: stacks/opentofu
+
+  #Opentofu Vendor Config
+  vendor:
+    terraform:
+      manage_state: true
+      workflow_tool: OPEN_TOFU
+      version: "1.10.2"
+      use_smart_sanitization: true
+
+  #Opentofu Cloud Config
+  attachments:
+    clouds:
+      aws:
+        id: 01JAZPBRW3K2YB0K7F58NZSDY6
+        read: true
+        write: true
+
+  #Opentofu ENV Var Config
+  environment:
+    variables:
+      - name: TF_VAR_s3_bucket
+        value: ${{ inputs.s3_bucket }}
+        description: S3 bucket for Minecraft world saves
+
+      - name: TF_VAR_instance_type
+        value: ${{ inputs.instance_type }}
+
+      - name: TF_VAR_motd
+        value: ${{ inputs.motd }}
+
+      - name: TF_VAR_max_players
+         # Have to pass numbers with the forced string syntax "${{ inputs.<name> }}" - Slightly different from normal string (OpenTofu will convert back to number)
+        value: "${{ inputs.max_players }}"
+
+  #Opentofu Hooks (Zip world folder and upload to s3 bucket defined in input/default)
+  hooks:
+    destroy:
+      before:
+      - test -d /home/ec2-user/minecraft && cd /home/ec2-user/minecraft && zip -r spacelift-world.zip spacelift-world || true
+      - test -f /home/ec2-user/minecraft/spacelift-world.zip && aws s3 cp /home/ec2-user/minecraft/spacelift-world.zip s3://$TF_VAR_s3_bucket/spacelift-world.zip || true
+
+  schedules:
+    drift:
+      cron: 
+        - "0 0/6 * * *" # Every 6 hours
+      reconcile: true
+      ignore_state: true # If true, the schedule will run even if the stack is in a failed state
+      timezone: America/Toronto
+  
+    #Auto-delete stack
+    tasks:
+    - command: tofu destroy -auto-approve
+      cron:
+        - "55 * * * *"  # Run at 55 minutes past every hour (adjust as needed)
+      timezone: America/Toronto
+
+    # Auto-delete schedule for webinar
+    delete:
+      timestamp_unix: 1754539200  # Demo deletion on Wed Aug 6
+      delete_resources: true
+
+  #Triggers the run and auto-confirms so it's not hanging on "Pending Confirmation"
+  options:
+    trigger_run: true
+  
+  auto_deploy: true
+
+#Stack 2: Ansible Stack
+
+#Ansible Stack Metadata
+- name: Minesible-Ansible-Blueprint-${{ context.random_string }}
+  space: opentofu-01JB2XV5E3ZR3NDTKCN80KS6RH #AWS/opentofu space ID
+  worker_pool: 01JCZY4WD38EJS5S94B64E0V1Z
+  labels:
+  - minesible #Used to auto attach context (EC2 pem key, server image)
+  key: stack2 #Used for stack dependency
+
+  runner_image: public.ecr.aws/spacelift/runner-ansible:legacy # Using old runner image as July 21, 2025 introduced new image without SPACELIFT user profile - Replace after issue is resolved
+  # https://github.com/spacelift-io/runner-ansible/pull/46
+
+  #Ansible VCS Config
+  vcs:
+    branch: main
+    repository: minesible
+    provider: GITHUB
+    project_root: stacks/ansible
+  
+  #Ansible Vendor Config
+  vendor:
+    ansible:
+      playbook: playbook.yml
+
+  #Opentofu ENV Var Config
+  environment:
+    
+    variables:
+      # Pass in inventory file name
+      - name: ANSIBLE_INVENTORY
+        value: inventory.ini
+        description: Inventory File Name
+
+      # For running scheduled task (to auto-save the world)
+      - name: ANSIBLE_HOST_KEY_CHECKING
+        value: "false"
+        description: For running custom tasks without a key check
+    
+    # Pulled from outputs in OpenTofu Stack
+    stack_dependency_references:
+      - name: S3_BUCKET
+        output: s3_bucket
+        from_stack: stack1
+      - name: EC2_IP
+        output: ec2_ip
+        from_stack: stack1
+      - name: MOTD
+        output: motd
+        from_stack: stack1
+      - name: MAX_PLAYERS
+        output: max_players
+        from_stack: stack1
+
+  #Ansible Hooks 
+  hooks:
+    init:
+      before:
+        # Part 1: Create the inventory.ini file, give read/write access to pem file, Wait till EC2 instance is up)
+        - echo "[minecraft]" > inventory.ini && echo "$EC2_IP ansible_user=ec2-user ansible_ssh_private_key_file=/mnt/workspace/minesible-access.pem" >> inventory.ini
+        - chmod 600 /mnt/workspace/minesible-access.pem || true
+        
+        # Part 2: Wait for EC2 Instace to come up before progressing
+        - echo "Waiting for EC2 to become reachable..."
+        - |
+          echo "Waiting for EC2 to become reachable..."
+          for i in $(seq 1 60); do
+            echo "Probing $EC2_IP on port 22 (attempt $i)..."
+            if nc -z "$EC2_IP" 22; then
+              echo "✅ EC2 is ready!"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "❌ EC2 did not become ready in time."
+          exit 1
+
+    apply:
+      before:
+        # Have to give read/write access again to pem file before applying
+        - chmod 600 /mnt/workspace/minesible-access.pem
+  
+  #Ansible Tasks - Saved the world every 6 hours
+  schedules:
+    tasks:
+      - command: ansible-playbook save-world.yml # Runs the save world playbook
+        cron:
+          - "0 0/6 * * *"  # Every 6 hours
+        timezone: America/Toronto
+    
+    #Auto delete for webinar
+    delete:
+      timestamp_unix: 1754538900  # 5 minutes before OpenTofu deletion
+      delete_resources: true
+  
+  #Triggers the run and auto-confirms so it's not hanging on "Pending Confirmation"
+  options:
+    trigger_run: false
+
+  auto_deploy: true
