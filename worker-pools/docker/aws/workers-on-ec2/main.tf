@@ -28,7 +28,7 @@ module "aws_ec2_asg_worker_pool" {
   autoscaling_configuration = {
     max_create    = 1
     max_terminate = 5
-    architecture  = "arm64" # ~ 20% cheaper than amd64
+    architecture  = var.ami_architecture
     timeout       = 60
   }
 

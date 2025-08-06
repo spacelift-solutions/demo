@@ -34,3 +34,8 @@ variable "spacelift_api_key_secret" {
   description = "Secret corresponding to the Spacelift API key to use"
   default     = null
 }
+
+variable "ami_architecture" {
+  type    = string
+  default = "arm64" # ~ 20% cheaper than amd64
+}
