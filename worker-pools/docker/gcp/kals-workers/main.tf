@@ -32,23 +32,15 @@ module "spacelift_worker_pool" {
   zone    = "${var.gcp_region}-a"
   
   # Instance settings
-  size         = 1  # Number of instances (min/max not available in this module)
-  machine_type = "e2-micro"  # Cheapest option
+  size    = 1  # Number of instances
   
   # Network settings
   network = var.network_name  # Will use default or create new
   
-  # Service account email for the instances
-  # This should be your GCP service account from the gcp-config context
+  # Service account email - set via TF_VAR_service_account_email in Spacelift
   email = var.service_account_email
   
-  # Optional: Specific image (leave blank for latest)
+  # Optional: Specific image (using latest if not specified)
+  # Uncomment and modify if you need a specific image:
   # image = "projects/spacelift-workers/global/images/spacelift-worker-us-1634112379-tmoys2fp"
-  
-  # Tags for resource management
-  tags = [
-    "spacelift-worker",
-    "environment-testing",
-    "managed-by-spacelift"
-  ]
 }
