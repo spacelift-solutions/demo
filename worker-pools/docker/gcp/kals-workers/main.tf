@@ -19,13 +19,20 @@ provider "google" {
   region  = var.gcp_region
 }
 
+# Debug: Let's see what's happening
+resource "null_resource" "debug_auth" {
+  provisioner "local-exec" {
+    command = "echo 'GOOGLE_APPLICATION_CREDENTIALS=' && echo $GOOGLE_APPLICATION_CREDENTIALS && echo 'Project ID:' && gcloud config get-value project 2>/dev/null || echo 'gcloud not available'"
+  }
+}
+
 # GCP Spacelift Worker Pool Module (sourced from GitHub)
 module "spacelift_worker_pool" {
   source = "github.com/spacelift-io/terraform-google-spacelift-workerpool?ref=v1.4.0"
   
   # Configuration - this should contain the SPACELIFT_TOKEN and SPACELIFT_POOL_PRIVATE_KEY
   # The file contains your worker pool token from Spacelift UI
-  configuration = file("/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K.config")
+  configuration = file("/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K")
   
   # GCP settings - cost-optimized
   region  = var.gcp_region
