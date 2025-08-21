@@ -23,8 +23,8 @@ provider "google" {
 module "spacelift_worker_pool" {
   source = "spacelift-io/spacelift-workerpool/google"
   
-  # Configuration file will be available from the mounted file in gcp-config context
-  configuration = file("/mnt/workspace/worker-pool-config.json")  # This needs to be adjusted based on your file
+  # Configuration file mounted from gcp-config context
+  configuration = file("/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K")
   
   # GCP settings - using cheapest options
   region        = var.gcp_region
@@ -51,7 +51,7 @@ module "spacelift_worker_pool" {
   
   # Tags
   labels = {
-    environment    = "testing"
+    environment     = "testing"
     team           = "infrastructure"
     purpose        = "spacelift-worker"
     managed_by     = "spacelift"
