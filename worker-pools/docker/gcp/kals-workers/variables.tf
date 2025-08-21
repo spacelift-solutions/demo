@@ -12,20 +12,15 @@ variable "gcp_region" {
   default     = "us-central1"
 }
 
-# These will be set as Spacelift stack variables (sensitive)
-variable "spacelift_api_key_endpoint" {
-  description = "Spacelift API key endpoint - set as Spacelift stack variable"
+variable "network_name" {
+  description = "GCP Network name to use for worker pool"
   type        = string
+  default     = "default"  # Use default network or specify custom
 }
 
-variable "spacelift_api_key_id" {
-  description = "Spacelift API key ID - set as sensitive Spacelift stack variable"
+variable "service_account_email" {
+  description = "Service account email for the worker instances"
   type        = string
-  sensitive   = true
-}
-
-variable "spacelift_api_key_secret" {
-  description = "Spacelift API key secret - set as sensitive Spacelift stack variable"
-  type        = string
-  sensitive   = true
+  # This should be set as a Spacelift stack variable
+  # You can find this in your GCP IAM service accounts
 }
