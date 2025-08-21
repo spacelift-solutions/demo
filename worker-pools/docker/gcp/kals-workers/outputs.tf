@@ -1,5 +1,19 @@
 # Outputs for Spacelift GCP Worker Pool
 
+# Temporary outputs to identify service accounts
+output "current_service_account_info" {
+  description = "Information about the current service account being used"
+  value = {
+    client_email = "Check run logs for service account email"
+    project_id   = var.gcp_project_id
+  }
+}
+
+output "compute_default_service_account" {
+  description = "The default compute service account"
+  value = data.google_compute_default_service_account.default.email
+}
+
 output "service_account_email" {
   description = "Service account email used by worker instances"
   value       = var.service_account_email
