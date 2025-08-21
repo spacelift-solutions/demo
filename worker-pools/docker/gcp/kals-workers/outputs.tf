@@ -1,13 +1,8 @@
 # Outputs for Spacelift GCP Worker Pool
 
-output "instance_group_manager" {
-  description = "The instance group manager name"
-  value       = module.spacelift_worker_pool.instance_group_manager
-}
-
-output "instance_template" {
-  description = "The instance template name"
-  value       = module.spacelift_worker_pool.instance_template
+output "service_account_email" {
+  description = "Service account email used by worker instances"
+  value       = var.service_account_email
 }
 
 output "gcp_project_info" {
@@ -22,9 +17,18 @@ output "gcp_project_info" {
 output "worker_pool_config" {
   description = "Worker pool configuration summary"
   value = {
-    size         = 1
-    machine_type = "e2-micro"
-    region       = var.gcp_region
-    network      = var.network_name
+    size    = 1
+    region  = var.gcp_region
+    network = var.network_name
+  }
+}
+
+output "deployment_info" {
+  description = "Deployment information"
+  value = {
+    module_source  = "github.com/spacelift-io/terraform-google-spacelift-workerpool?ref=v1.4.0"
+    deployed_via   = "spacelift"
+    context_used   = "gcp-config"
+    config_file    = "/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K"
   }
 }
