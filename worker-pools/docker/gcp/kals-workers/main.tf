@@ -7,7 +7,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "~> 5.0"
+      version = "~> 4.14.0"  # Match the module requirements
     }
   }
 }
@@ -19,42 +19,36 @@ provider "google" {
   region  = var.gcp_region
 }
 
-# Quick-deploy module for GCP Spacelift Worker Pool
+# GCP Spacelift Worker Pool Module (sourced from GitHub)
 module "spacelift_worker_pool" {
-  source = "spacelift-io/spacelift-workerpool/google"
+  source = "github.com/spacelift-io/terraform-google-spacelift-workerpool?ref=v1.4.0"
   
-  # Configuration file mounted from gcp-config context
+  # Configuration - this should contain the SPACELIFT_TOKEN and SPACELIFT_POOL_PRIVATE_KEY
+  # The file contains your worker pool token from Spacelift UI
   configuration = file("/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K")
   
-  # GCP settings - using cheapest options
-  region        = var.gcp_region
-  zone          = "${var.gcp_region}-a"  
-  machine_type  = "e2-micro"             # Cheapest option
+  # GCP settings - cost-optimized
+  region  = var.gcp_region
+  zone    = "${var.gcp_region}-a"
   
-  # Scaling - single instance
-  min_replicas = 1
-  max_replicas = 1
+  # Instance settings
+  size         = 1  # Number of instances (min/max not available in this module)
+  machine_type = "e2-micro"  # Cheapest option
   
-  # Network settings - create simple VPC
-  create_network = true
-  network_name   = "spacelift-worker-network"
-  subnet_name    = "spacelift-worker-subnet"
-  subnet_cidr    = "10.0.0.0/16"
+  # Network settings
+  network = var.network_name  # Will use default or create new
   
-  # Private worker pool
-  enable_private_pool = true
+  # Service account email for the instances
+  # This should be your GCP service account from the gcp-config context
+  email = var.service_account_email
   
-  # Spacelift API configuration - these will be set as Spacelift stack variables
-  spacelift_api_key_endpoint = var.spacelift_api_key_endpoint
-  spacelift_api_key_id       = var.spacelift_api_key_id
-  spacelift_api_key_secret   = var.spacelift_api_key_secret
+  # Optional: Specific image (leave blank for latest)
+  # image = "projects/spacelift-workers/global/images/spacelift-worker-us-1634112379-tmoys2fp"
   
-  # Tags
-  labels = {
-    environment     = "testing"
-    team           = "infrastructure"
-    purpose        = "spacelift-worker"
-    managed_by     = "spacelift"
-    deployed_from  = "spacelift-stack"
-  }
+  # Tags for resource management
+  tags = [
+    "spacelift-worker",
+    "environment-testing",
+    "managed-by-spacelift"
+  ]
 }
