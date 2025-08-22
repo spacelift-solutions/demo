@@ -19,40 +19,33 @@ provider "google" {
   region  = var.gcp_region
 }
 
-# Debug: Test authentication and file access
-resource "null_resource" "debug_auth" {
+# Debug: Force the debug to run by changing the trigger
+resource "null_resource" "debug_auth_v2" {
+  triggers = {
+    always_run = timestamp()
+  }
+  
   provisioner "local-exec" {
     command = <<-EOF
-      echo "=== DEBUG AUTHENTICATION ==="
+      echo "=== AUTHENTICATION DEBUG v2 ==="
       echo "GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS"
       echo ""
-      echo "=== WORKSPACE DIRECTORY ==="
-      ls -la /mnt/workspace/ 
+      echo "=== FILE CHECK ==="
+      ls -la /mnt/workspace/
       echo ""
-      echo "=== FILE PERMISSIONS ==="
+      echo "=== CREDENTIALS FILE CONTENT ==="
       if [ -f "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
-        echo "File exists and permissions:"
-        ls -la "$GOOGLE_APPLICATION_CREDENTIALS"
+        echo "File found, extracting client_email:"
+        jq -r '.client_email' "$GOOGLE_APPLICATION_CREDENTIALS" 2>/dev/null || grep -o '"client_email":"[^"]*"' "$GOOGLE_APPLICATION_CREDENTIALS"
         echo ""
-        echo "File size:"
-        wc -c "$GOOGLE_APPLICATION_CREDENTIALS"
-        echo ""
-        echo "First few characters:"
-        head -c 100 "$GOOGLE_APPLICATION_CREDENTIALS"
-        echo ""
-        echo "Contains client_email?"
-        grep -q "kals-gcp-sa" "$GOOGLE_APPLICATION_CREDENTIALS" && echo "YES" || echo "NO"
+        echo "Project ID in file:"
+        jq -r '.project_id' "$GOOGLE_APPLICATION_CREDENTIALS" 2>/dev/null || grep -o '"project_id":"[^"]*"' "$GOOGLE_APPLICATION_CREDENTIALS"
       else
-        echo "ERROR: Credentials file NOT found at: $GOOGLE_APPLICATION_CREDENTIALS"
+        echo "ERROR: File not found at $GOOGLE_APPLICATION_CREDENTIALS"
       fi
     EOF
   }
 }
-
-# Simple test - remove the data source that's failing
-# data "google_project" "current" {
-#   project_id = var.gcp_project_id
-# }
 
 # GCP Spacelift Worker Pool Module (sourced from GitHub)
 module "spacelift_worker_pool" {
@@ -60,7 +53,7 @@ module "spacelift_worker_pool" {
   
   # Configuration - this should contain the SPACELIFT_TOKEN and SPACELIFT_POOL_PRIVATE_KEY
   # The file contains your worker pool token from Spacelift UI
-  configuration = file("/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K.config")
+  configuration = file("/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K")
   
   # GCP settings - cost-optimized
   region  = var.gcp_region
