@@ -21,6 +21,19 @@ variable "network_name" {
 variable "service_account_email" {
   description = "Service account email for the worker instances"
   type        = string
-  # This should be set as a Spacelift stack variable
-  # You can find this in your GCP IAM service accounts
+  # Set this in Spacelift as Environment variable: TF_VAR_service_account_email
+  # Find your service account in GCP Console → IAM & Admin → Service Accounts
+}
+
+# New variables for Spacelift worker pool credentials
+variable "spacelift_token" {
+  description = "Spacelift worker pool token - set as sensitive Spacelift variable"
+  type        = string
+  sensitive   = true
+}
+
+variable "spacelift_pool_private_key" {
+  description = "Spacelift worker pool private key - set as sensitive Spacelift variable"
+  type        = string
+  sensitive   = true
 }
