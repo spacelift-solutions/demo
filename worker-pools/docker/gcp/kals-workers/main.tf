@@ -30,30 +30,26 @@ resource "null_resource" "debug_auth_v2" {
       echo "=== AUTHENTICATION DEBUG v2 ==="
       echo "GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS"
       echo ""
-      echo "=== FILE CHECK ==="
-      ls -la /mnt/workspace/
-      echo ""
-      echo "=== CREDENTIALS FILE CONTENT ==="
-      if [ -f "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
-        echo "File found, extracting client_email:"
-        jq -r '.client_email' "$GOOGLE_APPLICATION_CREDENTIALS" 2>/dev/null || grep -o '"client_email":"[^"]*"' "$GOOGLE_APPLICATION_CREDENTIALS"
-        echo ""
-        echo "Project ID in file:"
-        jq -r '.project_id' "$GOOGLE_APPLICATION_CREDENTIALS" 2>/dev/null || grep -o '"project_id":"[^"]*"' "$GOOGLE_APPLICATION_CREDENTIALS"
+      echo "=== WORKER POOL CONFIG DEBUG ==="
+      if [ -f "/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K.config" ]; then
+        echo "Worker pool config file found, showing first few lines:"
+        head -n 10 "/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K.config" || echo "Could not read file"
       else
-        echo "ERROR: File not found at $GOOGLE_APPLICATION_CREDENTIALS"
+        echo "Worker pool config file NOT found"
       fi
     EOF
   }
 }
 
-# GCP Spacelift Worker Pool Module (sourced from GitHub)
+# GCP Spacelift Worker Pool Module (sourced from GitHub)  
 module "spacelift_worker_pool" {
   source = "github.com/spacelift-io/terraform-google-spacelift-workerpool?ref=v1.4.0"
   
-  # Configuration - this should contain the SPACELIFT_TOKEN and SPACELIFT_POOL_PRIVATE_KEY
-  # The file contains your worker pool token from Spacelift UI
-  configuration = file("/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K.config")
+  # FIXED: Configuration should be shell export commands, not file path
+  configuration = <<-EOT
+export SPACELIFT_TOKEN="${var.spacelift_token}"
+export SPACELIFT_POOL_PRIVATE_KEY="${var.spacelift_pool_private_key}"
+EOT
   
   # GCP settings - cost-optimized
   region  = var.gcp_region
