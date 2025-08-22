@@ -19,41 +19,40 @@ provider "google" {
   region  = var.gcp_region
 }
 
-# Debug: Test authentication and service account
+# Debug: Test authentication and file access
 resource "null_resource" "debug_auth" {
   provisioner "local-exec" {
     command = <<-EOF
       echo "=== DEBUG AUTHENTICATION ==="
       echo "GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS"
       echo ""
-      echo "=== FILE EXISTS CHECK ==="
-      ls -la /mnt/workspace/ || echo "Workspace directory not found"
+      echo "=== WORKSPACE DIRECTORY ==="
+      ls -la /mnt/workspace/ 
       echo ""
-      echo "=== FILE CONTENT CHECK ==="
+      echo "=== FILE PERMISSIONS ==="
       if [ -f "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
-        echo "File exists, checking client_email..."
-        grep -o '"client_email":"[^"]*"' "$GOOGLE_APPLICATION_CREDENTIALS" || echo "Could not extract client_email"
+        echo "File exists and permissions:"
+        ls -la "$GOOGLE_APPLICATION_CREDENTIALS"
+        echo ""
+        echo "File size:"
+        wc -c "$GOOGLE_APPLICATION_CREDENTIALS"
+        echo ""
+        echo "First few characters:"
+        head -c 100 "$GOOGLE_APPLICATION_CREDENTIALS"
+        echo ""
+        echo "Contains client_email?"
+        grep -q "kals-gcp-sa" "$GOOGLE_APPLICATION_CREDENTIALS" && echo "YES" || echo "NO"
       else
-        echo "Credentials file NOT found at: $GOOGLE_APPLICATION_CREDENTIALS"
-      fi
-      echo ""
-      echo "=== TEST GCLOUD AUTH ==="
-      if command -v gcloud >/dev/null 2>&1; then
-        gcloud auth list --format="value(account)" 2>/dev/null || echo "gcloud auth failed"
-        gcloud config get-value project 2>/dev/null || echo "No project configured"
-      else
-        echo "gcloud CLI not available"
+        echo "ERROR: Credentials file NOT found at: $GOOGLE_APPLICATION_CREDENTIALS"
       fi
     EOF
   }
 }
 
-# Test if Terraform can authenticate with a simple data source
-data "google_client_config" "current" {}
-
-data "google_project" "current" {
-  project_id = var.gcp_project_id
-}
+# Simple test - remove the data source that's failing
+# data "google_project" "current" {
+#   project_id = var.gcp_project_id
+# }
 
 # GCP Spacelift Worker Pool Module (sourced from GitHub)
 module "spacelift_worker_pool" {
@@ -61,7 +60,7 @@ module "spacelift_worker_pool" {
   
   # Configuration - this should contain the SPACELIFT_TOKEN and SPACELIFT_POOL_PRIVATE_KEY
   # The file contains your worker pool token from Spacelift UI
-  configuration = file("/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K.config")
+  configuration = file("/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K")
   
   # GCP settings - cost-optimized
   region  = var.gcp_region
