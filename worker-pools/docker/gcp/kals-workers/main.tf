@@ -61,7 +61,7 @@ module "spacelift_worker_pool" {
   
   # Configuration - this should contain the SPACELIFT_TOKEN and SPACELIFT_POOL_PRIVATE_KEY
   # The file contains your worker pool token from Spacelift UI
-  configuration = file("/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K")
+  configuration = file("/mnt/workspace/worker-pool-01K34CN577PKJ3KVR1TMGSX03K.json")
   
   # GCP settings - cost-optimized
   region  = var.gcp_region
