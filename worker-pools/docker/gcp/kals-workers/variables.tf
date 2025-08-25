@@ -13,6 +13,7 @@ variable "gcp_region" {
 variable "service_account_email" {
   description = "Service account email for the worker instances"
   type        = string
+  default     = "kals-gcp-sa@swift-climate-439711-s0.iam.gserviceaccount.com"
 }
 
 variable "spacelift_token" {
