@@ -15,20 +15,17 @@ provider "google" {
   region  = var.gcp_region
 }
 
-resource "null_resource" "debug_sa" {
+resource "null_resource" "debug_env" {
   provisioner "local-exec" {
     command = <<-EOF
-      echo "=== Current Authentication ==="
-      gcloud auth list
-      echo "=== Token Info ==="
-      gcloud auth print-access-token | head -c 50
-      echo "..."
-      echo "=== Service Account Email Being Used ==="
-      gcloud config get-value account
-      echo "=== Project ==="
-      gcloud config get-value project
-      echo "=== Test Service Account Access ==="
-      gcloud iam service-accounts describe kals-gcp-sa@swift-climate-439711-s0.iam.gserviceaccount.com
+      echo "=== Environment Variables ==="
+      echo "GOOGLE_APPLICATION_CREDENTIALS: $GOOGLE_APPLICATION_CREDENTIALS"
+      echo "=== Checking if credentials file exists ==="
+      ls -la $GOOGLE_APPLICATION_CREDENTIALS || echo "File not found"
+      echo "=== Credentials file contents ==="
+      cat $GOOGLE_APPLICATION_CREDENTIALS || echo "Cannot read file"
+      echo "=== Module service account variable ==="
+      echo "Service Account Email being passed to module: ${var.service_account_email}"
     EOF
   }
 }
