@@ -85,7 +85,7 @@ stacks:
   schedules:
     drift:
       cron: 
-        - "0 0/6 * * *" # Every 6 hours
+        - "*/30 * * * *" # Every 30 mins
       reconcile: true
       ignore_state: true # If true, the schedule will run even if the stack is in a failed state
       timezone: America/Toronto
@@ -94,13 +94,8 @@ stacks:
     tasks:
     - command: tofu destroy -auto-approve
       cron:
-        - "55 * * * *"  # Run at 55 minutes past every hour (adjust as needed)
+        - "0 */3 * * *"  # Every 3 hours
       timezone: America/Toronto
-
-    # Auto-delete schedule for webinar
-    delete:
-      timestamp_unix: 1754539200  # Demo deletion on Wed Aug 6
-      delete_resources: true
 
   #Triggers the run and auto-confirms so it's not hanging on "Pending Confirmation"
   options:
@@ -197,11 +192,6 @@ stacks:
         cron:
           - "0 0/6 * * *"  # Every 6 hours
         timezone: America/Toronto
-    
-    #Auto delete for webinar
-    delete:
-      timestamp_unix: 1754538900  # 5 minutes before OpenTofu deletion
-      delete_resources: true
   
   #Triggers the run and auto-confirms so it's not hanging on "Pending Confirmation"
   options:
