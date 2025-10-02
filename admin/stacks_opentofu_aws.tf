@@ -20,7 +20,7 @@ module "stack_opentofu_aws_s3" {
   repository_branch = "main"
 }
 
-module "stack_aws_vpc" {
+/* module "stack_aws_vpc" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   description     = "stack that creates a VPC and handles networking"
@@ -42,12 +42,12 @@ module "stack_aws_vpc" {
       child_stack_id = module.stack_aws_ec2.id
 
       references = {
-        SUBNET = {
+        EC2_SUBNET = {
           output_name    = "subnet_id"
           input_name     = "TF_VAR_subnet_id"
           trigger_always = true
         }
-        SECURITY_GROUP = {
+        EC2_SECURITY_GROUP = {
           output_name    = "dev_sg"
           input_name     = "TF_VAR_aws_security_group_id"
           trigger_always = true
@@ -60,7 +60,7 @@ module "stack_aws_vpc" {
     schedule  = ["0 0 * * *"]
     reconcile = true
   }
-}
+} */
 
 module "stack_aws_ec2" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
