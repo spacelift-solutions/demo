@@ -1,0 +1,130 @@
+# Grafana Helm values for AWS EKS
+serviceAccount:
+  create: false
+  name: grafana
+
+# Admin credentials
+adminUser: admin
+adminPassword: changeme123!  # Should be overridden via secrets
+
+# Persistent storage
+persistence:
+  enabled: true
+  existingClaim: grafana-storage
+  size: 10Gi
+  storageClassName: gp2
+
+# Resource requests and limits
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
+# Datasources - use existing ConfigMap
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server.prometheus.svc.cluster.local:80
+        access: proxy
+        isDefault: true
+        editable: true
+        jsonData:
+          timeInterval: 15s
+
+# Dashboard providers
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+
+# Pre-configured dashboards
+dashboards:
+  default:
+    opencost-dashboard:
+      url: https://raw.githubusercontent.com/opencost/opencost/main/grafana/opencost-dashboard.json
+      datasource: Prometheus
+
+    kubernetes-cluster:
+      gnetId: 7249
+      revision: 1
+      datasource: Prometheus
+
+    kubernetes-pods:
+      gnetId: 6417
+      revision: 1
+      datasource: Prometheus
+
+# Grafana.ini configuration
+grafana.ini:
+  server:
+    domain: localhost
+    root_url: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
+    serve_from_sub_path: true
+
+  security:
+    admin_user: admin
+    admin_password: changeme123!
+
+  users:
+    allow_sign_up: false
+
+  auth.anonymous:
+    enabled: false
+
+  log:
+    mode: console
+    level: info
+
+# Plugins to install
+plugins:
+  - grafana-piechart-panel
+  - grafana-clock-panel
+  - grafana-simple-json-datasource
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+# Ingress (disabled by default)
+ingress:
+  enabled: false
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 472
+  fsGroup: 472
+
+# Node selector
+# nodeSelector (commented out - uncomment if you have labeled nodes)
+# nodeSelector:
+#   workload: monitoring
+
+# Tolerations (commented out - uncomment if you have tainted nodes)
+# tolerations:
+#   - key: "monitoring"
+#     operator: "Equal"
+#     value: "true"
+#     effect: "NoSchedule"
+
+# Environment variables
+env:
+  GF_INSTALL_PLUGINS: ""
+  GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+  GF_PATHS_DATA: /var/lib/grafana

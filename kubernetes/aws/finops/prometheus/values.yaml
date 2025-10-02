@@ -1,0 +1,98 @@
+# Prometheus Helm values for AWS EKS
+server:
+  # Use existing service account with IRSA
+  serviceAccount:
+    create: false
+    name: prometheus
+
+  # Persistent storage
+  persistentVolume:
+    enabled: true
+    existingClaim: prometheus-storage
+    size: 50Gi
+    storageClass: gp2
+
+  # Resource requests and limits
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+
+  # Retention period
+  retention: 30d
+
+  # Global scrape configs
+  global:
+    scrape_interval: 15s
+    evaluation_interval: 15s
+
+  # Enable admin API for management
+  enableAdminApi: true
+
+  # Service type
+  service:
+    type: ClusterIP
+    port: 9090
+
+  # Ingress (disabled by default)
+  ingress:
+    enabled: false
+
+# Alert Manager (optional)
+alertmanager:
+  enabled: false
+
+# Node Exporter
+nodeExporter:
+  enabled: true
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 50Mi
+    limits:
+      cpu: 200m
+      memory: 100Mi
+
+# Pushgateway (disabled)
+pushgateway:
+  enabled: false
+
+# Kube State Metrics
+kubeStateMetrics:
+  enabled: true
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+  fsGroup: 65534
+
+# Node selector (commented out - uncomment if you have labeled nodes)
+# nodeSelector:
+#   workload: monitoring
+
+# Tolerations (commented out - uncomment if you have tainted nodes)
+# tolerations:
+#   - key: "monitoring"
+#     operator: "Equal"
+#     value: "true"
+#     effect: "NoSchedule"
+
+# Extra scrape configs for OpenCost
+extraScrapeConfigs: |
+  - job_name: 'opencost'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['opencost.opencost.svc.cluster.local:9003']
