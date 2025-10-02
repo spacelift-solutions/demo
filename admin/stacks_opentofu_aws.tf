@@ -42,12 +42,12 @@ module "stack_aws_vpc" {
       child_stack_id = module.stack_aws_ec2.id
 
       references = {
-        SUBNET = {
+        EC2_SUBNET = {
           output_name    = "subnet_id"
           input_name     = "TF_VAR_subnet_id"
           trigger_always = true
         }
-        SECURITY_GROUP = {
+        EC2_SECURITY_GROUP = {
           output_name    = "dev_sg"
           input_name     = "TF_VAR_aws_security_group_id"
           trigger_always = true
