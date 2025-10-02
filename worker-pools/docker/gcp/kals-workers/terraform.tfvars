@@ -7,4 +7,4 @@ gcp_project_id = "534988924197"
 gcp_region     = "us-central1"
 
 # Network Configuration
-network_name = "default"  # Use default VPC or specify custom network
+network_name = "default" # Use default VPC or specify custom network
