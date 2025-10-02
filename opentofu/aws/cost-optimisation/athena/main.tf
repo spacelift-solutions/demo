@@ -143,10 +143,17 @@ resource "aws_glue_crawler" "cur_crawler" {
     update_behavior = "UPDATE_IN_DATABASE"
   }
 
+  recrawl_policy {
+    recrawl_behavior = "CRAWL_EVERYTHING"
+  }
+
   configuration = jsonencode({
     Version = 1.0
     Grouping = {
       TableGroupingPolicy = "CombineCompatibleSchemas"
+    }
+    CrawlerOutput = {
+      Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
     }
   })
 

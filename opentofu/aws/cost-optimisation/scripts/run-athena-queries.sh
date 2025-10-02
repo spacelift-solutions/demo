@@ -95,13 +95,25 @@ execute_query() {
 # Step 1: Run Glue Crawler to update schema
 echo ""
 echo "[1/4] Running Glue Crawler to update CUR data schema..."
-aws glue start-crawler \
+
+# Start the crawler
+start_result=$(aws glue start-crawler \
     --region "${AWS_REGION}" \
-    --name "${GLUE_CRAWLER}" 2>/dev/null || echo "  Crawler already running or recently completed"
+    --name "${GLUE_CRAWLER}" 2>&1) || {
+
+    if echo "${start_result}" | grep -q "CrawlerRunningException"; then
+        echo "  ⓘ Crawler already running"
+    elif echo "${start_result}" | grep -q "EntityNotFoundException"; then
+        echo "  ✗ Crawler not found: ${GLUE_CRAWLER}"
+        exit 1
+    else
+        echo "  ⓘ Crawler start: ${start_result}"
+    fi
+}
 
 echo "  Waiting for crawler to complete (this may take a few minutes)..."
 crawler_state="RUNNING"
-max_wait=300
+max_wait=600
 elapsed=0
 
 while [ "${crawler_state}" == "RUNNING" ] && [ ${elapsed} -lt ${max_wait} ]; do
@@ -117,10 +129,29 @@ while [ "${crawler_state}" == "RUNNING" ] && [ ${elapsed} -lt ${max_wait} ]; do
     echo "  Crawler state: ${crawler_state} (${elapsed}s elapsed)"
 done
 
+# Check last crawl status
+last_crawl_status=$(aws glue get-crawler \
+    --region "${AWS_REGION}" \
+    --name "${GLUE_CRAWLER}" \
+    --output text \
+    --query 'Crawler.LastCrawl.Status' 2>/dev/null || echo "UNKNOWN")
+
 if [ "${crawler_state}" == "READY" ]; then
-    echo "  ✓ Crawler completed successfully"
+    if [ "${last_crawl_status}" == "SUCCEEDED" ]; then
+        echo "  ✓ Crawler completed successfully"
+    elif [ "${last_crawl_status}" == "FAILED" ]; then
+        echo "  ✗ Crawler failed"
+        last_crawl_message=$(aws glue get-crawler \
+            --region "${AWS_REGION}" \
+            --name "${GLUE_CRAWLER}" \
+            --output text \
+            --query 'Crawler.LastCrawl.ErrorMessage' 2>/dev/null || echo "")
+        echo "  Error: ${last_crawl_message}"
+    else
+        echo "  ⓘ Crawler status: ${last_crawl_status}"
+    fi
 else
-    echo "  ⚠ Crawler state: ${crawler_state} (continuing anyway)"
+    echo "  ⚠ Crawler state: ${crawler_state} after ${elapsed}s (continuing anyway)"
 fi
 
 # Discover the actual table name created by Glue Crawler
@@ -134,8 +165,15 @@ TABLE_NAME=$(aws glue get-tables \
 
 if [ -z "${TABLE_NAME}" ] || [ "${TABLE_NAME}" == "None" ]; then
     echo "  ✗ No CUR table found in database ${DATABASE}"
-    echo "  Make sure CUR data has been generated and Glue Crawler has run successfully"
-    exit 1
+    echo ""
+    echo "  This is expected if this is the first run. AWS CUR data takes 24-48 hours to generate."
+    echo "  Once CUR data is available, the Glue Crawler will create the table automatically."
+    echo ""
+    echo "  To manually trigger the crawler later:"
+    echo "    aws glue start-crawler --name ${GLUE_CRAWLER} --region ${AWS_REGION}"
+    echo ""
+    echo "  Skipping Athena queries for now."
+    exit 0
 fi
 
 echo "  Found table: ${TABLE_NAME}"
