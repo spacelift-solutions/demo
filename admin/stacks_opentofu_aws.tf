@@ -378,7 +378,7 @@ module "stack_aws_finops_eks_prerequisites" {
 
   environment_variables = {
     TF_VAR_aws_region = {
-      value = "us-east-1"
+      value = "eu-west-1"
     }
   }
 
