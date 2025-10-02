@@ -1,0 +1,77 @@
+# OpenCost Helm values for AWS EKS
+opencost:
+  exporter:
+    # Use IRSA for AWS credentials
+    defaultClusterId: eks-cluster
+
+    aws:
+      # IRSA is configured via service account annotation
+      access_key_id: ""
+      secret_access_key: ""
+
+    # Enable cloud cost integration
+    cloudProviderApiKey: ""
+
+    # Resource requests and limits
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+  # Service account with IRSA annotation
+  serviceAccount:
+    create: false  # Created by Terraform
+    name: opencost
+
+  # Prometheus integration
+  prometheus:
+    internal:
+      enabled: false
+    external:
+      enabled: true
+      url: http://prometheus-server.prometheus.svc.cluster.local:80
+
+  ui:
+    enabled: true
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+  # Enable metrics export
+  metrics:
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        prometheus: kube-prometheus
+
+# Annotations for Prometheus scraping
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "9003"
+  prometheus.io/path: "/metrics"
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+# Node selector for cost optimization
+# nodeSelector (commented out - uncomment if you have labeled nodes)
+# nodeSelector:
+#   workload: monitoring
+
+# Tolerations (commented out - uncomment if you have tainted nodes)
+# tolerations:
+#   - key: "monitoring"
+#     operator: "Equal"
+#     value: "true"
+#     effect: "NoSchedule"

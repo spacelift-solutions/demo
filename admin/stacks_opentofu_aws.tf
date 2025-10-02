@@ -1,3 +1,8 @@
+# Data source to reference EKS cluster stack from Terraform space
+data "spacelift_stack" "eks_cluster" {
+  stack_id = "eks-cluster"
+}
+
 module "stack_opentofu_aws_s3" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
@@ -144,7 +149,7 @@ module "stack_aws_eks_worker_pool" {
       }
     }
     EKS = {
-      parent_stack_id = module.stack_aws_eks_kubernetes_example.id
+      parent_stack_id = data.spacelift_stack.eks_cluster.id
       references = {
         CLUSTER_NAME = {
           output_name = "cluster_name"
@@ -227,6 +232,306 @@ module "stack_aws_winrm" {
     TF_VAR_instance_password = {
       sensitive = true
       value     = var.windows_instance_password
+    }
+  }
+}
+
+#---# AWS FINOPS IMPLEMENTATION #---# 
+// Implemented by Marin Govedarski // 
+
+# FinOps Stack 1: S3 and CUR Setup
+module "stack_aws_finops_s3_cur" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "S3 bucket and Cost & Usage Report configuration for FinOps"
+  name            = "finops-s3-cur"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "finops", "s3", "cur"]
+  project_root      = "opentofu/aws/cost-optimisation/s3-cur"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
+
+  environment_variables = {
+    TF_VAR_aws_region = {
+      value = "us-east-1"
+    }
+  }
+
+  dependencies = {
+    ATHENA = {
+      child_stack_id = module.stack_aws_finops_athena.id
+
+      references = {
+        BUCKET_NAME = {
+          output_name    = "cur_bucket_name"
+          input_name     = "TF_VAR_cur_bucket_name"
+          trigger_always = true
+        }
+        S3_PREFIX = {
+          output_name    = "cur_s3_prefix"
+          input_name     = "TF_VAR_cur_s3_prefix"
+          trigger_always = true
+        }
+        REPORT_NAME = {
+          output_name    = "cur_report_name"
+          input_name     = "TF_VAR_cur_report_name"
+          trigger_always = true
+        }
+      }
+    }
+  }
+}
+
+# FinOps Stack 2: Athena Workgroup and Glue Database
+module "stack_aws_finops_athena" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "Athena workgroup and Glue database for CUR data analysis"
+  name            = "finops-athena"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "finops", "athena", "glue"]
+  project_root      = "opentofu/aws/cost-optimisation/athena"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
+
+  environment_variables = {
+    TF_VAR_aws_region = {
+      value = "us-east-1"
+    }
+  }
+
+  dependencies = {
+    EKS_PREREQ = {
+      child_stack_id = module.stack_aws_finops_eks_prerequisites.id
+
+      references = {
+        WORKGROUP_NAME = {
+          output_name    = "athena_workgroup_name"
+          input_name     = "TF_VAR_athena_workgroup_name"
+          trigger_always = false
+        }
+        DATABASE_NAME = {
+          output_name    = "glue_database_name"
+          input_name     = "TF_VAR_glue_database_name"
+          trigger_always = false
+        }
+      }
+    }
+    SQL_QUERIES = {
+      child_stack_id = module.stack_aws_finops_sql_queries.id
+
+      references = {
+        WORKGROUP_NAME = {
+          output_name    = "athena_workgroup_name"
+          input_name     = "TF_VAR_athena_workgroup_name"
+          trigger_always = false
+        }
+        DATABASE_NAME = {
+          output_name    = "glue_database_name"
+          input_name     = "TF_VAR_glue_database_name"
+          trigger_always = false
+        }
+        RESULTS_BUCKET = {
+          output_name    = "athena_results_bucket"
+          input_name     = "TF_VAR_athena_results_bucket"
+          trigger_always = false
+        }
+        CRAWLER_NAME = {
+          output_name    = "glue_crawler_name"
+          input_name     = "TF_VAR_glue_crawler_name"
+          trigger_always = false
+        }
+      }
+    }
+  }
+}
+
+# FinOps Stack 3: EKS Prerequisites (IRSA roles)
+module "stack_aws_finops_eks_prerequisites" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "IAM roles for IRSA (OpenCost, Prometheus, Grafana)"
+  name            = "finops-eks-prerequisites"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "finops", "eks", "iam"]
+  project_root      = "opentofu/aws/cost-optimisation/eks-prerequisites"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
+
+  environment_variables = {
+    TF_VAR_aws_region = {
+      value = "us-east-1"
+    }
+  }
+
+  dependencies = {
+    EKS = {
+      parent_stack_id = data.spacelift_stack.eks_cluster.id
+
+      references = {
+        CLUSTER_NAME = {
+          output_name    = "cluster_name"
+          input_name     = "TF_VAR_cluster_name"
+          trigger_always = true
+        }
+      }
+    }
+    MONITORING_INFRA = {
+      child_stack_id = module.stack_aws_finops_monitoring_infra.id
+
+      references = {
+        OPENCOST_ROLE = {
+          output_name    = "opencost_role_arn"
+          input_name     = "TF_VAR_opencost_role_arn"
+          trigger_always = true
+        }
+        PROMETHEUS_ROLE = {
+          output_name    = "prometheus_role_arn"
+          input_name     = "TF_VAR_prometheus_role_arn"
+          trigger_always = true
+        }
+        GRAFANA_ROLE = {
+          output_name    = "grafana_role_arn"
+          input_name     = "TF_VAR_grafana_role_arn"
+          trigger_always = true
+        }
+      }
+    }
+  }
+}
+
+# FinOps Stack 4: Monitoring Infrastructure
+module "stack_aws_finops_monitoring_infra" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "Kubernetes namespaces, service accounts, and supporting resources for FinOps monitoring"
+  name            = "finops-monitoring-infra"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "finops", "kubernetes", "monitoring", "finops-scripts"]
+  project_root      = "opentofu/aws/cost-optimisation/monitoring-infra"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
+
+  environment_variables = {
+    TF_VAR_aws_region = {
+      value = "us-east-1"
+    }
+  }
+
+  dependencies = {
+    EKS = {
+      parent_stack_id = data.spacelift_stack.eks_cluster.id
+
+      references = {
+        CLUSTER_NAME = {
+          output_name    = "cluster_name"
+          input_name     = "TF_VAR_cluster_name"
+          trigger_always = true
+        }
+        CLUSTER_ENDPOINT = {
+          output_name    = "cluster_endpoint"
+          input_name     = "TF_VAR_cluster_endpoint"
+          trigger_always = true
+        }
+        CLUSTER_CA = {
+          output_name    = "cluster_certificate_authority_data"
+          input_name     = "TF_VAR_cluster_ca_certificate"
+          trigger_always = true
+        }
+      }
+    }
+  }
+
+  hooks = {
+    before = {
+      init = [
+        "curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash",
+        "curl -LO https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl",
+        "chmod +x kubectl && mv kubectl /usr/local/bin/"
+      ]
+    }
+    after = {
+      apply = [
+        "chmod +x /mnt/workspace/deploy-helm.sh",
+        "export TF_VAR_cluster_name=$TF_VAR_cluster_name",
+        "export TF_VAR_aws_region=$TF_VAR_aws_region",
+        "export TF_OUTPUT_opencost_namespace=$(terraform output -raw opencost_namespace 2>/dev/null || echo 'opencost')",
+        "export TF_OUTPUT_prometheus_namespace=$(terraform output -raw prometheus_namespace 2>/dev/null || echo 'prometheus')",
+        "export TF_OUTPUT_grafana_namespace=$(terraform output -raw grafana_namespace 2>/dev/null || echo 'grafana')",
+        "/mnt/workspace/deploy-helm.sh"
+      ]
+    }
+  }
+}
+
+# FinOps Stack 5: SQL Query Execution (Scheduled)
+module "stack_aws_finops_sql_queries" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "Scheduled execution of Athena cost analysis queries"
+  name            = "finops-sql-queries"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "finops", "athena", "scheduled", "finops-scripts"]
+  project_root      = "opentofu/aws/cost-optimisation/scripts"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
+  auto_deploy       = false # Manual or scheduled execution only
+
+  environment_variables = {
+    TF_VAR_aws_region = {
+      value = "us-east-1"
+    }
+  }
+
+  # Use drift detection schedule to run queries weekly
+  drift_detection = {
+    enabled   = true
+    schedule  = ["0 6 * * 1"] # Every Monday at 6 AM UTC (cron format)
+    reconcile = false         # Don't reconcile, just run the plan hook
+    timezone  = "UTC"
+  }
+
+  hooks = {
+    after = {
+      plan = [
+        "chmod +x /mnt/workspace/run-athena-queries.sh",
+        "export TF_VAR_aws_region=$TF_VAR_aws_region",
+        "export TF_OUTPUT_athena_workgroup_name=$TF_VAR_athena_workgroup_name",
+        "export TF_OUTPUT_glue_database_name=$TF_VAR_glue_database_name",
+        "export TF_OUTPUT_athena_results_bucket=$TF_VAR_athena_results_bucket",
+        "export TF_OUTPUT_glue_crawler_name=$TF_VAR_glue_crawler_name",
+        "/mnt/workspace/run-athena-queries.sh"
+      ]
     }
   }
 }
