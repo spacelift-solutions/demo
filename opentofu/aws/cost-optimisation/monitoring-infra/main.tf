@@ -170,3 +170,29 @@ resource "kubernetes_persistent_volume_claim" "grafana" {
     storage_class_name = "gp2"
   }
 }
+
+# Generate random password for Grafana admin
+resource "random_password" "grafana_admin" {
+  length  = 24
+  special = true
+}
+
+# Kubernetes secret for Grafana admin credentials
+resource "kubernetes_secret" "grafana_admin" {
+  metadata {
+    name      = "grafana-admin-credentials"
+    namespace = kubernetes_namespace.grafana.metadata[0].name
+
+    labels = {
+      app       = "grafana"
+      managedBy = "spacelift"
+    }
+  }
+
+  data = {
+    admin-user     = "admin"
+    admin-password = random_password.grafana_admin.result
+  }
+
+  type = "Opaque"
+}

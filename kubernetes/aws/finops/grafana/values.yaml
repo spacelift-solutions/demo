@@ -3,9 +3,11 @@ serviceAccount:
   create: false
   name: grafana
 
-# Admin credentials
-adminUser: admin
-adminPassword: changeme123!  # Should be overridden via secrets
+# Admin credentials from Kubernetes secret (SOPS-encrypted)
+admin:
+  existingSecret: grafana-admin-credentials
+  userKey: admin-user
+  passwordKey: admin-password
 
 # Persistent storage
 persistence:
@@ -76,8 +78,7 @@ grafana.ini:
     serve_from_sub_path: true
 
   security:
-    admin_user: admin
-    admin_password: changeme123!
+    # Admin credentials loaded from Kubernetes secret
 
   users:
     allow_sign_up: false

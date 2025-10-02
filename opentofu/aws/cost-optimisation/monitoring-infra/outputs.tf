@@ -27,3 +27,9 @@ output "grafana_service_account" {
   description = "Service account name for Grafana"
   value       = kubernetes_service_account.grafana.metadata[0].name
 }
+
+output "grafana_admin_password" {
+  description = "Grafana admin password (randomly generated)"
+  value       = random_password.grafana_admin.result
+  sensitive   = true
+}
