@@ -30,11 +30,6 @@ module "aws_ec2_asg_worker_pool" {
     max_terminate = 5
     architecture  = var.ami_architecture
     timeout       = 60
-
-    s3_package = {
-      bucket = "s3-autoscaler"
-      key    = "bootstrap_arm64.zip"
-    }
   }
 
   instance_refresh = {
