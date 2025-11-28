@@ -33,7 +33,7 @@ module "aws_ec2_asg_worker_pool" {
 
     s3_package = {
       bucket = "s3-autoscaler"
-      key    = "bootstrap.zip"
+      key    = "bootstrap_arm64.zip"
     }
   }
 
