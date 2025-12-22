@@ -9,7 +9,7 @@ resource "spacelift_blueprint" "s3_blueprint" {
 resource "spacelift_blueprint" "minesible" {
   name        = "Minesible Blueprint"
   description = "DIY Minecraft Servers!"
-  space       = "opentofu-01JB2XV5E3ZR3NDTKCN80KS6RH"
+  space       = "spacelift_space.aws_opentofu.id"
   state       = "PUBLISHED"
   template    = file("blueprints/minesible.yaml")
 }
