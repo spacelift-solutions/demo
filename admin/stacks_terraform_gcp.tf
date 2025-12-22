@@ -11,8 +11,7 @@ GKE: Google Kubernetes Engine
 
 // IAM
 module "stack_gcp_iam" {
-  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-
+  source          = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
   description     = "Creates all the relevant roles, service accounts and permissions for the gcp environment"
   name            = "gcp-iam"
   repository_name = "demo"
@@ -20,7 +19,13 @@ module "stack_gcp_iam" {
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
 
-  administrative    = false
+  roles = {
+    ADMIN_ROLE = {
+      role_id  = spacelift_role.admin.id
+      space_id = spacelift_space.gcp_terraform.id
+    }
+  }
+
   auto_deploy       = true
   labels            = ["gcp", "iam"]
   project_root      = "terraform/gcp/gcp-environment/modules/iam-module"
@@ -112,7 +117,7 @@ module "stack_gcp_networking" {
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
 
-  administrative    = false
+  # administrative    = false
   auto_deploy       = true
   labels            = ["gcp", "network"]
   project_root      = "terraform/gcp/gcp-environment/modules/network-module"
@@ -176,7 +181,7 @@ module "stack_gcp_gke" {
   workflow_tool   = "TERRAFORM_FOSS"
 
   # Optional inputs
-  administrative    = false
+  # administrative    = false
   auto_deploy       = true
   labels            = ["gcp", "gke"]
   project_root      = "terraform/gcp/gcp-environment/modules/gke-module"
@@ -239,7 +244,7 @@ module "stack_gcp_db" {
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
 
-  administrative    = false
+  # administrative    = false
   auto_deploy       = true
   labels            = ["gcp", "db"]
   project_root      = "terraform/gcp/gcp-environment/modules/db-module"
@@ -341,7 +346,7 @@ module "stack_gcp_ce_win" {
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
   # optional:  worker_pool_id  = spacelift_worker_pool.gcp_ce_worker.id
-  administrative    = false
+  # administrative    = false
   auto_deploy       = true
   labels            = ["gcp", "compute-engine", "win", "demo"]
   project_root      = "terraform/gcp/compute-engines"
@@ -386,7 +391,7 @@ module "stack_gcp_ce_worker_pool" {
   workflow_tool   = "TERRAFORM_FOSS"
   #  runner_image    = "gcr.io/swift-climate-439711-s0/demo-winrm-image"
 
-  administrative    = false
+  # administrative    = false
   auto_deploy       = false
   labels            = ["gcp", "worker-pool", "win"]
   project_root      = "worker-pools/docker/gcp/ce_workers"
@@ -438,7 +443,7 @@ module "stack_gcp_monitoring" {
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
 
-  administrative    = false
+  # administrative    = false
   auto_deploy       = true
   labels            = ["gcp", "monitoring", "grafana", "prometheus"]
   project_root      = "terraform/gcp/gcp-environment/modules/gcp-monitoring-module"
@@ -503,7 +508,7 @@ module "stack_gcp_gke_control" {
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
 
-  administrative    = false
+  # administrative    = false
   auto_deploy       = false # Important: Manual execution only
   labels            = ["gcp", "gke", "control", "manual"]
   project_root      = "terraform/gcp/gcp-environment/modules/gke-cluster-control"

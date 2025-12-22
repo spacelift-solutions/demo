@@ -25,7 +25,13 @@ module "stack_ansible_ce_gcp" {
   ansible_playbook = "playbook.yml"
   #  worker_pool_id    = spacelift_worker_pool.gcp_ce_worker.id
   #  runner_image      = "gcr.io/swift-climate-439711-s0/ansible-winrm-image"
-  administrative    = false
+  roles = {
+    ADMIN_ROLE = {
+      role_id  = spacelift_role.admin.id
+      space_id = spacelift_space.gcp_ansible.id
+    }
+  }
+
   auto_deploy       = true
   labels            = ["gcp", "ansible", "demo", "win"]
   project_root      = "ansible/gcp"

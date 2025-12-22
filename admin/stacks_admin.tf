@@ -9,7 +9,13 @@ module "stack_example_admin_vars" {
   labels            = ["example"]
   project_root      = "env_vars"
   repository_branch = "main"
-  administrative    = true
+
+  roles = {
+    ADMIN_ROLE = {
+      role_id  = spacelift_role.admin.id
+      space_id = spacelift_space.examples.id
+    }
+  }
 
   additional_project_globs = ["env_vars/*.yaml", "env_vars/*.yml"]
 
