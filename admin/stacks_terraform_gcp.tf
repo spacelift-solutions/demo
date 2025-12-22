@@ -11,14 +11,13 @@ GKE: Google Kubernetes Engine
 
 // IAM
 module "stack_gcp_iam" {
-  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
-
+  source          = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
   description     = "Creates all the relevant roles, service accounts and permissions for the gcp environment"
   name            = "gcp-iam"
   repository_name = "demo"
-  # space_id        = spacelift_space.gcp_terraform.id
-  manage_state  = true
-  workflow_tool = "TERRAFORM_FOSS"
+  space_id        = spacelift_space.gcp_terraform.id
+  manage_state    = true
+  workflow_tool   = "TERRAFORM_FOSS"
 
   roles = {
     ADMIN_ROLE = {
