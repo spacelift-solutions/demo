@@ -2,7 +2,7 @@ terraform {
   required_providers {
     spacelift = {
       source  = "spacelift-io/spacelift"
-      version = "1.17.0"
+      version = "1.42.0"
     }
     google = {
       source  = "opentofu/google"
