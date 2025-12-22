@@ -36,7 +36,7 @@ resource "spacelift_policy" "drift_notification_flows" {
 resource "spacelift_policy" "Github_PR_Comment_Deploy" {
   name        = "Kal | Github PR Comment Deploy"
   body        = file("./policies/push/Github_PR_Comment_Deploy.rego")
-  type        = "PUSH"
+  type        = "GIT_PUSH"
   description = "This policy leverages the power of pull request comments to drive actions, establishing a direct line between commentary and deployment."
   space_id    = "spacelift_space.aws_opentofu.id"
 }
