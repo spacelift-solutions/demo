@@ -11,10 +11,10 @@ resource "spacelift_module" "stacks_module" {
   }
 
 
-  branch      = "main"
-  description = "module used to standardize creation of stacks"
-  repository  = "module-stacks"
-  # space_id             = "root"
+  branch               = "main"
+  description          = "module used to standardize creation of stacks"
+  repository           = "module-stacks"
+  space_id             = "root"
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true
@@ -57,10 +57,10 @@ resource "spacelift_module" "sops_plugin_module" {
   }
 
 
-  branch      = "main"
-  description = "Plugin that manages sops encrypted files."
-  repository  = "plugin-sops"
-  # space_id             = "root"
+  branch               = "main"
+  description          = "Plugin that manages sops encrypted files."
+  repository           = "plugin-sops"
+  space_id             = "root"
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true
@@ -102,10 +102,10 @@ resource "spacelift_module" "signed_runs_plugin_module" {
     }
   }
 
-  branch      = "main"
-  description = "Spacelift plugin that signs runs with Spacelift inside GitHub"
-  repository  = "plugin-signed-runs"
-  # space_id             = "root"
+  branch               = "main"
+  description          = "Spacelift plugin that signs runs with Spacelift inside GitHub"
+  repository           = "plugin-signed-runs"
+  space_id             = "root"
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true
@@ -124,11 +124,11 @@ resource "spacelift_module" "tofusible_host_module" {
     }
   }
 
-  branch       = "main"
-  description  = "Spacelift module for creating hosts for Tofusible"
-  repository   = "tofusible"
-  project_root = "modules/tofusible_host"
-  # space_id             = "root"
+  branch               = "main"
+  description          = "Spacelift module for creating hosts for Tofusible"
+  repository           = "tofusible"
+  project_root         = "modules/tofusible_host"
+  space_id             = "root"
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true

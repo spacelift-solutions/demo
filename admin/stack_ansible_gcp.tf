@@ -16,10 +16,10 @@ locals {
 module "stack_ansible_ce_gcp" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
-  description     = "Creates an ansible stack that configures an existing windows host"
-  name            = "ansible-ce-gcp"
-  repository_name = "demo"
-  # space_id         = spacelift_space.gcp_ansible.id
+  description      = "Creates an ansible stack that configures an existing windows host"
+  name             = "ansible-ce-gcp"
+  repository_name  = "demo"
+  space_id         = spacelift_space.gcp_ansible.id
   manage_state     = true
   workflow_tool    = "ANSIBLE"
   ansible_playbook = "playbook.yml"
