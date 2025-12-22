@@ -24,3 +24,27 @@ resource "spacelift_policy" "require_approval_from_fork" {
   space_id    = "root"
   labels      = ["autpattach:module"]
 }
+
+resource "spacelift_policy" "drift_notification_flows" {
+  name        = "Kal | AWS Drift -> Flows for manual reconcilation"
+  body        = file("./policies/notification/drift_notification_flows.rego")
+  type        = "NOTIFICATION"
+  description = "This policy will send a notification to Flows (or Discord) on any drift that's detected!"
+  space_id    = "spacelift_space.aws_opentofu.id"
+}
+
+resource "spacelift_policy" "Github_PR_Comment_Deploy" {
+  name        = "Kal | Github PR Comment Deploy"
+  body        = file("./policies/approval/Github_PR_Comment_Deploy.rego")
+  type        = "PUSH"
+  description = "This policy leverages the power of pull request comments to drive actions, establishing a direct line between commentary and deployment."
+  space_id    = "spacelift_space.aws_opentofu.id"
+}
+
+resource "spacelift_policy" "Github_PR_Summary_Comment" {
+  name        = "Kal | Notification as a comment on your PR which summarises your logs"
+  body        = file("./policies/approval/Github_PR_Summary_Comment.rego")
+  type        = "NOTIFICATION"
+  description = "This policy will add a comment to a pull request where it will list all the resources that were added, changed, deleted, moved, imported or forgotten."
+  space_id    = "spacelift_space.aws_opentofu.id"
+}
