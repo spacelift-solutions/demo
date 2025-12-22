@@ -1,16 +1,7 @@
 resource "spacelift_module" "stacks_module" {
-  name               = "stacks-module"
-  terraform_provider = "spacelift"
-  # administrative       = true
-
-  roles = {
-    ADMIN_ROLE = {
-      role_id  = spacelift_role.admin.id
-      space_id = "root"
-    }
-  }
-
-
+  name                 = "stacks-module"
+  terraform_provider   = "spacelift"
+  administrative       = true
   branch               = "main"
   description          = "module used to standardize creation of stacks"
   repository           = "module-stacks"
@@ -22,18 +13,9 @@ resource "spacelift_module" "stacks_module" {
 }
 
 resource "spacelift_module" "context_trigger_plugin_module" {
-  name               = "plugin-context-trigger"
-  terraform_provider = "spacelift"
-  # administrative       = true
-
-  roles = {
-    ADMIN_ROLE = {
-      role_id  = spacelift_role.admin.id
-      space_id = "root"
-    }
-  }
-
-
+  name                 = "plugin-context-trigger"
+  terraform_provider   = "spacelift"
+  administrative       = true
   branch               = "main"
   description          = "Plugin that triggers stacks on context changes."
   repository           = "plugin-context-trigger"
@@ -45,18 +27,9 @@ resource "spacelift_module" "context_trigger_plugin_module" {
 }
 
 resource "spacelift_module" "sops_plugin_module" {
-  name               = "plugin-sops"
-  terraform_provider = "spacelift"
-  # administrative       = true
-
-  roles = {
-    ADMIN_ROLE = {
-      role_id  = spacelift_role.admin.id
-      space_id = "root"
-    }
-  }
-
-
+  name                 = "plugin-sops"
+  terraform_provider   = "spacelift"
+  administrative       = true
   branch               = "main"
   description          = "Plugin that manages sops encrypted files."
   repository           = "plugin-sops"
@@ -68,18 +41,9 @@ resource "spacelift_module" "sops_plugin_module" {
 }
 
 resource "spacelift_module" "infracost_plugin_module" {
-  name               = "plugin-infracost"
-  terraform_provider = "spacelift"
-  # administrative       = true
-
-  roles = {
-    ADMIN_ROLE = {
-      role_id  = spacelift_role.admin.id
-      space_id = "root"
-    }
-  }
-
-
+  name                 = "plugin-infracost"
+  terraform_provider   = "spacelift"
+  administrative       = true
   branch               = "main"
   description          = "Plugin that creates the necessary context to integrate with infracost"
   repository           = "plugin-infracost"
@@ -91,17 +55,9 @@ resource "spacelift_module" "infracost_plugin_module" {
 }
 
 resource "spacelift_module" "signed_runs_plugin_module" {
-  name               = "plugin-signed-runs"
-  terraform_provider = "spacelift"
-  # administrative       = true
-
-  roles = {
-    ADMIN_ROLE = {
-      role_id  = spacelift_role.admin.id
-      space_id = "root"
-    }
-  }
-
+  name                 = "plugin-signed-runs"
+  terraform_provider   = "spacelift"
+  administrative       = true
   branch               = "main"
   description          = "Spacelift plugin that signs runs with Spacelift inside GitHub"
   repository           = "plugin-signed-runs"
@@ -113,17 +69,9 @@ resource "spacelift_module" "signed_runs_plugin_module" {
 }
 
 resource "spacelift_module" "tofusible_host_module" {
-  name               = "tofusible-host"
-  terraform_provider = "spacelift"
-  # administrative       = true
-
-  roles = {
-    ADMIN_ROLE = {
-      role_id  = spacelift_role.admin.id
-      space_id = "root"
-    }
-  }
-
+  name                 = "tofusible-host"
+  terraform_provider   = "spacelift"
+  administrative       = true
   branch               = "main"
   description          = "Spacelift module for creating hosts for Tofusible"
   repository           = "tofusible"
