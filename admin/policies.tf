@@ -30,7 +30,7 @@ resource "spacelift_policy" "drift_notification_flows" {
   body        = file("./policies/notification/drift_notification_flows.rego")
   type        = "NOTIFICATION"
   description = "This policy will send a notification to Flows (or Discord) on any drift that's detected!"
-  space_id    = "opentofu-01JB2XV5E3ZR3NDTKCN80KS6RH"
+  space_id    = "spacelift_space.aws_opentofu.id"
 }
 
 resource "spacelift_policy" "Github_PR_Comment_Deploy" {
@@ -38,7 +38,7 @@ resource "spacelift_policy" "Github_PR_Comment_Deploy" {
   body        = file("./policies/approval/Github_PR_Comment_Deploy.rego")
   type        = "PUSH"
   description = "This policy leverages the power of pull request comments to drive actions, establishing a direct line between commentary and deployment."
-  space_id    = "opentofu-01JB2XV5E3ZR3NDTKCN80KS6RH"
+  space_id    = "spacelift_space.aws_opentofu.id"
 }
 
 resource "spacelift_policy" "Github_PR_Summary_Comment" {
@@ -46,5 +46,5 @@ resource "spacelift_policy" "Github_PR_Summary_Comment" {
   body        = file("./policies/approval/Github_PR_Summary_Comment.rego")
   type        = "NOTIFICATION"
   description = "This policy will add a comment to a pull request where it will list all the resources that were added, changed, deleted, moved, imported or forgotten."
-  space_id    = "opentofu-01JB2XV5E3ZR3NDTKCN80KS6RH"
+  space_id    = "spacelift_space.aws_opentofu.id"
 }
