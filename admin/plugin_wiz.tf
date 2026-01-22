@@ -9,7 +9,7 @@ variable "wiz_client_secret" {
 }
 
 resource "spacelift_plugin" "wiz" {
-  plugin_template_id = "wiz"
+  plugin_template_id = "wiz-no-policies"
 
   name        = "Wiz"
   stack_label = "wiz"
