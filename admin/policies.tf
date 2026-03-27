@@ -48,3 +48,11 @@ resource "spacelift_policy" "Github_PR_Summary_Comment" {
   description = "This policy will add a comment to a pull request where it will list all the resources that were added, changed, deleted, moved, imported or forgotten."
   space_id    = spacelift_space.aws_opentofu.id
 }
+
+resource "spacelift_policy" "block_public_s3_websites" {
+  name        = "Block public S3 website deployments"
+  body        = file("./policies/plan/block-public-s3-websites.rego")
+  type        = "INTENT"
+  description = "Blocks public S3 website configurations while allowing private S3 buckets. Enforces all S3 public access blocks and prevents public bucket policies."
+  space_id    = "root"
+}
