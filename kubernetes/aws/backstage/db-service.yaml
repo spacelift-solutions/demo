@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: backstage
+spec:
+  internalTrafficPolicy: Cluster
+  ports:
+    - port: 5432
+      protocol: TCP
+      targetPort: 5432
+  selector:
+    app: postgres
+  sessionAffinity: None
+  type: ClusterIP
