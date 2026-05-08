@@ -8,7 +8,7 @@ resource "spacelift_context" "k8s_example" {
 resource "spacelift_environment_variable" "aws_region" {
   context_id  = spacelift_context.k8s_example.id
   name        = "TF_VAR_aws_region"
-  value       = "eu-west-1"
+  value       = "us-east-1"
   write_only  = false
   description = "AWS region to deploy the EKS cluster"
 }
@@ -56,7 +56,7 @@ resource "spacelift_environment_variable" "cluster_name" {
 resource "spacelift_environment_variable" "cluster_version" {
   context_id  = spacelift_context.k8s_example.id
   name        = "TF_VAR_cluster_version"
-  value       = "1.30"
+  value       = "1.35"
   write_only  = false
   description = "Version of the EKS cluster"
 }
