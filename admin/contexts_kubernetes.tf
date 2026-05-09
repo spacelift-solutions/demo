@@ -71,48 +71,7 @@ resource "spacelift_context" "k8s_configuration" {
 resource "spacelift_environment_variable" "aws_region_k8s" {
   context_id  = spacelift_context.k8s_configuration.id
   name        = "REGION"
-  value       = "eu-west-1"
+  value       = "us-east-1"
   write_only  = false
   description = "AWS region to deploy the EKS cluster"
-}
-
-# FinOps Scripts Context
-resource "spacelift_context" "finops_scripts" {
-  description = "Mounted scripts for FinOps automation (Helm deployment, Athena queries)"
-  name        = "FinOps Scripts"
-  labels      = ["autoattach:finops-scripts"]
-  space_id    = spacelift_space.aws_opentofu.id
-}
-
-# Mount deploy-helm.sh script
-resource "spacelift_mounted_file" "deploy_helm_script" {
-  context_id    = spacelift_context.finops_scripts.id
-  relative_path = "deploy-helm.sh"
-  content       = filebase64("${path.module}/../opentofu/aws/cost-optimisation/scripts/deploy-helm.sh")
-}
-
-# Mount run-athena-queries.sh script
-resource "spacelift_mounted_file" "run_athena_queries_script" {
-  context_id    = spacelift_context.finops_scripts.id
-  relative_path = "run-athena-queries.sh"
-  content       = filebase64("${path.module}/../opentofu/aws/cost-optimisation/scripts/run-athena-queries.sh")
-}
-
-# Mount Athena SQL queries
-resource "spacelift_mounted_file" "daily_costs_sql" {
-  context_id    = spacelift_context.finops_scripts.id
-  relative_path = "athena-queries/daily-costs.sql"
-  content       = filebase64("${path.module}/../opentofu/aws/cost-optimisation/scripts/athena-queries/daily-costs.sql")
-}
-
-resource "spacelift_mounted_file" "service_breakdown_sql" {
-  context_id    = spacelift_context.finops_scripts.id
-  relative_path = "athena-queries/service-breakdown.sql"
-  content       = filebase64("${path.module}/../opentofu/aws/cost-optimisation/scripts/athena-queries/service-breakdown.sql")
-}
-
-resource "spacelift_mounted_file" "optimization_opportunities_sql" {
-  context_id    = spacelift_context.finops_scripts.id
-  relative_path = "athena-queries/optimization-opportunities.sql"
-  content       = filebase64("${path.module}/../opentofu/aws/cost-optimisation/scripts/athena-queries/optimization-opportunities.sql")
 }

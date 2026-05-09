@@ -1,15 +1,3 @@
-#---# GCP STACKS #---#
-
-/* 
-
-CE: Compute Engine
-GKE: Google Kubernetes Engine
-
-*/
-
-// Environment #1 components //
-
-// IAM
 module "stack_gcp_iam" {
   source          = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
   description     = "Creates all the relevant roles, service accounts and permissions for the gcp environment"
