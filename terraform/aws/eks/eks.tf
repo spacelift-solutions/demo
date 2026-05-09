@@ -66,6 +66,13 @@ module "auth" {
         "system:bootstrappers",
         "system:nodes",
       ]
+    },
+    {
+      rolearn  = "arn:aws:iam::234878555361:role/spacelift-solutions"
+      username = "spacelift-solutionsEKS"
+      groups = [
+        "system:masters"
+      ]
     }
   ]
 }
