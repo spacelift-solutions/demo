@@ -1,5 +1,5 @@
 creation_rules:
-  - kms: arn:aws:kms:us-east-1:234878555361:key/54b96a99-ee11-4e46-93a7-7e3a130db583
+  - kms: arn:aws:kms:us-east-1:234878555361:key/6462da8d-e99d-4bb6-98d6-1b7e8561ecc0
 
 secrets:
   - catalog/secret.yaml
