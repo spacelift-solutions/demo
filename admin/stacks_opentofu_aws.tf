@@ -192,22 +192,22 @@ module "stack_aws_winrm" {
       value     = var.windows_instance_password
     }
   }
-  module "stack_aws_cloudwatch_dashboard" {
-    source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+}
 
-    description     = "stack that creates a cloudwatch dashboard with alb and rds metrics"
-    name            = "tofu-cloudwatch-dashboard"
-    repository_name = "demo"
-    space_id        = spacelift_space.aws_opentofu.id
+module "stack_aws_cloudwatch_dashboard" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
-    aws_integration = {
-      enabled = true
-      id      = spacelift_aws_integration.demo.id
-    }
+  description     = "stack that creates a cloudwatch dashboard with alb and rds metrics"
+  name            = "tofu-cloudwatch-dashboard"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
 
-    labels            = ["aws", "cloudwatch", "dashboard"]
-    project_root      = "opentofu/aws/cloudwatch_dashboard"
-    repository_branch = "main"
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
   }
 
+  labels            = ["aws", "cloudwatch", "dashboard"]
+  project_root      = "opentofu/aws/cloudwatch_dashboard"
+  repository_branch = "main"
 }
