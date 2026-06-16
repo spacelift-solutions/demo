@@ -210,4 +210,8 @@ module "stack_aws_cloudwatch_dashboard" {
   labels            = ["aws", "cloudwatch", "dashboard"]
   project_root      = "opentofu/aws/cloudwatch_dashboard"
   repository_branch = "main"
+
+  policies = {
+    CLOUDWATCH_DASHBOARD_ACCESS = spacelift_policy.allow_cloudwatch_dashboard.id
+  }
 }

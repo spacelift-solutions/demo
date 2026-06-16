@@ -48,3 +48,11 @@ resource "spacelift_policy" "Github_PR_Summary_Comment" {
   description = "This policy will add a comment to a pull request where it will list all the resources that were added, changed, deleted, moved, imported or forgotten."
   space_id    = spacelift_space.aws_opentofu.id
 }
+
+resource "spacelift_policy" "allow_cloudwatch_dashboard" {
+  name        = "Allow CloudWatch Dashboard Access"
+  body        = file("./policies/access/allow_cloudwatch_dashboard.rego")
+  type        = "ACCESS"
+  description = "Allow access for the CloudWatch dashboard stack in the AWS OpenTofu space."
+  space_id    = spacelift_space.aws_opentofu.id
+}
