@@ -60,7 +60,7 @@ resource "spacelift_policy" "approval_cloudwatch_dashboard" {
 
 resource "spacelift_policy" "no-weekend-deploys" {
   name   = "Let's not deploy any changes over the weekend"
-  body   = file("${path.module}/policies/no-weekend-deploys.rego")
+  body   = file("./policies/plan/no-weekend-deploys.rego")
   type   = "PLAN"
   labels = ["autoattach:deletion-protection"]
 }
