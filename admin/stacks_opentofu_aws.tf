@@ -197,10 +197,6 @@ module "stack_aws_winrm" {
 module "stack_aws_cloudwatch_dashboard" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
-  providers = {
-    spacelift = spacelift
-  }
-
   description     = "stack that creates a cloudwatch dashboard with alb and rds metrics"
   name            = "tofu-cloudwatch-dashboard"
   repository_name = "demo"
@@ -216,6 +212,6 @@ module "stack_aws_cloudwatch_dashboard" {
   repository_branch = "main"
 
   policies = {
-    CLOUDWATCH_DASHBOARD_ACCESS = spacelift_policy.allow_cloudwatch_dashboard.id
+    TWO_PERSON_REVIEW = spacelift_policy.approval_cloudwatch_dashboard.id
   }
 }

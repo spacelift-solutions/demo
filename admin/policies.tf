@@ -56,11 +56,5 @@ resource "spacelift_policy" "approval_cloudwatch_dashboard" {
   description = "Require two distinct approvals (excluding the run triggerer) and zero rejections before a run on the CloudWatch dashboard stack can be applied."
   space_id    = spacelift_space.aws_opentofu.id
 }
-
-# Attach the two-person-review policy to ONLY the CloudWatch dashboard stack.
-# `module.stack_aws_cloudwatch_dashboard.id` is the stack ID (the stacks module
-# exposes `output "id" = spacelift_stack.this.id`).
-resource "spacelift_policy_attachment" "approval_cloudwatch_dashboard" {
-  policy_id = spacelift_policy.approval_cloudwatch_dashboard.id
-  stack_id  = module.stack_aws_cloudwatch_dashboard.id
-}
+# Attached to the CloudWatch dashboard stack via that stack module's `policies`
+# input (see module "stack_aws_cloudwatch_dashboard" in stacks_opentofu_aws.tf).
