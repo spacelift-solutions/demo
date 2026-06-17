@@ -1,11 +1,17 @@
 resource "aws_kms_key" "secure_env_vars" {}
 
 module "aws_ec2_asg_worker_pool" {
-  source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2?ref=v5.6.0"
+  source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2?ref=ca-bundle-secrets-manager"
 
-  secure_env_vars = {
-    SPACELIFT_TOKEN            = var.worker_pool_config,
-    SPACELIFT_POOL_PRIVATE_KEY = var.worker_pool_private_key
+  env_vars = {
+    SPACELIFT_TOKEN = {
+      sensitive = true,
+      value     = var.worker_pool_config,
+    },
+    SPACELIFT_POOL_PRIVATE_KEY = {
+      sensitive = true,
+      value     = var.worker_pool_private_key,
+    }
   }
   secure_env_vars_kms_key_id = aws_kms_key.secure_env_vars.arn
 
@@ -30,6 +36,7 @@ module "aws_ec2_asg_worker_pool" {
     max_terminate = 5
     architecture  = var.ami_architecture
     timeout       = 60
+    version       = "v2.7.0-rc.1"
   }
 
   instance_refresh = {
