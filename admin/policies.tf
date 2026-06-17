@@ -22,7 +22,7 @@ resource "spacelift_policy" "require_approval_from_fork" {
   type        = "APPROVAL"
   description = "This policy will require at least one approval for runs that are being triggered from forks"
   space_id    = "root"
-  labels      = ["autpattach:module"]
+  labels      = ["autoattach:module"]
 }
 
 resource "spacelift_policy" "drift_notification_flows" {
