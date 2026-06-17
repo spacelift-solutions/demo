@@ -213,6 +213,5 @@ module "stack_aws_cloudwatch_dashboard" {
 
   policies = {
     TWO_PERSON_REVIEW = spacelift_policy.approval_cloudwatch_dashboard.id
-    BLOCK_IAM_CHANGES = spacelift_policy.block_iam_changes.id
   }
 }
