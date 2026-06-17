@@ -207,11 +207,12 @@ module "stack_aws_cloudwatch_dashboard" {
     id      = spacelift_aws_integration.demo.id
   }
 
-  labels            = ["aws", "cloudwatch", "dashboard"]
+  labels            = ["aws", "cloudwatch", "dashboard", "deletion-protection"]
   project_root      = "opentofu/aws/cloudwatch_dashboard"
   repository_branch = "main"
 
   policies = {
     TWO_PERSON_REVIEW = spacelift_policy.approval_cloudwatch_dashboard.id
+    BLOCK_IAM_CHANGES = spacelift_policy.block_iam_changes.id
   }
 }
