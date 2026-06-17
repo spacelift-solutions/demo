@@ -197,6 +197,10 @@ module "stack_aws_winrm" {
 module "stack_aws_cloudwatch_dashboard" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
+  providers = {
+    spacelift = spacelift
+  }
+
   description     = "stack that creates a cloudwatch dashboard with alb and rds metrics"
   name            = "tofu-cloudwatch-dashboard"
   repository_name = "demo"

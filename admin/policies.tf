@@ -49,10 +49,18 @@ resource "spacelift_policy" "Github_PR_Summary_Comment" {
   space_id    = spacelift_space.aws_opentofu.id
 }
 
-resource "spacelift_policy" "allow_cloudwatch_dashboard" {
-  name        = "Allow CloudWatch Dashboard Access"
-  body        = file("./policies/access/allow_cloudwatch_dashboard.rego")
-  type        = "ACCESS"
-  description = "Allow access for the CloudWatch dashboard stack in the AWS OpenTofu space."
+resource "spacelift_policy" "approval_cloudwatch_dashboard" {
+  name        = "Two-person review - CloudWatch dashboard"
+  body        = file("./policies/approval/two_person_review.rego")
+  type        = "APPROVAL"
+  description = "Require two distinct approvals (excluding the run triggerer) and zero rejections before a run on the CloudWatch dashboard stack can be applied."
   space_id    = spacelift_space.aws_opentofu.id
+}
+
+# Attach the two-person-review policy to ONLY the CloudWatch dashboard stack.
+# `module.stack_aws_cloudwatch_dashboard.id` is the stack ID (the stacks module
+# exposes `output "id" = spacelift_stack.this.id`).
+resource "spacelift_policy_attachment" "approval_cloudwatch_dashboard" {
+  policy_id = spacelift_policy.approval_cloudwatch_dashboard.id
+  stack_id  = module.stack_aws_cloudwatch_dashboard.id
 }
