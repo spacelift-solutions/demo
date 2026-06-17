@@ -82,6 +82,13 @@ resource "aws_cloudwatch_dashboard" "this" {
   dashboard_body = local.dashboard_body
 }
 
+resource "spacelift_policy" "no-weekend-deploys" {
+  name   = "Let's not deploy any changes over the weekend"
+  body   = file("${path.module}/policies/no-weekend-deploys.rego")
+  type   = "PLAN"
+  labels = ["autoattach:deletion-protection"]
+}
+
 # Output the CloudWatch dashboard URL for easy access
 output "dashboard_url" {
   value = "https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashboards:name=${aws_cloudwatch_dashboard.this.dashboard_name}"

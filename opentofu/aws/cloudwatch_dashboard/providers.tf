@@ -11,3 +11,6 @@ provider "aws" {
     }
   }
 }
+
+# Spacelift Provider Configuration
+provider "spacelift" {}

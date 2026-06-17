@@ -22,7 +22,7 @@ resource "spacelift_policy" "require_approval_from_fork" {
   type        = "APPROVAL"
   description = "This policy will require at least one approval for runs that are being triggered from forks"
   space_id    = "root"
-  labels      = ["autpattach:module"]
+  labels      = ["autoattach:module"]
 }
 
 resource "spacelift_policy" "drift_notification_flows" {
@@ -48,3 +48,12 @@ resource "spacelift_policy" "Github_PR_Summary_Comment" {
   description = "This policy will add a comment to a pull request where it will list all the resources that were added, changed, deleted, moved, imported or forgotten."
   space_id    = spacelift_space.aws_opentofu.id
 }
+
+resource "spacelift_policy" "approval_cloudwatch_dashboard" {
+  name        = "Two-person review - CloudWatch dashboard"
+  body        = file("./policies/approval/two_person_review.rego")
+  type        = "APPROVAL"
+  description = "Require two distinct approvals (excluding the run triggerer) and zero rejections before a run on the CloudWatch dashboard stack can be applied."
+  space_id    = spacelift_space.aws_opentofu.id
+} # Attached to the CloudWatch dashboard stack via that stack module's `policies`
+# input (see module "stack_aws_cloudwatch_dashboard" in stacks_opentofu_aws.tf).
