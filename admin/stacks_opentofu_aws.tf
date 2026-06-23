@@ -212,6 +212,7 @@ module "stack_aws_cloudwatch_dashboard" {
   repository_branch = "main"
 
   policies = {
-    TWO_PERSON_REVIEW = spacelift_policy.approval_cloudwatch_dashboard.id
+    TWO_PERSON_REVIEW  = spacelift_policy.approval_cloudwatch_dashboard.id
+    NO_WEEKEND_DEPLOYS = spacelift_policy.no-weekend-deploys.id
   }
 }
