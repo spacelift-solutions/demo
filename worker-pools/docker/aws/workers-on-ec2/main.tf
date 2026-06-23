@@ -1,7 +1,7 @@
 resource "aws_kms_key" "secure_env_vars" {}
 
 module "aws_ec2_asg_worker_pool" {
-  source = "github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2?ref=ca-bundle-secrets-manager"
+  source = "git::https://github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2.git?ref=fix/ca-bundle-secrets-manager"
 
   env_vars = {
     SPACELIFT_TOKEN = {
