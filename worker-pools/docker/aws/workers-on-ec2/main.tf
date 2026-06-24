@@ -36,7 +36,7 @@ module "aws_ec2_asg_worker_pool" {
     max_terminate = 5
     architecture  = var.ami_architecture
     timeout       = 60
-    version       = "v2.7.0-rc.1"
+    version       = "v2.7.0"
   }
 
   instance_refresh = {
