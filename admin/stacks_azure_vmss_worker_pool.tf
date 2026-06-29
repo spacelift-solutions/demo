@@ -1,10 +1,3 @@
-locals {
-  # Existing managed Azure integration ("Spacelift Solutions") — consented and
-  # granted Contributor on the subscription. Created outside of this repo.
-  azure_integration_id  = "01KAEB7BTPH5CZZ8Y4JRXA9NS9"
-  azure_subscription_id = "d2d840cc-eb24-4500-a29f-6cddefb542a4"
-}
-
 # Stack that deploys the Azure VMSS worker pool (with autoscaler, min 1).
 # It runs on shared workers and uses the Azure integration to provision the VMSS;
 # the resulting workers register back to the pool created in the admin stack.
@@ -17,13 +10,14 @@ module "stack_azure_vmss_worker_pool" {
   repository_branch = "main"
   project_root      = "worker-pools/docker/azure/vmss"
   space_id          = spacelift_space.azure_terraform.id
+  workflow_tool     = "OPEN_TOFU"
   tf_version        = "1.8.4"
   labels            = ["azure", "vmss", "worker-pool"]
 
   azure_integration = {
     enabled         = true
-    id              = local.azure_integration_id
-    subscription_id = local.azure_subscription_id
+    id              = data.spacelift_azure_integration.demo.id
+    subscription_id = data.spacelift_azure_integration.demo.default_subscription_id
   }
 
   dependencies = {

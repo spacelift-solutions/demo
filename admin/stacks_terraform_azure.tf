@@ -6,8 +6,8 @@ module "azure_linux_stack" {
   repository_name = "demo"
   space_id        = spacelift_space.azure_terraform.id
 
-  workflow_tool = "TERRAFORM_FOSS"
-  tf_version    = "1.5.7"
+  workflow_tool = "OPEN_TOFU"
+  tf_version    = "1.8.4"
 
   labels            = ["azure"]
   project_root      = "/terraform/azure/"
@@ -17,8 +17,8 @@ module "azure_linux_stack" {
   # (This was the missing piece causing the stack to fail.)
   azure_integration = {
     enabled         = true
-    id              = local.azure_integration_id
-    subscription_id = local.azure_subscription_id
+    id              = data.spacelift_azure_integration.demo.id
+    subscription_id = data.spacelift_azure_integration.demo.default_subscription_id
   }
 
   # Run on the dedicated Azure VMSS worker pool.

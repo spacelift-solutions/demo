@@ -20,7 +20,21 @@ resource "tls_cert_request" "azure_vmss" {
   }
 }
 
-# API key used by the VMSS autoscaler to query the worker pool queue and scale.
+# API key used by the VMSS autoscaler to query the worker pool queue and drain workers.
 resource "spacelift_api_key" "azure_vmss_autoscaler" {
   name = "azure-vmss-autoscaler"
+}
+
+# Least-privilege role for the autoscaler: read the space + drain workers.
+# (Per the autoscaler's documented requirements: Space:Read + Worker Pool:Drain Worker.)
+resource "spacelift_role" "azure_vmss_autoscaler" {
+  name        = "Azure VMSS Autoscaler"
+  description = "Allows the Azure VMSS worker pool autoscaler to read the space and drain workers."
+  actions     = ["SPACE_READ", "WORKER_DRAIN_SET"]
+}
+
+resource "spacelift_role_attachment" "azure_vmss_autoscaler" {
+  api_key_id = spacelift_api_key.azure_vmss_autoscaler.id
+  role_id    = spacelift_role.azure_vmss_autoscaler.id
+  space_id   = "root"
 }
