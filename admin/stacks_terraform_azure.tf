@@ -13,6 +13,17 @@ module "azure_linux_stack" {
   project_root      = "/terraform/azure/"
   repository_branch = "main"
 
+  # Attach the existing managed Azure integration so the stack can authenticate.
+  # (This was the missing piece causing the stack to fail.)
+  azure_integration = {
+    enabled         = true
+    id              = local.azure_integration_id
+    subscription_id = local.azure_subscription_id
+  }
+
+  # Run on the dedicated Azure VMSS worker pool.
+  worker_pool_id = spacelift_worker_pool.azure_vmss.id
+
   environment_variables = {
     TF_VAR_project_name = {
       sensitive = false
