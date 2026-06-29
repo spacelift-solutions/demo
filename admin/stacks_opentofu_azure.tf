@@ -122,7 +122,7 @@ resource "spacelift_stack" "azure_demo_app" {
   branch     = "main"
 
   azure_devops {
-    id      = spacelift_azure_devops_integration.demo.id
+    id      = data.spacelift_azure_devops_integration.demo.id
     project = "demo"
   }
 
