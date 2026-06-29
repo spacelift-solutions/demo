@@ -108,3 +108,36 @@ module "stack_azure_vmss_worker_pool" {
     }
   }
 }
+
+# Demo workload stack — sourced from the Azure DevOps repo, runs on the Azure
+# VMSS worker pool. Demonstrates the PR workflow and the large-VM-SKU approval
+# policy. Uses the raw spacelift_stack resource because the stacks module does
+# not support Azure DevOps as a VCS provider.
+resource "spacelift_stack" "azure_demo_app" {
+  name        = "azure-demo-app"
+  description = "Demo: deploys an Azure VM from Azure DevOps; gated by the large-VM-SKU approval policy."
+  space_id    = spacelift_space.azure_terraform.id
+
+  repository = "demo"
+  branch     = "main"
+
+  azure_devops {
+    id      = spacelift_azure_devops_integration.demo.id
+    project = "demo"
+  }
+
+  terraform_workflow_tool = "OPEN_TOFU"
+  terraform_version       = "1.8.4"
+  worker_pool_id          = spacelift_worker_pool.azure_vmss.id
+  autodeploy              = false
+
+  labels = ["azure", "demo", "azure-demo-app"]
+}
+
+resource "spacelift_azure_integration_attachment" "azure_demo_app" {
+  integration_id  = data.spacelift_azure_integration.demo.id
+  stack_id        = spacelift_stack.azure_demo_app.id
+  subscription_id = data.spacelift_azure_integration.demo.default_subscription_id
+  read            = true
+  write           = true
+}
