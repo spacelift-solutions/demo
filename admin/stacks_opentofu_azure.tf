@@ -66,7 +66,7 @@ module "stack_azure_linux" {
   }
 }
 
-# Stack that deploys the Azure VMSS worker pool (with autoscaler, min 1).
+# Stack that deploys the Azure VMSS worker pool (static, one always-on worker).
 # It runs on shared workers and uses the Azure integration to provision the VMSS;
 # the resulting workers register back to the pool created in the admin stack.
 module "stack_azure_vmss_worker_pool" {
@@ -103,14 +103,6 @@ module "stack_azure_vmss_worker_pool" {
         WORKER_POOL_PRIVATE_KEY = {
           output_name = "azure_vmss_worker_pool_private_key"
           input_name  = "TF_VAR_worker_pool_private_key"
-        }
-        AUTOSCALER_API_KEY_ID = {
-          output_name = "azure_vmss_autoscaler_api_key_id"
-          input_name  = "TF_VAR_spacelift_api_key_id"
-        }
-        AUTOSCALER_API_KEY_SECRET = {
-          output_name = "azure_vmss_autoscaler_api_key_secret"
-          input_name  = "TF_VAR_spacelift_api_key_secret"
         }
       }
     }
