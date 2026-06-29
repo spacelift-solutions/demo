@@ -32,6 +32,32 @@ output "eks_worker_pool_id" {
   value = spacelift_worker_pool.aws_eks.id
 }
 
+// Azure Outputs //
+
+// VMSS worker pool outputs
+output "azure_vmss_worker_pool_private_key" {
+  value     = base64encode(tls_private_key.azure_vmss.private_key_pem)
+  sensitive = true
+}
+
+output "azure_vmss_worker_pool_config" {
+  value     = spacelift_worker_pool.azure_vmss.config
+  sensitive = true
+}
+
+output "azure_vmss_worker_pool_id" {
+  value = spacelift_worker_pool.azure_vmss.id
+}
+
+output "azure_vmss_autoscaler_api_key_id" {
+  value = spacelift_api_key.azure_vmss_autoscaler.id
+}
+
+output "azure_vmss_autoscaler_api_key_secret" {
+  value     = spacelift_api_key.azure_vmss_autoscaler.secret
+  sensitive = true
+}
+
 // GCP Outputs //
 
 // Compute Engine worker pool outputs
