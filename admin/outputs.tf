@@ -49,15 +49,6 @@ output "azure_vmss_worker_pool_id" {
   value = spacelift_worker_pool.azure_vmss.id
 }
 
-output "azure_vmss_autoscaler_api_key_id" {
-  value = spacelift_api_key.azure_vmss_autoscaler.id
-}
-
-output "azure_vmss_autoscaler_api_key_secret" {
-  value     = spacelift_api_key.azure_vmss_autoscaler.secret
-  sensitive = true
-}
-
 // GCP Outputs //
 
 // Compute Engine worker pool outputs

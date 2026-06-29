@@ -25,21 +25,12 @@ module "worker_pool_azure_vmss" {
   name_prefix = "sp5ft-demo"
   vmss_sku    = var.vmss_sku
 
-  # Autoscaler keeps a minimum of one warm worker so demo runs start instantly.
-  autoscaling_configuration = {
-    max_create    = 2
-    max_terminate = 1
-    scale = {
-      min = var.worker_pool_min_size
-      max = var.worker_pool_max_size
-    }
-  }
-
-  spacelift_api_credentials = {
-    api_key_id       = var.spacelift_api_key_id
-    api_key_secret   = var.spacelift_api_key_secret
-    api_key_endpoint = "${var.spacelift_api_key_endpoint}/graphql"
-  }
+  # Static single-worker pool: one always-warm worker (ideal for live demos).
+  # The module's autoscaler is intentionally not used here — it creates role
+  # assignments for its Function App identity, which requires roleAssignments/write
+  # that the Spacelift integration SP can't be granted under the subscription's
+  # ABAC guardrails.
+  non_autoscaled_vmss_instances = var.worker_count
 
   tags = {
     Environment = "demo"
