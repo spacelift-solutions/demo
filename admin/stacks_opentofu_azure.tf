@@ -129,7 +129,9 @@ resource "spacelift_stack" "azure_demo_app" {
   terraform_workflow_tool = "OPEN_TOFU"
   terraform_version       = "1.8.4"
   worker_pool_id          = spacelift_worker_pool.azure_vmss.id
-  autodeploy              = false
+  # autodeploy on so small changes flow through; the plan policy marks large-VM
+  # SKU changes for human review (warn) before they can apply.
+  autodeploy = true
 
   labels = ["azure", "demo", "azure-demo-app"]
 }
