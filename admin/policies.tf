@@ -1,3 +1,12 @@
+resource "spacelift_policy" "azure_large_vm_sku_approval" {
+  name        = "Azure - require approval for large VM SKUs"
+  body        = file("./policies/approval/azure_large_vm_sku_approval.rego")
+  type        = "APPROVAL"
+  description = "Requires a human approval before applying runs that create or change an Azure VM with a large SKU. Auto-approves smaller SKUs."
+  labels      = ["autoattach:azure-demo-app"]
+  space_id    = "root"
+}
+
 resource "spacelift_policy" "trigger_consumers" {
   name        = "trigger module consumers"
   body        = file("./policies/trigger/trigger_module_consumers.rego")
