@@ -4,9 +4,11 @@ package spacelift
 # stops auto-deploy by marking the run for human review), and set a flag that the
 # companion APPROVAL policy uses to require sign-off.
 #
-# This is a PLAN policy on purpose: plan policies receive the real, unredacted
-# resource attributes (input.terraform.resource_changes). Approval-policy
-# run.changes values are hashed and can't be matched on a SKU.
+# NOTE on value hashing: Spacelift sanitizes resource attribute *values* in policy
+# inputs — each value is sha256-hashed and exposed as the last 8 hex chars (e.g.
+# "Standard_D8s_v5" -> "f49cf0ed"). Resource type and address are NOT hashed. So
+# we match on the hash of each known SKU (computed here with crypto.sha256), not
+# the literal string.
 
 # Large Azure VM SKUs that require human review/approval.
 large_vm_sizes := {
@@ -24,13 +26,21 @@ large_vm_sizes := {
 	"Standard_F32s_v2",
 }
 
+# The sanitized form Spacelift exposes: last 8 hex chars of sha256(sku).
+large_vm_size_hashes[h] {
+	some s
+	large_vm_sizes[s]
+	full := crypto.sha256(s)
+	h := substring(full, count(full) - 8, 8)
+}
+
 # Addresses of VMs being created/changed to a large SKU.
 large_vm_changes[address] {
 	some i
 	rc := input.terraform.resource_changes[i]
 	rc.type == "azurerm_linux_virtual_machine"
 	rc.change.actions[_] != "delete"
-	large_vm_sizes[rc.change.after.size]
+	large_vm_size_hashes[rc.change.after.size]
 	address := rc.address
 }
 
