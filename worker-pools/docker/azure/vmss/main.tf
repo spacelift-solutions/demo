@@ -4,7 +4,7 @@ resource "tls_private_key" "admin_ssh" {
   rsa_bits  = 4096
 }
 
-module "azure_vmss_worker_pool" {
+module "worker_pool_azure_vmss" {
   source = "github.com/spacelift-io/terraform-azure-spacelift-workerpool?ref=v3.0.0"
 
   admin_username   = var.admin_username

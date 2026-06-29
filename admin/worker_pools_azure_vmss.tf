@@ -25,16 +25,13 @@ resource "spacelift_api_key" "azure_vmss_autoscaler" {
   name = "azure-vmss-autoscaler"
 }
 
-# Least-privilege role for the autoscaler: read the space + drain workers.
-# (Per the autoscaler's documented requirements: Space:Read + Worker Pool:Drain Worker.)
-resource "spacelift_role" "azure_vmss_autoscaler" {
-  name        = "Azure VMSS Autoscaler"
-  description = "Allows the Azure VMSS worker pool autoscaler to read the space and drain workers."
-  actions     = ["SPACE_READ", "WORKER_DRAIN_SET"]
+# Built-in system role for worker pool automation (SPACE_READ + WORKER_POOL_*).
+data "spacelift_role" "worker_pool_controller" {
+  slug = "worker-pool-controller"
 }
 
 resource "spacelift_role_attachment" "azure_vmss_autoscaler" {
   api_key_id = spacelift_api_key.azure_vmss_autoscaler.id
-  role_id    = spacelift_role.azure_vmss_autoscaler.id
+  role_id    = data.spacelift_role.worker_pool_controller.role_id
   space_id   = "root"
 }
