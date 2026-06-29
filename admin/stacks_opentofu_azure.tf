@@ -1,4 +1,10 @@
-module "azure_linux_stack" {
+# Renamed from azure_linux_stack to follow the {type}_{cloud}_{service} convention.
+moved {
+  from = module.azure_linux_stack
+  to   = module.stack_azure_linux
+}
+
+module "stack_azure_linux" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   name            = "azure-terraform-stack"
