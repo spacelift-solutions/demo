@@ -4,6 +4,14 @@ resource "tls_private_key" "admin_ssh" {
   rsa_bits  = 4096
 }
 
+# User-assigned managed identity used by Intent runs on this pool (so the azurerm
+# provider can authenticate via ARM_USE_MSI). Created out-of-band with Contributor
+# because the worker-pool stack's integration SP can't create role assignments.
+data "azurerm_user_assigned_identity" "intent" {
+  name                = "id-spacelift-intent"
+  resource_group_name = azurerm_resource_group.workers.name
+}
+
 module "worker_pool_azure_vmss" {
   source = "github.com/spacelift-io/terraform-azure-spacelift-workerpool?ref=v3.0.0"
 
@@ -24,6 +32,12 @@ module "worker_pool_azure_vmss" {
 
   name_prefix = "sp5ft-demo"
   vmss_sku    = var.vmss_sku
+
+  # Attach the Intent managed identity so Intent runs on this pool can deploy to
+  # Azure via ARM_USE_MSI. Stacks that use the cloud integration are unaffected
+  # (the integration injects its own ARM_* creds, which take precedence).
+  identity_type = "UserAssigned"
+  identity_ids  = [data.azurerm_user_assigned_identity.intent.id]
 
   # Static single-worker pool: one always-warm worker (ideal for live demos).
   # The module's autoscaler is intentionally not used here — it creates role
