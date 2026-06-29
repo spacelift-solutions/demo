@@ -1,3 +1,65 @@
+module "azure_linux_stack" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  name            = "azure-terraform-stack"
+  description     = "Stack to Deploy Infrastructure to Azure"
+  repository_name = "demo"
+  space_id        = spacelift_space.azure_terraform.id
+
+  workflow_tool = "OPEN_TOFU"
+  tf_version    = "1.8.4"
+
+  labels            = ["azure"]
+  project_root      = "/terraform/azure/"
+  repository_branch = "main"
+
+  # Attach the existing managed Azure integration so the stack can authenticate.
+  # (This was the missing piece causing the stack to fail.)
+  azure_integration = {
+    enabled         = true
+    id              = data.spacelift_azure_integration.demo.id
+    subscription_id = data.spacelift_azure_integration.demo.default_subscription_id
+  }
+
+  # Run on the dedicated Azure VMSS worker pool.
+  worker_pool_id = spacelift_worker_pool.azure_vmss.id
+
+  environment_variables = {
+    TF_VAR_project_name = {
+      sensitive = false
+      value     = ""
+    }
+    TF_VAR_location = {
+      value = ""
+    }
+    TF_VAR_vm_size = {
+      value = ""
+    }
+    TF_VAR_vnet_address_space = {
+      value = ""
+    }
+    TF_VAR_subnet_address_prefixes = {
+      value = ""
+    }
+    TF_VAR_vm_role = {
+      value = ""
+    }
+    TF_VAR_vm_number = {
+      value = ""
+    }
+    TF_VAR_admin_password = {
+      value     = ""
+      sensitive = true
+    }
+    TF_VAR_admin_username = {
+      value = ""
+    }
+    TF_VAR_disable_password_auth = {
+      value = ""
+    }
+  }
+}
+
 # Stack that deploys the Azure VMSS worker pool (with autoscaler, min 1).
 # It runs on shared workers and uses the Azure integration to provision the VMSS;
 # the resulting workers register back to the pool created in the admin stack.
