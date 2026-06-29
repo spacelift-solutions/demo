@@ -1,8 +1,17 @@
-resource "spacelift_policy" "azure_large_vm_sku_approval" {
-  name        = "Azure - require approval for large VM SKUs"
-  body        = file("./policies/approval/azure_large_vm_sku_approval.rego")
+resource "spacelift_policy" "azure_large_vm_sku" {
+  name        = "Azure - flag large VM SKUs for review"
+  body        = file("./policies/plan/azure_large_vm_sku.rego")
+  type        = "PLAN"
+  description = "Warns and sets the azure-large-vm-sku flag when a plan creates or changes an Azure VM with a large SKU (uses real plan values). Smaller SKUs apply without review."
+  labels      = ["autoattach:azure-demo-app"]
+  space_id    = "root"
+}
+
+resource "spacelift_policy" "azure_large_vm_approval" {
+  name        = "Azure - require approval for flagged large VM runs"
+  body        = file("./policies/approval/azure_large_vm_approval.rego")
   type        = "APPROVAL"
-  description = "Requires a human approval before applying runs that create or change an Azure VM with a large SKU. Auto-approves smaller SKUs."
+  description = "Requires a human approval for runs flagged 'azure-large-vm-sku' by the plan policy; auto-approves everything else."
   labels      = ["autoattach:azure-demo-app"]
   space_id    = "root"
 }
