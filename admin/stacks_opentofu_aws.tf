@@ -207,9 +207,10 @@ module "stack_aws_cloudwatch_dashboard" {
     id      = spacelift_aws_integration.demo.id
   }
 
-  labels            = ["aws", "cloudwatch", "dashboard", "deletion-prevention", "wiz"]
-  project_root      = "opentofu/aws/cloudwatch_dashboard"
-  repository_branch = "main"
+  labels                = ["aws", "cloudwatch", "dashboard", "deletion-prevention", "wiz"]
+  project_root          = "opentofu/aws/cloudwatch_dashboard"
+  repository_branch     = "main"
+  protect_from_deletion = true
 
   hooks = {
     before = {
@@ -220,9 +221,6 @@ module "stack_aws_cloudwatch_dashboard" {
   }
 
   contexts = {
-    deletion_prevention = {
-      enabled = true
-    }
     github_auth = spacelift_context.github_auth.id
   }
 
