@@ -228,4 +228,21 @@ module "stack_aws_cloudwatch_dashboard" {
     TWO_PERSON_REVIEW  = spacelift_policy.approval_cloudwatch_dashboard.id
     NO_WEEKEND_DEPLOYS = spacelift_policy.no-weekend-deploys.id
   }
+
+  dependencies = {
+    ADMIN = {
+      parent_stack_id = data.spacelift_current_stack.admin.id
+    }
+    OPENTOFU_AWS_S3 = {
+      child_stack_id = module.stack_opentofu_aws_s3.id
+    }
+  }
+}
+
+resource "spacelift_scheduled_task" "cloudwatch_dashboard_version_check" {
+  stack_id = module.stack_aws_cloudwatch_dashboard.id
+
+  command  = "tofu version && ls -la"
+  every    = ["*/15 * * * *"]
+  timezone = "UTC"
 }
