@@ -207,9 +207,22 @@ module "stack_aws_cloudwatch_dashboard" {
     id      = spacelift_aws_integration.demo.id
   }
 
-  labels            = ["aws", "cloudwatch", "dashboard", "deletion-prevention"]
-  project_root      = "opentofu/aws/cloudwatch_dashboard"
-  repository_branch = "main"
+  labels                = ["aws", "cloudwatch", "dashboard", "deletion-prevention", "wiz"]
+  project_root          = "opentofu/aws/cloudwatch_dashboard"
+  repository_branch     = "main"
+  protect_from_deletion = true
+
+  hooks = {
+    before = {
+      init = [
+        "echo 'Preparing CloudWatch dashboard stack deployment'"
+      ]
+    }
+  }
+
+  contexts = {
+    github_auth = spacelift_context.github_auth.id
+  }
 
   policies = {
     TWO_PERSON_REVIEW  = spacelift_policy.approval_cloudwatch_dashboard.id
