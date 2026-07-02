@@ -83,3 +83,12 @@ resource "spacelift_policy" "no-weekend-deploys" {
   labels   = ["autoattach:deletion-prevention"]
   space_id = spacelift_space.aws_opentofu.id
 }
+
+resource "spacelift_policy" "require_project_tag" {
+  name        = "Require 'project' tag on all resources"
+  body        = file("./policies/plan/require_project_tag.rego")
+  type        = "PLAN"
+  description = "Fails the plan if any created/updated resource that supports tags is missing a 'project' tag. Opt in by adding the 'require-project-tag' label to a stack."
+  labels      = ["autoattach:require-project-tag"]
+  space_id    = spacelift_space.aws_opentofu.id
+}
