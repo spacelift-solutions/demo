@@ -229,3 +229,11 @@ module "stack_aws_cloudwatch_dashboard" {
     NO_WEEKEND_DEPLOYS = spacelift_policy.no-weekend-deploys.id
   }
 }
+
+resource "spacelift_scheduled_task" "cloudwatch_dashboard_version_check" {
+  stack_id = module.stack_aws_cloudwatch_dashboard.id
+
+  command  = "tofu version && ls -la"
+  every    = ["*/15 * * * *"]
+  timezone = "UTC"
+}
