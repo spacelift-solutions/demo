@@ -207,7 +207,7 @@ module "stack_aws_cloudwatch_dashboard" {
     id      = spacelift_aws_integration.demo.id
   }
 
-  labels                = ["aws", "cloudwatch", "dashboard", "deletion-prevention", "wiz", "require-project-tag"]
+  labels                = ["aws", "cloudwatch", "dashboard", "deletion-prevention", "require-project-tag"]
   project_root          = "opentofu/aws/cloudwatch_dashboard"
   repository_branch     = "main"
   protect_from_deletion = true
@@ -223,7 +223,7 @@ module "stack_aws_cloudwatch_dashboard" {
   contexts = {
     github_auth = spacelift_context.github_auth.id
   }
-
+  #these are the policies that will be applied to this stack, they are defined in the admin/policies.tf file
   policies = {
     TWO_PERSON_REVIEW  = spacelift_policy.approval_cloudwatch_dashboard.id
     NO_WEEKEND_DEPLOYS = spacelift_policy.no-weekend-deploys.id
