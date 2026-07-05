@@ -2,10 +2,18 @@ package spacelift
 
 import rego.v1
 
-# Plan policy: deletion protection & no weekend deploys
-# Blocks resource deletions and prevents runs on weekends
+# Plan policy: deletion protection & no weekend runs
 
-# Collect deleted resource addresses
+weekend_timezone := "EST"
+
+now := input.request.timestamp_ns
+
+is_weekend if {
+	day := time.weekday([now, weekend_timezone])
+	day in {"Saturday", "Sunday"}
+}
+
+# --- Deletion protection: blocks deletions every day ---
 deleted_addresses contains addr if {
 	c := input.run.changes[_]
 	c.entity.entity_type == "resource"
@@ -13,7 +21,6 @@ deleted_addresses contains addr if {
 	addr := c.entity.address
 }
 
-# Deny if any resource is scheduled for deletion
 deny contains msg if {
 	count(deleted_addresses) > 0
 	msg := sprintf(
@@ -22,8 +29,8 @@ deny contains msg if {
 	)
 }
 
-# NOTE: Weekend blocking is left as a TODO because run timestamp handling
-# depends on the platform's timestamp format. Implement with accurate
-# timezone-aware parsing if you need strict weekend enforcement.
-
-sample := true
+# --- Weekend protection: blocks ALL runs on Sat/Sun ---
+deny contains msg if {
+	is_weekend
+	msg := "No runs allowed on weekends (EST)"
+}
