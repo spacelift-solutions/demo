@@ -17,9 +17,9 @@ variable "alb_arn_suffix" {
   default = "app/Spacelift-ALB/701b9c7295718017"
 }
 
-variable "rds_instance_id" {
+variable "eks_cluster_name" {
   type    = string
-  default = "payments-prod-db"
+  default = "eks-cluster"
 }
 
 locals {
@@ -32,14 +32,13 @@ locals {
         width  = 12
         height = 6
         properties = {
-          title  = "ALB Request Count & 5XX"
+          title  = "ALB Peak LCUs"
           region = "us-east-1"
           metrics = [
-            ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", var.alb_arn_suffix],
-            [".", "HTTPCode_ELB_5XX_Count", ".", "."],
+            ["AWS/ApplicationELB", "PeakLCUs", "LoadBalancer", var.alb_arn_suffix],
           ]
-          stat   = "Sum"
-          period = 60
+          stat   = "Average"
+          period = 300
         }
       },
       {
@@ -49,27 +48,44 @@ locals {
         width  = 12
         height = 6
         properties = {
-          title  = "ALB Target Latency p95"
+          title  = "Estimated Charges (USD)"
           region = "us-east-1"
           metrics = [
-            ["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", var.alb_arn_suffix, { stat = "p95" }],
+            ["AWS/Billing", "EstimatedCharges", "Currency", "USD"],
           ]
-          period = 60
+          stat   = "Maximum"
+          period = 21600
         }
       },
       {
         type   = "metric"
         x      = 0
         y      = 6
-        width  = 24
+        width  = 12
         height = 6
         properties = {
-          title  = "RDS CPU & Connections"
+          title  = "EC2 CPU Utilization"
           region = "us-east-1"
           metrics = [
-            ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", var.rds_instance_id],
-            [".", "DatabaseConnections", ".", "."],
+            ["AWS/EC2", "CPUUtilization"],
           ]
+          stat   = "Average"
+          period = 300
+        }
+      },
+      {
+        type   = "metric"
+        x      = 12
+        y      = 6
+        width  = 12
+        height = 6
+        properties = {
+          title  = "EKS API Server 4XX Requests"
+          region = "us-east-1"
+          metrics = [
+            ["AWS/EKS", "apiserver_request_total_4XX", "ClusterName", var.eks_cluster_name],
+          ]
+          stat   = "Sum"
           period = 300
         }
       },
