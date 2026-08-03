@@ -81,7 +81,7 @@ module "stack_azure_vmss_worker_pool" {
   workflow_tool     = "OPEN_TOFU"
   tf_version        = "1.8.4"
   labels            = ["azure", "vmss", "worker-pool"]
-  auto_deploy       = true
+  autodeploy        = true
 
   azure_integration = {
     enabled         = true
