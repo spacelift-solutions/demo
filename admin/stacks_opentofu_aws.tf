@@ -206,7 +206,7 @@ module "stack_aws_cloudwatch_dashboard" {
     enabled = true
     id      = spacelift_aws_integration.demo.id
   }
-
+  #ensuring that the stack is protected from deletion and requires a project tag to be applied to the stack
   labels                = ["aws", "cloudwatch", "dashboard", "deletion-prevention", "require-project-tag", "wiz"]
   project_root          = "opentofu/aws/cloudwatch_dashboard"
   repository_branch     = "main"
