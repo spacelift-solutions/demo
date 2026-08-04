@@ -161,6 +161,78 @@ locals {
           period = 21600
         }
       },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 12
+        width  = 24
+        height = 6
+        properties = {
+          title  = "Top 10 RDS Instances by Max CPU Utilization"
+          region = "us-east-1"
+          view   = "timeSeries"
+          stat   = "Average"
+          period = 300
+          metrics = [
+            [{
+              expression = "SELECT MAX(CPUUtilization) FROM SCHEMA(\"AWS/RDS\", DBInstanceIdentifier) GROUP BY DBInstanceIdentifier ORDER BY MAX() DESC LIMIT 10"
+              id         = "q1"
+            }]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 18
+        width  = 24
+        height = 6
+        properties = {
+          title  = "EC2 Average CPU Utilization"
+          region = "us-east-1"
+          view   = "timeSeries"
+          stat   = "Average"
+          period = 300
+          metrics = [
+            [{
+              expression = "SELECT AVG(CPUUtilization) FROM SCHEMA(\"AWS/EC2\", InstanceId)"
+              id         = "q2"
+            }]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 24
+        width  = 12
+        height = 6
+        properties = {
+          title  = "ALB Peak LCUs"
+          region = "us-east-1"
+          metrics = [
+            ["AWS/ApplicationELB", "PeakLCUs", "LoadBalancer", var.alb_arn_suffix],
+          ]
+          stat   = "Average"
+          period = 60
+        }
+      },
+      {
+        type   = "metric"
+        x      = 12
+        y      = 24
+        width  = 12
+        height = 6
+        properties = {
+          title  = "Estimated Charges (USD)"
+          region = "us-east-1"
+          metrics = [
+            ["AWS/Billing", "EstimatedCharges", "Currency", "USD"],
+          ]
+          stat   = "Maximum"
+          period = 21600
+        }
+      },
     ]
   })
 }
