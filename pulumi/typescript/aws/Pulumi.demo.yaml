@@ -1,0 +1,3 @@
+config:
+  demo-ts-aws-s3:bucketName: spacelift-solutions-demo-pulumi
+  demo-ts-aws-s3:versioningEnabled: "true"
