@@ -37,3 +37,7 @@ override.tf.json
 terraform.rc
 # Ignore instruction files
 instructions.md
+
+# Pulumi build artifacts (state lives in the backend, not on disk)
+pulumi/**/node_modules/
+pulumi/**/bin/
