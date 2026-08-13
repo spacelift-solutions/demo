@@ -1,0 +1,3 @@
+name: demo-ts-aws-s3
+description: TypeScript Pulumi program that creates an encrypted, private S3 bucket
+runtime: nodejs
