@@ -48,3 +48,9 @@ variable "infracost_api_key" {
   description = "Infracost API Key"
   sensitive   = true
 }
+
+variable "pulumi_config_passphrase" {
+  type        = string
+  description = "Passphrase for Pulumi's secrets provider, required by the S3 state backend"
+  sensitive   = true
+}
