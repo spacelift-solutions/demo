@@ -13,9 +13,8 @@ terraform {
 provider "spacelift" {}
 
 # Authenticates via FLOWS_TOKEN, set on this stack by the admin stack.
-# liftspace.net is where this Flows org lives, not the public useflows.eu.
 provider "flows" {
-  endpoint = "flows.liftspace.net"
+  endpoint = "useflows.eu"
 }
 
 module "jira_approval" {
@@ -26,14 +25,18 @@ module "jira_approval" {
   spacelift_api_key_id = var.spacelift_api_key_id
 
   jira = {
-    url         = "https://theoutdoorprogrammer.atlassian.net"
-    email       = "joey@theoutdoorprogrammer.com"
+    url         = "https://spacelift-demo-plugin.atlassian.net"
+    email       = "spacelift-demo@theoutdoorprogrammer.com"
     api_token   = var.jira_api_token
-    project_key = "SCRUM"
+    project_key = "KAN"
 
-    # The "Spacelift Info" short-text field in that Jira project, found via
-    # the plugin README's step 2 devtools dance. Changes if the field is recreated.
-    custom_field_id = "customfield_10073"
+    # The "Spacelift Info" short-text field in the KAN project. Team-managed
+    # project, so the field is project-scoped and this changes if recreated.
+    custom_field_id = "customfield_10043"
+
+    # Issues land here on creation; the Flows flow reacts when a human moves
+    # them to Approved or Rejected (the JIRA_*_STATUS secrets).
+    initial_status = "Needs Approval"
   }
 
   infracost = {
@@ -44,10 +47,12 @@ module "jira_approval" {
   }
 
   flows = {
-    # joeys@spacelift.io's Personal Sandbox project, where the Jira and
-    # Spacelift apps (and the JWT_SECRET / JIRA_*_STATUS secrets) are set up.
-    project_id       = "0197b19a-cd01-7cf7-bc99-6699879cc49e"
-    jira_app_id      = "019b0e32-1920-7f0e-88f5-f9784d0946a8"
-    spacelift_app_id = "019b0e42-1133-7378-ac76-9b00be3b347f"
+    # The "Jira Spacelift Flow" project on useflows.eu, which holds the Jira
+    # and Spacelift app installations and the JWT_SECRET / JIRA_*_STATUS secrets.
+    project_id = "01a0348d-6000-773e-81f3-3d8ec22ba3ce"
+
+    # TODO: fill once the Jira and Spacelift apps are installed in that project.
+    jira_app_id      = ""
+    spacelift_app_id = ""
   }
 }
