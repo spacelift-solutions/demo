@@ -10,15 +10,15 @@ Everything here (plugin, flow, app installations, secrets, API key) is managed b
 | Jira board (issues land here) | <https://spacelift-demo-plugin.atlassian.net/jira/software/projects/KAN/boards/2> |
 | Jira login | `spacelift-demo@theoutdoorprogrammer.com` |
 | Flows project ("Jira Spacelift Flow", useflows.eu) | <https://useflows.eu/project/01a0348d-6000-773e-81f3-3d8ec22ba3ce> |
-| Demo target stack (trigger this one) | <https://spacelift-solutions.app.spacelift.io/stack/tofusible-administrative> |
+| Demo target stack (trigger this one) | <https://spacelift-solutions.app.spacelift.io/stack/tofusible-opentofu> |
 | Infra stack (manages all of the above) | <https://spacelift-solutions.app.spacelift.io/stack/jira-approval-plugin> |
 
 Credentials are in Joey's password manager: the `jira-api-token-spacelift-demo-plugin` item holds the API token, and its notes say where the UI login password lives.
 
 ## Demo runbook
 
-1. Trigger a tracked run on the `Tofusible - Administrative` stack, which recreates its EC2 servers every run, so every run carries a cost diff.
-   The `ec2` stack also forces an instance replacement per run and works as an alternate target; give it the `jira` label in `admin/stacks_opentofu_aws.tf` to gate it.
+1. Trigger a tracked run on the `Tofusible - OpenTofu` stack, which recreates its EC2 servers every run, so every run carries a cost diff.
+   Its `jira` label lives in the tofusible repo (`stacks/admin/main.tf`), not here.
 2. Infracost estimates the plan; anything over $5/month gets flagged `infracost:too_costly` by the plan policy and the run holds at Unconfirmed.
 3. The plugin creates a Jira issue in KAN ("[Terraform Plan] ... - N change(s)") with the plan summary, cost estimate, and a signed JWT identifying the run.
    New issues start in the "Needs Approval" column.
