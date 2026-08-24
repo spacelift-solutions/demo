@@ -54,3 +54,16 @@ variable "pulumi_config_passphrase" {
   description = "Passphrase for Pulumi's secrets provider, required by the S3 state backend"
   sensitive   = true
 }
+
+variable "flows_token" {
+  type        = string
+  description = "Flows API token for the jira-approval plugin stack (flowctl auth token)"
+  sensitive   = true
+}
+
+variable "jira_api_token" {
+  type        = string
+  description = "Jira API token used by the jira-approval plugin"
+  sensitive   = true
+}
+
