@@ -67,13 +67,3 @@ variable "jira_api_token" {
   sensitive   = true
 }
 
-variable "jira_signing_key" {
-  type        = string
-  description = "JWT signing key for the jira-approval plugin, must match the Flows project's JWT_SECRET secret"
-  sensitive   = true
-}
-
-variable "jira_spacelift_api_key_id" {
-  type        = string
-  description = "ID of the Spacelift API key the jira-approval Flows flow approves runs with"
-}

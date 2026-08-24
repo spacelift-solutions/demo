@@ -1,11 +1,15 @@
 terraform {
   required_providers {
     spacelift = {
-      source = "spacelift-io/spacelift"
+      source  = "spacelift-io/spacelift"
+      version = ">= 1.48.0" # spacelift_api_key
     }
     flows = {
       source  = "spacelift-io/flows"
-      version = "0.2.0"
+      version = ">= 0.6.0" # flows_app_installation, flows_secret
+    }
+    random = {
+      source = "opentofu/random"
     }
   }
 }
@@ -17,12 +21,17 @@ provider "flows" {
   endpoint = "useflows.eu"
 }
 
+locals {
+  # The "Jira Spacelift Flow" project on useflows.eu.
+  flows_project_id = "01a0348d-6000-773e-81f3-3d8ec22ba3ce"
+}
+
 module "jira_approval" {
   source = "github.com/spacelift-solutions/plugin-jira-approval"
 
   stack_label          = "jira"
-  signing_key          = var.signing_key
-  spacelift_api_key_id = var.spacelift_api_key_id
+  signing_key          = random_password.signing_key.result
+  spacelift_api_key_id = spacelift_api_key.jira_approval.id
 
   jira = {
     url         = "https://spacelift-demo-plugin.atlassian.net"
@@ -34,8 +43,8 @@ module "jira_approval" {
     # project, so the field is project-scoped and this changes if recreated.
     custom_field_id = "customfield_10043"
 
-    # Issues land here on creation; the Flows flow reacts when a human moves
-    # them to Approved or Rejected (the JIRA_*_STATUS secrets).
+    # Issues land here on creation; the flow reacts when a human moves them to
+    # Approved or Rejected (the JIRA_*_STATUS secrets).
     initial_status = "Needs Approval"
   }
 
@@ -47,12 +56,8 @@ module "jira_approval" {
   }
 
   flows = {
-    # The "Jira Spacelift Flow" project on useflows.eu, which holds the Jira
-    # and Spacelift app installations and the JWT_SECRET / JIRA_*_STATUS secrets.
-    project_id = "01a0348d-6000-773e-81f3-3d8ec22ba3ce"
-
-    # TODO: fill once the Jira and Spacelift apps are installed in that project.
-    jira_app_id      = ""
-    spacelift_app_id = ""
+    project_id       = local.flows_project_id
+    jira_app_id      = flows_app_installation.jira.id
+    spacelift_app_id = flows_app_installation.spacelift.id
   }
 }

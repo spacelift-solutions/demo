@@ -52,10 +52,6 @@ module "stack_opentofu_spacelift_jira_approval" {
       value     = var.flows_token
       sensitive = true
     }
-    TF_VAR_signing_key = {
-      value     = var.jira_signing_key
-      sensitive = true
-    }
     TF_VAR_jira_api_token = {
       value     = var.jira_api_token
       sensitive = true
@@ -64,8 +60,8 @@ module "stack_opentofu_spacelift_jira_approval" {
       value     = var.infracost_api_key
       sensitive = true
     }
-    TF_VAR_spacelift_api_key_id = {
-      value = var.jira_spacelift_api_key_id
+    TF_VAR_admin_role_id = {
+      value = spacelift_role.admin.id
     }
   }
 
