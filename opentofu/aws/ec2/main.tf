@@ -3,11 +3,6 @@ resource "aws_key_pair" "ssh_key" {
   public_key = file(var.public_key)
 }
 
-# Forces an instance replacement every run so plans always carry a cost diff.
-resource "terraform_data" "always_replace" {
-  triggers_replace = plantimestamp()
-}
-
 resource "aws_instance" "sd_instance" {
   ami                         = data.aws_ami.dev_server_ami.id
   instance_type               = var.instance_type
@@ -18,9 +13,5 @@ resource "aws_instance" "sd_instance" {
 
   tags = {
     Name = "dev-node"
-  }
-
-  lifecycle {
-    replace_triggered_by = [terraform_data.always_replace]
   }
 }

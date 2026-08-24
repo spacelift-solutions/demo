@@ -26,8 +26,7 @@ module "stack_opentofu_spacelift_tofusible" {
     }
   }
 
-  # "jira" attaches the cost-approval plugin (see jira-approval-plugin stack).
-  labels            = ["tofusible", "admin", "jira"]
+  labels            = ["tofusible", "admin"]
   project_root      = "stacks/admin"
   repository_branch = "main"
 }
