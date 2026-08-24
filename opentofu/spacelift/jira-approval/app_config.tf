@@ -1,45 +1,46 @@
 # Field keys come from the app sources (spacelift-io/flows-app-jira and
 # flows-app-spacelift main.ts); the API exposes no schema for drafts.
+# Values are JavaScript expressions, hence jsonencode to make string literals.
 resource "flows_app_installation_config_field" "jira_url" {
   app_installation_id = flows_app_installation.jira.id
   key                 = "jiraUrl"
-  value               = "https://spacelift-demo-plugin.atlassian.net"
+  value               = jsonencode("https://spacelift-demo-plugin.atlassian.net")
 }
 
 resource "flows_app_installation_config_field" "jira_email" {
   app_installation_id = flows_app_installation.jira.id
   key                 = "email"
-  value               = "spacelift-demo@theoutdoorprogrammer.com"
+  value               = jsonencode("spacelift-demo@theoutdoorprogrammer.com")
 }
 
 resource "flows_app_installation_config_field" "jira_api_token" {
   app_installation_id = flows_app_installation.jira.id
   key                 = "apiToken"
-  value               = var.jira_api_token
+  value               = jsonencode(var.jira_api_token)
 }
 
 resource "flows_app_installation_config_field" "spacelift_api_key_id" {
   app_installation_id = flows_app_installation.spacelift.id
   key                 = "apiKeyId"
-  value               = spacelift_api_key.jira_approval.id
+  value               = jsonencode(spacelift_api_key.jira_approval.id)
 }
 
 resource "flows_app_installation_config_field" "spacelift_api_key_secret" {
   app_installation_id = flows_app_installation.spacelift.id
   key                 = "apiKeySecret"
-  value               = spacelift_api_key.jira_approval.secret
+  value               = jsonencode(spacelift_api_key.jira_approval.secret)
 }
 
 resource "flows_app_installation_config_field" "spacelift_endpoint" {
   app_installation_id = flows_app_installation.spacelift.id
   key                 = "endpoint"
-  value               = "spacelift-solutions.app.spacelift.io"
+  value               = jsonencode("spacelift-solutions.app.spacelift.io")
 }
 
 resource "flows_app_installation_config_field" "spacelift_space_id" {
   app_installation_id = flows_app_installation.spacelift.id
   key                 = "spaceId"
-  value               = "root"
+  value               = jsonencode("root")
 }
 
 resource "flows_app_installation_confirmation" "jira" {
