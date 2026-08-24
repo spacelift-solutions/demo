@@ -1,7 +1,7 @@
 resource "aws_kms_key" "secure_env_vars" {}
 
 module "aws_ec2_asg_worker_pool" {
-  source = "git::https://github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2.git?ref=v7.1.0"
+  source = "git::https://github.com/spacelift-io/terraform-aws-spacelift-workerpool-on-ec2.git?ref=fix/atomic-terminate-lifecycle-drain"
 
   env_vars = {
     SPACELIFT_TOKEN = {
@@ -36,7 +36,7 @@ module "aws_ec2_asg_worker_pool" {
     max_terminate = 5
     architecture  = var.ami_architecture
     timeout       = 60
-    version       = "v2.7.0"
+    version       = "v3.0.0-rc.1"
   }
 
   instance_refresh = {
