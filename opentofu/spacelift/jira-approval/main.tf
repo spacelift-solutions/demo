@@ -13,8 +13,9 @@ terraform {
 provider "spacelift" {}
 
 # Authenticates via FLOWS_TOKEN, set on this stack by the admin stack.
+# liftspace.net is where this Flows org lives, not the public useflows.eu.
 provider "flows" {
-  endpoint = "useflows.eu"
+  endpoint = "flows.liftspace.net"
 }
 
 module "jira_approval" {
