@@ -43,9 +43,9 @@ module "jira_approval" {
     # project, so the field is project-scoped and this changes if recreated.
     custom_field_id = "customfield_10043"
 
-    # Issues land here on creation; the flow reacts when a human moves them to
-    # Approved or Rejected (the JIRA_*_STATUS secrets).
-    initial_status = "Needs Approval"
+    # No initial_status: the plugin passes it as a create-time status field,
+    # which Jira rejects. KAN's workflow starts issues in "Needs Approval"
+    # instead; the flow reacts when a human moves them to Approved/Rejected.
   }
 
   infracost = {
