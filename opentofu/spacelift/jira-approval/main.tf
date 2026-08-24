@@ -32,6 +32,7 @@ module "jira_approval" {
   stack_label          = "jira"
   signing_key          = random_password.signing_key.result
   spacelift_api_key_id = spacelift_api_key.jira_approval.id
+  monthly_cost_input   = "input.third_party_metadata.custom.infracost.projects[0].breakdown.totalMonthlyCost"
 
   jira = {
     url         = "https://spacelift-demo-plugin.atlassian.net"
