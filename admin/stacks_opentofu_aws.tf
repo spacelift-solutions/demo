@@ -32,7 +32,7 @@ module "stack_aws_ec2" {
     enabled = true
     id      = spacelift_aws_integration.demo.id
   }
-  labels            = ["aws", "ec2", "jira"]
+  labels            = ["aws", "ec2"]
   project_root      = "opentofu/aws/ec2"
   repository_branch = "main"
   tf_version        = "1.8.4"
