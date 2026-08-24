@@ -54,3 +54,11 @@ resource "flows_secret" "denied_status" {
   key        = "JIRA_DENIED_STATUS"
   value      = "Rejected"
 }
+
+# The flow reads the JWT out of this issue field; undocumented in the plugin
+# README but referenced by flow.yaml.
+resource "flows_secret" "custom_field_id" {
+  project_id = local.flows_project_id
+  key        = "JIRA_CUSTOM_FIELD_ID"
+  value      = "customfield_10043"
+}
