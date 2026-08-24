@@ -54,3 +54,26 @@ variable "pulumi_config_passphrase" {
   description = "Passphrase for Pulumi's secrets provider, required by the S3 state backend"
   sensitive   = true
 }
+
+variable "flows_token" {
+  type        = string
+  description = "Flows API token for the jira-approval plugin stack (flowctl auth token)"
+  sensitive   = true
+}
+
+variable "jira_api_token" {
+  type        = string
+  description = "Jira API token used by the jira-approval plugin"
+  sensitive   = true
+}
+
+variable "jira_signing_key" {
+  type        = string
+  description = "JWT signing key for the jira-approval plugin, must match the Flows project's JWT_SECRET secret"
+  sensitive   = true
+}
+
+variable "jira_spacelift_api_key_id" {
+  type        = string
+  description = "ID of the Spacelift API key the jira-approval Flows flow approves runs with"
+}
