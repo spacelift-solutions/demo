@@ -1,5 +1,6 @@
 # CloudWatch Dashboard Configuration for Payments API Monitoring
 # This file defines variables, dashboard metrics, and outputs for the monitoring infrastructure.
+# Starting with a single metric; more will be added back in as template inputs.
 
 # Service name used for dashboard naming and resource identification
 variable "service_name" {
@@ -12,14 +13,48 @@ variable "environment" {
   default = "prod"
 }
 
-variable "alb_arn_suffix" {
+# AWS region CloudWatch metrics are read from.
+variable "dashboard_region" {
+  type    = string
+  default = "us-east-1"
+}
+
+# Generic CloudWatch metric coordinates, so a template input can point the
+# single widget at any namespace/metric, not just ALB PeakLCUs.
+variable "metric_namespace" {
+  type    = string
+  default = "AWS/ApplicationELB"
+}
+
+variable "metric_name" {
+  type    = string
+  default = "PeakLCUs"
+}
+
+# Leave blank for metrics with no dimension (e.g. account-wide AWS/EC2 CPUUtilization).
+variable "metric_dimension_name" {
+  type    = string
+  default = "LoadBalancer"
+}
+
+variable "metric_dimension_value" {
   type    = string
   default = "app/Spacelift-ALB/701b9c7295718017"
 }
 
-variable "eks_cluster_name" {
+variable "metric_stat" {
   type    = string
-  default = "eks-cluster"
+  default = "Average"
+}
+
+variable "metric_period" {
+  type    = number
+  default = 300
+}
+
+variable "widget_title" {
+  type    = string
+  default = "ALB Peak LCUs"
 }
 
 locals {
@@ -32,277 +67,15 @@ locals {
         width  = 12
         height = 6
         properties = {
-          title  = "ALB Peak LCUs"
-          region = "us-east-1"
-          metrics = [
-            ["AWS/ApplicationELB", "PeakLCUs", "LoadBalancer", var.alb_arn_suffix],
+          title  = var.widget_title
+          region = var.dashboard_region
+          metrics = var.metric_dimension_name != "" ? [
+            [var.metric_namespace, var.metric_name, var.metric_dimension_name, var.metric_dimension_value],
+            ] : [
+            [var.metric_namespace, var.metric_name],
           ]
-          stat   = "Average"
-          period = 300
-        }
-      },
-      {
-        type   = "metric"
-        x      = 12
-        y      = 0
-        width  = 12
-        height = 6
-        properties = {
-          title  = "Estimated Charges (USD)"
-          region = "us-east-1"
-          metrics = [
-            ["AWS/Billing", "EstimatedCharges", "Currency", "USD"],
-          ]
-          stat   = "Maximum"
-          period = 21600
-        }
-      },
-      {
-        type   = "metric"
-        x      = 0
-        y      = 6
-        width  = 12
-        height = 6
-        properties = {
-          title  = "EC2 CPU Utilization"
-          region = "us-east-1"
-          metrics = [
-            ["AWS/EC2", "CPUUtilization"],
-          ]
-          stat   = "Average"
-          period = 300
-        }
-      },
-      {
-        type   = "metric"
-        x      = 12
-        y      = 6
-        width  = 12
-        height = 6
-        properties = {
-          title  = "EKS API Server 4XX Requests"
-          region = "us-east-1"
-          metrics = [
-            ["AWS/EKS", "apiserver_request_total_4XX", "ClusterName", var.eks_cluster_name],
-          ]
-          stat   = "Sum"
-          period = 300
-        }
-      },
-      {
-        type   = "metric"
-        x      = 0
-        y      = 12
-        width  = 24
-        height = 6
-        properties = {
-          title  = "Top 10 RDS Instances by Max CPU Utilization"
-          region = "us-east-1"
-          view   = "timeSeries"
-          stat   = "Average"
-          period = 300
-          metrics = [
-            [{
-              expression = "SELECT MAX(CPUUtilization) FROM SCHEMA(\"AWS/RDS\", DBInstanceIdentifier) GROUP BY DBInstanceIdentifier ORDER BY MAX() DESC LIMIT 10"
-              id         = "q1"
-            }]
-          ]
-        }
-      },
-      {
-        type   = "metric"
-        x      = 0
-        y      = 18
-        width  = 24
-        height = 6
-        properties = {
-          title  = "EC2 Average CPU Utilization"
-          region = "us-east-1"
-          view   = "timeSeries"
-          stat   = "Average"
-          period = 300
-          metrics = [
-            [{
-              expression = "SELECT AVG(CPUUtilization) FROM SCHEMA(\"AWS/EC2\", InstanceId)"
-              id         = "q2"
-            }]
-          ]
-        }
-      },
-      {
-        type   = "metric"
-        x      = 0
-        y      = 24
-        width  = 12
-        height = 6
-        properties = {
-          title  = "ALB Peak LCUs"
-          region = "us-east-1"
-          metrics = [
-            ["AWS/ApplicationELB", "PeakLCUs", "LoadBalancer", var.alb_arn_suffix],
-          ]
-          stat   = "Average"
-          period = 60
-        }
-      },
-      {
-        type   = "metric"
-        x      = 12
-        y      = 24
-        width  = 12
-        height = 6
-        properties = {
-          title  = "Estimated Charges (USD)"
-          region = "us-east-1"
-          metrics = [
-            ["AWS/Billing", "EstimatedCharges", "Currency", "USD"],
-          ]
-          stat   = "Maximum"
-          period = 21600
-        }
-      },
-      {
-        type   = "metric"
-        x      = 0
-        y      = 12
-        width  = 24
-        height = 6
-        properties = {
-          title  = "Top 10 RDS Instances by Max CPU Utilization"
-          region = "us-east-1"
-          view   = "timeSeries"
-          stat   = "Average"
-          period = 300
-          metrics = [
-            [{
-              expression = "SELECT MAX(CPUUtilization) FROM SCHEMA(\"AWS/RDS\", DBInstanceIdentifier) GROUP BY DBInstanceIdentifier ORDER BY MAX() DESC LIMIT 10"
-              id         = "q1"
-            }]
-          ]
-        }
-      },
-      {
-        type   = "metric"
-        x      = 0
-        y      = 18
-        width  = 24
-        height = 6
-        properties = {
-          title  = "EC2 Average CPU Utilization"
-          region = "us-east-1"
-          view   = "timeSeries"
-          stat   = "Average"
-          period = 300
-          metrics = [
-            [{
-              expression = "SELECT AVG(CPUUtilization) FROM SCHEMA(\"AWS/EC2\", InstanceId)"
-              id         = "q2"
-            }]
-          ]
-        }
-      },
-      {
-        type   = "metric"
-        x      = 0
-        y      = 24
-        width  = 12
-        height = 6
-        properties = {
-          title  = "ALB Peak LCUs"
-          region = "us-east-1"
-          metrics = [
-            ["AWS/ApplicationELB", "PeakLCUs", "LoadBalancer", var.alb_arn_suffix],
-          ]
-          stat   = "Average"
-          period = 60
-        }
-      },
-      {
-        type   = "metric"
-        x      = 12
-        y      = 24
-        width  = 12
-        height = 6
-        properties = {
-          title  = "Estimated Charges (USD)"
-          region = "us-east-1"
-          metrics = [
-            ["AWS/Billing", "EstimatedCharges", "Currency", "USD"],
-          ]
-          stat   = "Maximum"
-          period = 21600
-        }
-      },
-      {
-        type   = "metric"
-        x      = 0
-        y      = 12
-        width  = 24
-        height = 6
-        properties = {
-          title  = "Top 10 RDS Instances by Max CPU Utilization"
-          region = "us-east-1"
-          view   = "timeSeries"
-          stat   = "Average"
-          period = 300
-          metrics = [
-            [{
-              expression = "SELECT MAX(CPUUtilization) FROM SCHEMA(\"AWS/RDS\", DBInstanceIdentifier) GROUP BY DBInstanceIdentifier ORDER BY MAX() DESC LIMIT 10"
-              id         = "q1"
-            }]
-          ]
-        }
-      },
-      {
-        type   = "metric"
-        x      = 0
-        y      = 18
-        width  = 24
-        height = 6
-        properties = {
-          title  = "EC2 Average CPU Utilization"
-          region = "us-east-1"
-          view   = "timeSeries"
-          stat   = "Average"
-          period = 300
-          metrics = [
-            [{
-              expression = "SELECT AVG(CPUUtilization) FROM SCHEMA(\"AWS/EC2\", InstanceId)"
-              id         = "q2"
-            }]
-          ]
-        }
-      },
-      {
-        type   = "metric"
-        x      = 0
-        y      = 24
-        width  = 12
-        height = 6
-        properties = {
-          title  = "ALB Peak LCUs"
-          region = "us-east-1"
-          metrics = [
-            ["AWS/ApplicationELB", "PeakLCUs", "LoadBalancer", var.alb_arn_suffix],
-          ]
-          stat   = "Average"
-          period = 60
-        }
-      },
-      {
-        type   = "metric"
-        x      = 12
-        y      = 24
-        width  = 12
-        height = 6
-        properties = {
-          title  = "Estimated Charges (USD)"
-          region = "us-east-1"
-          metrics = [
-            ["AWS/Billing", "EstimatedCharges", "Currency", "USD"],
-          ]
-          stat   = "Maximum"
-          period = 21600
+          stat   = var.metric_stat
+          period = var.metric_period
         }
       },
     ]
@@ -316,7 +89,7 @@ resource "aws_cloudwatch_dashboard" "this" {
 
 # Output the CloudWatch dashboard URL for easy access
 output "dashboard_url" {
-  value = "https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashboards:name=${aws_cloudwatch_dashboard.this.dashboard_name}"
+  value = "https://console.aws.amazon.com/cloudwatch/home?region=${var.dashboard_region}#dashboards:name=${aws_cloudwatch_dashboard.this.dashboard_name}"
 }
 
 resource "random_string" "demo_bucket_suffix" {
