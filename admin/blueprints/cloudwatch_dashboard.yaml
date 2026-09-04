@@ -17,27 +17,27 @@ inputs:
   - id: widget_title
     name: Widget Title
     type: short_text
-    default: ALB Peak LCUs
+    default: EC2 CPU Utilization
 
   - id: metric_namespace
     name: CloudWatch Metric Namespace
     type: short_text
-    default: AWS/ApplicationELB
+    default: AWS/EC2
 
   - id: metric_name
     name: CloudWatch Metric Name
     type: short_text
-    default: PeakLCUs
+    default: CPUUtilization
 
   - id: metric_dimension_name
     name: Metric Dimension Name (blank for no dimension)
     type: short_text
-    default: LoadBalancer
+    default: ""
 
   - id: metric_dimension_value
     name: Metric Dimension Value
     type: short_text
-    default: app/Spacelift-ALB/701b9c7295718017
+    default: ""
 
   - id: metric_stat
     name: Metric Statistic (Average, Maximum, Sum, ...)
@@ -50,11 +50,12 @@ inputs:
     default: "300"
 
 stacks:
-  - name: cloudwatch-dashboard-${{ inputs.service_name }}-${{ inputs.environment }}
-    key: cloudwatch_dashboard
+  - name: cloudwatch-dashboard-ec2cpu-${{ inputs.service_name }}-${{ inputs.environment }}
+    key: cloudwatch_dashboard_ec2_cpu
     description: >
-      Creates a CloudWatch dashboard starting with the ALB Peak LCUs metric.
-      More metrics will be added as additional template inputs over time.
+      Creates a CloudWatch dashboard showing account-wide EC2 CPU Utilization
+      (no dimension), using the same generic single-metric OpenTofu module as
+      the ALB Peak LCUs blueprint.
     attachments:
       clouds:
         aws:
@@ -89,10 +90,10 @@ stacks:
         - name: TF_VAR_metric_period
           value: "${{ inputs.metric_period }}"
     vcs:
-      reference:
-        type: BRANCH
+      reference: 
+        type: branch
         value: main
-      repository: "spacelift-solutions/demo"
+      repository: "demo"
       provider: GITHUB
       project_root: "opentofu/aws/cloudwatch_dashboard"
     vendor:
