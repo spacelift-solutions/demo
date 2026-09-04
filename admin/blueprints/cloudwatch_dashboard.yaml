@@ -47,7 +47,7 @@ inputs:
   - id: metric_period
     name: Metric Period (seconds)
     type: number
-    default: "300"
+    default: 300
 
 stacks:
   - name: cloudwatch-dashboard-ec2cpu-${{ inputs.service_name }}-${{ inputs.environment }}
