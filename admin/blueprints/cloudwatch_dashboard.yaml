@@ -1,0 +1,102 @@
+inputs:
+  - id: service_name
+    name: Dashboard Service Name
+    type: short_text
+    default: payments-api
+
+  - id: environment
+    name: Environment
+    type: short_text
+    default: prod
+
+  - id: dashboard_region
+    name: AWS Region for Metrics
+    type: short_text
+    default: us-east-1
+
+  - id: widget_title
+    name: Widget Title
+    type: short_text
+    default: ALB Peak LCUs
+
+  - id: metric_namespace
+    name: CloudWatch Metric Namespace
+    type: short_text
+    default: AWS/ApplicationELB
+
+  - id: metric_name
+    name: CloudWatch Metric Name
+    type: short_text
+    default: PeakLCUs
+
+  - id: metric_dimension_name
+    name: Metric Dimension Name (blank for no dimension)
+    type: short_text
+    default: LoadBalancer
+
+  - id: metric_dimension_value
+    name: Metric Dimension Value
+    type: short_text
+    default: app/Spacelift-ALB/701b9c7295718017
+
+  - id: metric_stat
+    name: Metric Statistic (Average, Maximum, Sum, ...)
+    type: short_text
+    default: Average
+
+  - id: metric_period
+    name: Metric Period (seconds)
+    type: number
+    default: "300"
+
+stacks:
+  - name: cloudwatch-dashboard-${{ inputs.service_name }}-${{ inputs.environment }}
+    key: cloudwatch_dashboard
+    description: >
+      Creates a CloudWatch dashboard starting with the ALB Peak LCUs metric.
+      More metrics will be added as additional template inputs over time.
+    attachments:
+      clouds:
+        aws:
+          id: 01JAZPBRW3K2YB0K7F58NZSDY6
+          read: true
+          write: true
+    labels:
+      - "blueprint"
+      - "cloudwatch"
+      - "service:${{ inputs.service_name }}"
+      - "environment:${{ inputs.environment }}"
+    environment:
+      variables:
+        - name: TF_VAR_service_name
+          value: ${{ inputs.service_name }}
+        - name: TF_VAR_environment
+          value: ${{ inputs.environment }}
+        - name: TF_VAR_dashboard_region
+          value: ${{ inputs.dashboard_region }}
+        - name: TF_VAR_widget_title
+          value: ${{ inputs.widget_title }}
+        - name: TF_VAR_metric_namespace
+          value: ${{ inputs.metric_namespace }}
+        - name: TF_VAR_metric_name
+          value: ${{ inputs.metric_name }}
+        - name: TF_VAR_metric_dimension_name
+          value: ${{ inputs.metric_dimension_name }}
+        - name: TF_VAR_metric_dimension_value
+          value: ${{ inputs.metric_dimension_value }}
+        - name: TF_VAR_metric_stat
+          value: ${{ inputs.metric_stat }}
+        - name: TF_VAR_metric_period
+          value: "${{ inputs.metric_period }}"
+    vcs:
+      reference:
+        type: BRANCH
+        value: main
+      repository: "spacelift-solutions/demo"
+      provider: GITHUB
+      project_root: "opentofu/aws/cloudwatch_dashboard"
+    vendor:
+      terraform:
+        manage_state: true
+        version: "1.9.1"
+        workflow_tool: OPEN_TOFU
