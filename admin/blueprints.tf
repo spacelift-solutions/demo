@@ -16,7 +16,7 @@ resource "spacelift_blueprint" "minesible" {
 
 resource "spacelift_blueprint" "cloudwatch_dashboard" {
   name        = "CloudWatch Dashboard Blueprint"
-  description = "Creates a CloudWatch dashboard driven by template inputs, starting with the ALB Peak LCUs metric"
+  description = "Creates a CloudWatch dashboard for any metric in your AWS account"
   space       = "root"
   state       = "PUBLISHED"
   template    = file("blueprints/cloudwatch_dashboard.yaml")
