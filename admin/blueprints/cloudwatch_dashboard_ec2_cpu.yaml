@@ -90,10 +90,10 @@ stacks:
         - name: TF_VAR_metric_period
           value: "${{ inputs.metric_period }}"
     vcs:
-      reference:
-        type: BRANCH
+      reference: 
+        type: branch
         value: main
-      repository: "spacelift-solutions/demo"
+      repository: "demo"
       provider: GITHUB
       project_root: "opentofu/aws/cloudwatch_dashboard"
     vendor:

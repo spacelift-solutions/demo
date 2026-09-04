@@ -22,14 +22,6 @@ resource "spacelift_blueprint" "cloudwatch_dashboard" {
   template    = file("blueprints/cloudwatch_dashboard.yaml")
 }
 
-resource "spacelift_blueprint" "cloudwatch_dashboard_ec2_cpu" {
-  name        = "CloudWatch Dashboard Blueprint - EC2 CPU"
-  description = "Creates a CloudWatch dashboard showing account-wide EC2 CPU Utilization"
-  space       = "root"
-  state       = "PUBLISHED"
-  template    = file("blueprints/cloudwatch_dashboard_ec2_cpu.yaml")
-}
-
 // Commenting out TEMPORARILY in order to deploy without errors:
 
 // resource "spacelift_blueprint" "minesible" {
