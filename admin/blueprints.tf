@@ -14,14 +14,6 @@ resource "spacelift_blueprint" "minesible" {
   template    = file("blueprints/minesible.yaml")
 }
 
-resource "spacelift_blueprint" "cloudwatch_dashboard" {
-  name        = "CloudWatch Dashboard Blueprint"
-  description = "Creates a CloudWatch dashboard for any metric in your AWS account"
-  space       = "root"
-  state       = "PUBLISHED"
-  template    = file("blueprints/cloudwatch_dashboard.yaml")
-}
-
 // Commenting out TEMPORARILY in order to deploy without errors:
 
 // resource "spacelift_blueprint" "minesible" {
