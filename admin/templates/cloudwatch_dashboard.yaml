@@ -1,3 +1,5 @@
+space: opentofu-01JB2XV5E3ZR3NDTKCN80KS6RH #AWS/opentofu space ID
+
 inputs:
   - id: service_name
     name: Dashboard Service Name
@@ -63,7 +65,7 @@ stacks:
           read: true
           write: true
     labels:
-      - "blueprint"
+      - "template"
       - "cloudwatch"
       - "service:${{ inputs.service_name }}"
       - "environment:${{ inputs.environment }}"
@@ -90,7 +92,7 @@ stacks:
         - name: TF_VAR_metric_period
           value: "${{ inputs.metric_period }}"
     vcs:
-      reference: 
+      reference:
         type: branch
         value: main
       repository: "demo"
