@@ -24,6 +24,34 @@ module "stack_opentofu_spacelift_tofusible" {
       value     = "us-east-1"
       sensitive = false
     }
+    TF_VAR_aws_default_region = {
+      value = "us-east-1"
+    }
+    TF_VAR_aws_integration_id = {
+      value = spacelift_aws_integration.demo.id
+    }
+    TF_VAR_resource_space_id = {
+      value = spacelift_space.aws_opentofu.id
+    }
+    TF_VAR_ansible_worker_pool_id = {
+      value = spacelift_worker_pool.aws_ec2_asg.id
+    }
+  }
+
+  dependencies = {
+    VPC = {
+      parent_stack_id = module.stack_opentofu_aws_vpc.id
+      references = {
+        SUBNET = {
+          output_name = "subnet_id"
+          input_name  = "TF_VAR_subnet_id"
+        }
+        SECURITY_GROUP = {
+          output_name = "dev_sg"
+          input_name  = "TF_VAR_vpc_security_group_id"
+        }
+      }
+    }
   }
 
   labels            = ["tofusible", "admin"]
