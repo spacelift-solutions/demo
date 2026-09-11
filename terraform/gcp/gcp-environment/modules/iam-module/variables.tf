@@ -25,7 +25,6 @@ variable "devops_principals" {
     "user:emina@spacelift.io",
     "user:joeys@spacelift.io",
     "user:jubrann@spacelift.io",
-    "user:maring@spacelift.io",
     "user:chrisd@spacelift.io",
     "user:aaronc@spacelift.io"
   ]
