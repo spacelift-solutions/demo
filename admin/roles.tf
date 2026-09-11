@@ -4,11 +4,13 @@ resource "spacelift_role" "admin" {
   actions     = ["SPACE_ADMIN"]
 }
 
-data "spacelift_idp_group_mapping" "solutions_engineering" {
-  name = "solutions-engineering"
+resource "spacelift_idp_group_mapping" "solutions_engineering" {
+  name        = "solutions-engineering"
+  description = "GitHub team solutions-engineering"
 }
 resource "spacelift_role" "default_solutions_engineering_role" {
-  name = "default solutions engineering role"
+  name        = "default solutions engineering role"
+  description = "Default role for solutions engineering team"
 
   actions = [
     "RUN_CANCEL",
@@ -31,7 +33,7 @@ resource "spacelift_role" "default_solutions_engineering_role" {
 }
 
 resource "spacelift_role_attachment" "default_solutions_engineering_role_attachment" {
-  idp_group_mapping_id = data.spacelift_idp_group_mapping.solutions_engineering.id
+  idp_group_mapping_id = spacelift_idp_group_mapping.solutions_engineering.id
   role_id              = spacelift_role.default_solutions_engineering_role.id
   space_id             = "root"
 }
