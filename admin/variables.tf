@@ -11,17 +11,6 @@ variable "project_id" {
   sensitive   = true
 }
 // <
-variable "dd_api_key" {
-  type        = string
-  description = "API key for the DD integration"
-  sensitive   = true
-}
-
-variable "dd_site" {
-  type        = string
-  description = "Datadog site (hostname) to send metrics to."
-}
-
 variable "audit_trail_endpoint" {
   type        = string
   description = "AWS endpoint to send audit trail events to. Empty until the events-collector stack has applied; the webhook is skipped while empty."
