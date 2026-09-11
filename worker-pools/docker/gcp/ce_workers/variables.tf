@@ -1,3 +1,8 @@
+variable "project" {
+  type        = string
+  description = "GCP project that hosts the workers"
+}
+
 variable "ce_worker_pool_config" {
   type        = string
   description = "worker pool token needed for the ASG"
