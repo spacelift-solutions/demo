@@ -33,6 +33,24 @@ module "stack_aws_ec2" {
   tf_version        = "1.8.4"
 }
 
+module "stack_opentofu_aws_vpc" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "creates the dev VPC, public subnet and security group used by the EC2 stacks"
+  name            = "opentofu-aws-vpc"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  auto_deploy       = true
+  labels            = ["aws", "vpc", "opentofu"]
+  project_root      = "opentofu/aws/vpc"
+  repository_branch = "main"
+}
+
 module "stack_aws_ec2_asg_worker_pool" {
   source          = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
   description     = "stack to deploy private workers on AWS EC2 ASG"
@@ -48,6 +66,9 @@ module "stack_aws_ec2_asg_worker_pool" {
   repository_branch = "main"
   tf_version        = "1.8.4"
   dependencies = {
+    VPC = {
+      parent_stack_id = module.stack_opentofu_aws_vpc.id
+    }
     ADMIN = {
       parent_stack_id = data.spacelift_current_stack.admin.id
       references = {
