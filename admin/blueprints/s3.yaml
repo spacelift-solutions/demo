@@ -9,26 +9,26 @@ inputs:
       - Security Team
       - Application Team
 stack:
-  name: blueprint-bucket ${{ inputs.bucket_name }}
+  name: blueprint-bucket $${{ inputs.bucket_name }}
   space: root
   description: >
     Creates an arbitrary s3 bucket
   attachments:
     clouds:
       aws: 
-        id: 01JAZPBRW3K2YB0K7F58NZSDY6
+        id: ${aws_integration_id}
         read: true
         write: true
   labels:
     - "blueprint"
-    - "team:${{ inputs.team_identifier }}"
-    - "bucket:${{ inputs.bucket_name }}"
+    - "team:$${{ inputs.team_identifier }}"
+    - "bucket:$${{ inputs.bucket_name }}"
   auto_deploy: true
   local_preview_enabled: true
   environment:
     variables:
       - name: TF_VAR_bucket_name
-        value: ${{ inputs.bucket_name }}
+        value: $${{ inputs.bucket_name }}
   vcs:
     branch: main
     repository: "spacelift-solutions/demo"

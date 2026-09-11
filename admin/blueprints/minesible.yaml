@@ -26,11 +26,11 @@ stacks:
 #Stack 1: Opentofu Stack
 
 #Opentofu Stack Metadata
-- name: Minesible-Opentofu-Blueprint-${{ context.random_string }}
-  space: opentofu-01JB2XV5E3ZR3NDTKCN80KS6RH #AWS/opentofu space ID
-  worker_pool: 01JCZY4WD38EJS5S94B64E0V1Z
+- name: Minesible-Opentofu-Blueprint-$${{ context.random_string }}
+  space: ${aws_opentofu_space_id}
+  worker_pool: ${ec2_worker_pool_id}
   description: >
-    Minecraft server infra stack created from blueprint by ${{ context.user.name }}.
+    Minecraft server infra stack created from blueprint by $${{ context.user.name }}.
   labels:
     - minesible #Used for search and view filtering
   key: stack1 #Used for stack dependency
@@ -54,7 +54,7 @@ stacks:
   attachments:
     clouds:
       aws:
-        id: 01JAZPBRW3K2YB0K7F58NZSDY6
+        id: ${aws_integration_id}
         read: true
         write: true
 
@@ -62,18 +62,18 @@ stacks:
   environment:
     variables:
       - name: TF_VAR_s3_bucket
-        value: ${{ inputs.s3_bucket }}
+        value: $${{ inputs.s3_bucket }}
         description: S3 bucket for Minecraft world saves
 
       - name: TF_VAR_instance_type
-        value: ${{ inputs.instance_type }}
+        value: $${{ inputs.instance_type }}
 
       - name: TF_VAR_motd
-        value: ${{ inputs.motd }}
+        value: $${{ inputs.motd }}
 
       - name: TF_VAR_max_players
-         # Have to pass numbers with the forced string syntax "${{ inputs.<name> }}" - Slightly different from normal string (OpenTofu will convert back to number)
-        value: "${{ inputs.max_players }}"
+         # Have to pass numbers with the forced string syntax "$${{ inputs.<name> }}" - Slightly different from normal string (OpenTofu will convert back to number)
+        value: "$${{ inputs.max_players }}"
 
   #Opentofu Hooks (Zip world folder and upload to s3 bucket defined in input/default)
   hooks:
@@ -106,9 +106,9 @@ stacks:
 #Stack 2: Ansible Stack
 
 #Ansible Stack Metadata
-- name: Minesible-Ansible-Blueprint-${{ context.random_string }}
-  space: opentofu-01JB2XV5E3ZR3NDTKCN80KS6RH #AWS/opentofu space ID
-  worker_pool: 01JCZY4WD38EJS5S94B64E0V1Z
+- name: Minesible-Ansible-Blueprint-$${{ context.random_string }}
+  space: ${aws_opentofu_space_id}
+  worker_pool: ${ec2_worker_pool_id}
   labels:
   - minesible #Used to auto attach context (EC2 pem key, server image)
   key: stack2 #Used for stack dependency
