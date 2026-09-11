@@ -1,0 +1,15 @@
+# SOPS ciphertext stored in historical Kubernetes fixtures.
+8c66caa810aa142e26d60f704b81b2b845561c04:kubernetes/aws/backstage/postgres-secrets.yaml:generic-password:11
+8c66caa810aa142e26d60f704b81b2b845561c04:kubernetes/aws/catalog/secret.yaml:generic-password:7
+8c66caa810aa142e26d60f704b81b2b845561c04:kubernetes/aws/orders/secret.yaml:generic-password:8
+8c66caa810aa142e26d60f704b81b2b845561c04:kubernetes/aws/rabbitmq/secret.yaml:generic-password:32
+b646353bec540c8cfc73686d855ad70703456288:kubernetes/aws/rabbitmq/secret.yaml:generic-password:32
+b646353bec540c8cfc73686d855ad70703456288:kubernetes/aws/orders/secret.yaml:generic-password:8
+b646353bec540c8cfc73686d855ad70703456288:kubernetes/aws/catalog/secret.yaml:generic-password:7
+0b66a63807db3c884a0d6eb99448e396f3272527:kubernetes/aws/backstage/postgres-secrets.yaml:generic-password:4
+4d7f0e97dfb0a3f220cbe089c4da6fd9e552a200:kubernetes/aws/orders/secret.yaml:generic-password:9
+4d7f0e97dfb0a3f220cbe089c4da6fd9e552a200:kubernetes/aws/catalog/secret.yaml:generic-password:7
+4d7f0e97dfb0a3f220cbe089c4da6fd9e552a200:kubernetes/aws/rabbitmq/secret.yaml:generic-password:38
+
+# SHA-256 checksum annotation in a historical Kubernetes fixture.
+4d7f0e97dfb0a3f220cbe089c4da6fd9e552a200:kubernetes/aws/rabbitmq/statefulset.yaml:generic-api-key:26
