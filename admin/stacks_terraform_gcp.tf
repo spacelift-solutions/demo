@@ -211,11 +211,11 @@ module "stack_gcp_gke" {
   hooks = {
     after = {
       apply = [
-        "chmod +x scripts/gcp-stop-resources.sh",
+        "chmod +x ../../scripts/gcp-stop-resources.sh",
         "export GCP_PROJECT_ID=$TF_VAR_project_id",
         "export GKE_CLUSTER_NAME=$TF_VAR_gke_cluster_name",
         "export GKE_CLUSTER_LOCATION=$TF_VAR_cluster_location",
-        "./scripts/gcp-stop-resources.sh"
+        "../../scripts/gcp-stop-resources.sh"
       ]
     }
   }
@@ -274,9 +274,9 @@ module "stack_gcp_db" {
   hooks = {
     after = {
       apply = [
-        "chmod +x scripts/gcp-stop-resources.sh",
+        "chmod +x ../../scripts/gcp-stop-resources.sh",
         "export GCP_PROJECT_ID=$TF_VAR_project_id",
-        "./scripts/gcp-stop-resources.sh"
+        "../../scripts/gcp-stop-resources.sh"
       ]
     }
   }
