@@ -142,21 +142,24 @@ module "stack_aws_audit_event_collector" {
       value     = ""
     }
   }
-  # this dependecy needs to be defined after this stack is applied in order to get around the chicken and egg situation
+  # Spacelift refuses to run a stack whose referenced inputs have no value yet, so
+  # the admin stack can only depend on this one once it has applied.
   dependencies = {
-    ADMIN = {
-      child_stack_id = data.spacelift_current_stack.admin.id
-      references = {
-        ENDPOINT = {
-          output_name = "courier_url"
-          input_name  = "TF_VAR_audit_trail_endpoint"
-        }
-        SECRET = {
-          output_name = "audit_trail_secret"
-          input_name  = "TF_VAR_audit_trail_secret"
+    for key, dependency in {
+      ADMIN = {
+        child_stack_id = data.spacelift_current_stack.admin.id
+        references = {
+          ENDPOINT = {
+            output_name = "courier_url"
+            input_name  = "TF_VAR_audit_trail_endpoint"
+          }
+          SECRET = {
+            output_name = "audit_trail_secret"
+            input_name  = "TF_VAR_audit_trail_secret"
+          }
         }
       }
-    }
+    } : key => dependency if var.audit_trail_endpoint != ""
   }
   labels = ["aws", "s3", "lambda"]
 }
