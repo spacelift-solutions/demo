@@ -24,7 +24,8 @@ variable "dd_site" {
 
 variable "audit_trail_endpoint" {
   type        = string
-  description = "AWS endpoint to send audit trail events to"
+  description = "AWS endpoint to send audit trail events to. Empty until the events-collector stack has applied; the webhook is skipped while empty."
+  default     = ""
 }
 
 variable "audit_trail_secret" {
