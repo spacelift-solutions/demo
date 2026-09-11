@@ -3,7 +3,9 @@ resource "spacelift_blueprint" "s3_blueprint" {
   description = "creates an s3 bucket"
   space       = "root"
   state       = "PUBLISHED"
-  template    = file("blueprints/s3.yaml")
+  template = templatefile("blueprints/s3.yaml", {
+    aws_integration_id = spacelift_aws_integration.demo.id
+  })
 }
 
 resource "spacelift_blueprint" "minesible" {
@@ -11,15 +13,9 @@ resource "spacelift_blueprint" "minesible" {
   description = "DIY Minecraft Servers!"
   space       = spacelift_space.aws_opentofu.id
   state       = "PUBLISHED"
-  template    = file("blueprints/minesible.yaml")
+  template = templatefile("blueprints/minesible.yaml", {
+    aws_opentofu_space_id = spacelift_space.aws_opentofu.id
+    aws_integration_id    = spacelift_aws_integration.demo.id
+    ec2_worker_pool_id    = spacelift_worker_pool.aws_ec2_asg.id
+  })
 }
-
-// Commenting out TEMPORARILY in order to deploy without errors:
-
-// resource "spacelift_blueprint" "minesible" {
-// name        = "minesible"
-// description = "DIY Minecraft Servers"
-// space       = "root"
-// state       = "PUBLISHED"
-// template    = file("blueprints/minesible.yaml")
-// }

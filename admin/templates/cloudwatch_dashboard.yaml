@@ -1,4 +1,4 @@
-space: opentofu-01JB2XV5E3ZR3NDTKCN80KS6RH #AWS/opentofu space ID
+space: ${aws_opentofu_space_id}
 
 inputs:
   - id: service_name
@@ -52,7 +52,7 @@ inputs:
     default: 300
 
 stacks:
-  - name: cloudwatch-dashboard-ec2cpu-${{ inputs.service_name }}-${{ inputs.environment }}
+  - name: cloudwatch-dashboard-ec2cpu-$${{ inputs.service_name }}-$${{ inputs.environment }}
     key: cloudwatch_dashboard_ec2_cpu
     description: >
       Creates a CloudWatch dashboard showing account-wide EC2 CPU Utilization
@@ -61,36 +61,36 @@ stacks:
     attachments:
       clouds:
         aws:
-          id: 01JAZPBRW3K2YB0K7F58NZSDY6
+          id: ${aws_integration_id}
           read: true
           write: true
     labels:
       - "template"
       - "cloudwatch"
-      - "service:${{ inputs.service_name }}"
-      - "environment:${{ inputs.environment }}"
+      - "service:$${{ inputs.service_name }}"
+      - "environment:$${{ inputs.environment }}"
     environment:
       variables:
         - name: TF_VAR_service_name
-          value: ${{ inputs.service_name }}
+          value: $${{ inputs.service_name }}
         - name: TF_VAR_environment
-          value: ${{ inputs.environment }}
+          value: $${{ inputs.environment }}
         - name: TF_VAR_dashboard_region
-          value: ${{ inputs.dashboard_region }}
+          value: $${{ inputs.dashboard_region }}
         - name: TF_VAR_widget_title
-          value: ${{ inputs.widget_title }}
+          value: $${{ inputs.widget_title }}
         - name: TF_VAR_metric_namespace
-          value: ${{ inputs.metric_namespace }}
+          value: $${{ inputs.metric_namespace }}
         - name: TF_VAR_metric_name
-          value: ${{ inputs.metric_name }}
+          value: $${{ inputs.metric_name }}
         - name: TF_VAR_metric_dimension_name
-          value: ${{ inputs.metric_dimension_name }}
+          value: $${{ inputs.metric_dimension_name }}
         - name: TF_VAR_metric_dimension_value
-          value: ${{ inputs.metric_dimension_value }}
+          value: $${{ inputs.metric_dimension_value }}
         - name: TF_VAR_metric_stat
-          value: ${{ inputs.metric_stat }}
+          value: $${{ inputs.metric_stat }}
         - name: TF_VAR_metric_period
-          value: "${{ inputs.metric_period }}"
+          value: "$${{ inputs.metric_period }}"
     vcs:
       reference:
         type: branch
