@@ -7,6 +7,10 @@ terraform {
   }
 }
 
+provider "google" {
+  project = var.project
+}
+
 module "gcp_ce_workerpool" {
   source = "github.com/spacelift-io/terraform-google-spacelift-workerpool?ref=v1.2.0"
 
