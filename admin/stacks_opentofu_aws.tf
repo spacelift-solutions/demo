@@ -160,7 +160,7 @@ module "stack_aws_audit_event_collector" {
   environment_variables = {
     TF_VAR_audit_trail_secret = {
       sensitive = true
-      value     = ""
+      value     = var.audit_trail_secret
     }
   }
   # Spacelift refuses to run a stack whose referenced inputs have no value yet, so
@@ -173,10 +173,6 @@ module "stack_aws_audit_event_collector" {
           ENDPOINT = {
             output_name = "courier_url"
             input_name  = "TF_VAR_audit_trail_endpoint"
-          }
-          SECRET = {
-            output_name = "audit_trail_secret"
-            input_name  = "TF_VAR_audit_trail_secret"
           }
         }
       }
