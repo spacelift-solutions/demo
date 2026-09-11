@@ -1,8 +1,3 @@
-# Data source to reference EKS cluster stack from Terraform space
-data "spacelift_stack" "eks_cluster" {
-  stack_id = "eks-cluster"
-}
-
 module "stack_opentofu_aws_s3" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
@@ -107,7 +102,7 @@ module "stack_aws_eks_worker_pool" {
       }
     }
     EKS = {
-      parent_stack_id = data.spacelift_stack.eks_cluster.id
+      parent_stack_id = module.stack_aws_eks_kubernetes_example.id
       references = {
         CLUSTER_NAME = {
           output_name = "cluster_name"
