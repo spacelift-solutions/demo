@@ -4,7 +4,7 @@ resource "spacelift_module" "stacks_module" {
   administrative       = true
   branch               = "main"
   description          = "module used to standardize creation of stacks"
-  repository           = "module-stacks"
+  repository           = "terraform-spacelift-stack"
   space_id             = "root"
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
