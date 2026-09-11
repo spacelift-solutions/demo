@@ -31,6 +31,22 @@ module "stack_aws_ec2" {
   project_root      = "opentofu/aws/ec2"
   repository_branch = "main"
   tf_version        = "1.8.4"
+
+  dependencies = {
+    VPC = {
+      parent_stack_id = module.stack_opentofu_aws_vpc.id
+      references = {
+        SUBNET = {
+          output_name = "subnet_id"
+          input_name  = "TF_VAR_subnet_id"
+        }
+        SECURITY_GROUP = {
+          output_name = "dev_sg"
+          input_name  = "TF_VAR_aws_security_group_id"
+        }
+      }
+    }
+  }
 }
 
 module "stack_opentofu_aws_vpc" {
