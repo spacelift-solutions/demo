@@ -1,3 +1,9 @@
+resource "spacelift_role" "admin" {
+  name        = "Admin Role"
+  description = "Role with full administrative privileges"
+  actions     = ["SPACE_ADMIN"]
+}
+
 data "spacelift_idp_group_mapping" "solutions_engineering" {
   name = "solutions-engineering"
 }
