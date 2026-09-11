@@ -5,7 +5,7 @@ resource "spacelift_module" "stacks_module" {
   branch               = "main"
   description          = "module used to standardize creation of stacks"
   repository           = "terraform-spacelift-stack"
-  space_id             = "root"
+  space_id             = spacelift_space.modules.id
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true
@@ -19,7 +19,7 @@ resource "spacelift_module" "context_trigger_plugin_module" {
   branch               = "main"
   description          = "Plugin that triggers stacks on context changes."
   repository           = "plugin-context-trigger"
-  space_id             = "root"
+  space_id             = spacelift_space.modules.id
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true
@@ -33,7 +33,7 @@ resource "spacelift_module" "sops_plugin_module" {
   branch               = "main"
   description          = "Plugin that manages sops encrypted files."
   repository           = "plugin-sops"
-  space_id             = "root"
+  space_id             = spacelift_space.modules.id
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true
@@ -47,7 +47,7 @@ resource "spacelift_module" "infracost_plugin_module" {
   branch               = "main"
   description          = "Plugin that creates the necessary context to integrate with infracost"
   repository           = "plugin-infracost"
-  space_id             = "root"
+  space_id             = spacelift_space.modules.id
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true
@@ -61,7 +61,7 @@ resource "spacelift_module" "signed_runs_plugin_module" {
   branch               = "main"
   description          = "Spacelift plugin that signs runs with Spacelift inside GitHub"
   repository           = "plugin-signed-runs"
-  space_id             = "root"
+  space_id             = spacelift_space.modules.id
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true
@@ -76,7 +76,7 @@ resource "spacelift_module" "tofusible_host_module" {
   description          = "Spacelift module for creating hosts for Tofusible"
   repository           = "tofusible"
   project_root         = "modules/tofusible_host"
-  space_id             = "root"
+  space_id             = spacelift_space.modules.id
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true
@@ -90,7 +90,7 @@ resource "spacelift_module" "loki_plugin_module" {
   branch               = "main"
   description          = "Spacelift plugin that sends information to Loki"
   repository           = "plugin-loki"
-  space_id             = "root"
+  space_id             = spacelift_space.modules.id
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true
@@ -106,7 +106,7 @@ resource "spacelift_module" "prometheus_monitoring_module" {
   branch               = "main"
   description          = "Spacelift Grafana monitoring module for observability stack on GKE"
   repository           = "module-prometheus-monitoring"
-  space_id             = "root"
+  space_id             = spacelift_space.modules.id
   workflow_tool        = "OPEN_TOFU"
   enable_local_preview = true
   public               = true
