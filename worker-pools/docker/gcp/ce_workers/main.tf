@@ -11,6 +11,22 @@ provider "google" {
   project = var.project
 }
 
+# The module gives workers no external IP, so the region needs Cloud NAT for
+# them to reach Spacelift.
+resource "google_compute_router" "workers" {
+  name    = "spacelift-workers-router"
+  region  = "us-central1"
+  network = "default"
+}
+
+resource "google_compute_router_nat" "workers" {
+  name                               = "spacelift-workers-nat"
+  router                             = google_compute_router.workers.name
+  region                             = google_compute_router.workers.region
+  nat_ip_allocate_option             = "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+}
+
 module "gcp_ce_workerpool" {
   source = "github.com/spacelift-io/terraform-google-spacelift-workerpool?ref=v1.2.0"
 
