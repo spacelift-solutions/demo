@@ -39,8 +39,8 @@ Add these as **stack variables**:
 | Variable | Value | Type | Sensitive |
 |----------|-------|------|-----------|
 | `spacelift_api_key_endpoint` | `https://spacelift-solutions.app.spacelift.io/graphql` | Environment | No |
-| `spacelift_api_key_id` | `***REMOVED***` | Environment | Yes ✅ |
-| `spacelift_api_key_secret` | `***REMOVED***` | Environment | Yes ✅ |
+| `spacelift_api_key_id` | `<create key on spacelift account>` | Environment | Yes ✅ |
+| `spacelift_api_key_secret` | `<copy from key secret once you create your key>` | Environment | Yes ✅ |
 
 ### 3. Handle Worker Pool Configuration File
 
