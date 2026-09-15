@@ -8,32 +8,33 @@ resource "spacelift_idp_group_mapping" "solutions_engineering" {
   name        = "solutions-engineering"
   description = "GitHub team solutions-engineering"
 }
-resource "spacelift_role" "default_solutions_engineering_role" {
-  name        = "default solutions engineering role"
-  description = "Default role for solutions engineering team"
 
-  actions = [
-    "RUN_CANCEL",
-    "RUN_CANCEL_BLOCKING",
-    "RUN_COMMENT",
-    "RUN_CONFIRM",
-    "RUN_DISCARD",
-    "RUN_KILL",
-    "RUN_KILL_BLOCKING",
-    "RUN_PRIORITIZE_SET",
-    "RUN_RETRY",
-    "RUN_RETRY_BLOCKING",
-    "RUN_REVIEW",
-    "RUN_STOP",
-    "RUN_STOP_BLOCKING",
-    "RUN_TARGETED_REPLAN",
-    "RUN_TRIGGER",
-    "SPACE_READ",
-  ]
-}
+# resource "spacelift_role" "default_solutions_engineering_role" {
+#   name        = "default solutions engineering role"
+#   description = "Default role for solutions engineering team"
+
+#   actions = [
+#     "RUN_CANCEL",
+#     "RUN_CANCEL_BLOCKING",
+#     "RUN_COMMENT",
+#     "RUN_CONFIRM",
+#     "RUN_DISCARD",
+#     "RUN_KILL",
+#     "RUN_KILL_BLOCKING",
+#     "RUN_PRIORITIZE_SET",
+#     "RUN_RETRY",
+#     "RUN_RETRY_BLOCKING",
+#     "RUN_REVIEW",
+#     "RUN_STOP",
+#     "RUN_STOP_BLOCKING",
+#     "RUN_TARGETED_REPLAN",
+#     "RUN_TRIGGER",
+#     "SPACE_READ",
+#   ]
+# }
 
 resource "spacelift_role_attachment" "default_solutions_engineering_role_attachment" {
   idp_group_mapping_id = spacelift_idp_group_mapping.solutions_engineering.id
-  role_id              = spacelift_role.default_solutions_engineering_role.id
+  role_id              = spacelift_role.admin.id
   space_id             = "root"
 }
