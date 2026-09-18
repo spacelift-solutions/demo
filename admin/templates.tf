@@ -14,3 +14,17 @@ resource "spacelift_template_version" "cloudwatch_dashboard_v1" {
     aws_integration_id    = spacelift_aws_integration.demo.id
   })
 }
+
+resource "spacelift_template" "github_repository" {
+  name        = "GitHub Repository Template"
+  description = "Creates a Spacelift Solutions repository with the shared checks and rulesets"
+  space       = "root"
+  labels      = ["github", "repository"]
+}
+
+resource "spacelift_template_version" "github_repository_v1" {
+  template_id    = spacelift_template.github_repository.id
+  version_number = "1.0.0"
+  state          = "PUBLISHED"
+  template       = file("templates/github-repository.yaml")
+}
