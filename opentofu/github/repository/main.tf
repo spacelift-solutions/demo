@@ -9,6 +9,12 @@ terraform {
 
 provider "github" {
   owner = "spacelift-solutions"
+
+  app_auth {
+    id              = var.github_app_id
+    installation_id = var.github_app_installation_id
+    pem_file        = try(file("/mnt/workspace/github-app.pem"), "")
+  }
 }
 
 resource "github_repository" "this" {
@@ -16,6 +22,15 @@ resource "github_repository" "this" {
   description = var.repository_description
   visibility  = var.repository_visibility
 
-  archive_on_destroy = true
-  auto_init          = true
+  archive_on_destroy     = true
+  delete_branch_on_merge = true
+  allow_merge_commit     = false
+  allow_rebase_merge     = false
+  allow_squash_merge     = true
+
+  template {
+    owner                = "spacelift-solutions"
+    repository           = "repository-template"
+    include_all_branches = false
+  }
 }

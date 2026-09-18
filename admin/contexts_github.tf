@@ -11,17 +11,10 @@ resource "spacelift_context" "spacelift_solutions_github_app" {
   space_id    = "root"
 }
 
-resource "spacelift_environment_variable" "github_app_auth_mode" {
-  context_id  = spacelift_context.spacelift_solutions_github_app.id
-  description = "Require the GitHub provider to authenticate as a GitHub App"
-  name        = "GITHUB_AUTH_MODE"
-  value       = "app"
-}
-
 resource "spacelift_environment_variable" "github_app_id" {
   context_id  = spacelift_context.spacelift_solutions_github_app.id
   description = "GitHub App ID for Spacelift-Solutions[Bot]; set the real value in the Spacelift UI"
-  name        = "GITHUB_APP_ID"
+  name        = "TF_VAR_github_app_id"
   value       = "PLACEHOLDER_SET_VIA_UI"
   write_only  = true
 }
@@ -29,15 +22,22 @@ resource "spacelift_environment_variable" "github_app_id" {
 resource "spacelift_environment_variable" "github_app_installation_id" {
   context_id  = spacelift_context.spacelift_solutions_github_app.id
   description = "GitHub App installation ID for Spacelift-Solutions[Bot]; set the real value in the Spacelift UI"
-  name        = "GITHUB_APP_INSTALLATION_ID"
+  name        = "TF_VAR_github_app_installation_id"
   value       = "PLACEHOLDER_SET_VIA_UI"
   write_only  = true
 }
 
-resource "spacelift_environment_variable" "github_app_pem_file" {
+resource "spacelift_mounted_file" "github_app_pem_file" {
+  context_id    = spacelift_context.spacelift_solutions_github_app.id
+  description   = "GitHub App private key for Spacelift-Solutions[Bot]; upload the real file in the Spacelift UI"
+  relative_path = "github-app.pem"
+  content       = base64encode("PLACEHOLDER_SET_VIA_UI")
+  write_only    = true
+}
+
+resource "spacelift_environment_variable" "github_app_pem_file_path" {
   context_id  = spacelift_context.spacelift_solutions_github_app.id
-  description = "GitHub App private key for Spacelift-Solutions[Bot]; set the real value in the Spacelift UI"
-  name        = "GITHUB_APP_PEM_FILE"
-  value       = "PLACEHOLDER_SET_VIA_UI"
-  write_only  = true
+  description = "Path to the mounted Spacelift-Solutions[Bot] private key"
+  name        = "GITHUB_APP_PEM_FILE_PATH"
+  value       = "/mnt/workspace/github-app.pem"
 }

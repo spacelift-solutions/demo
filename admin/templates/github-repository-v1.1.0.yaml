@@ -61,34 +61,16 @@ stacks:
         version: "1.10.2"
         workflow_tool: OPEN_TOFU
     hooks:
-      init:
-        before:
-          - >-
-            GH_VERSION=2.101.0;
-            case "$(uname -m)" in
-            x86_64) GH_ARCH=amd64 ;;
-            aarch64|arm64) GH_ARCH=arm64 ;;
-            *) echo "Unsupported runner architecture: $(uname -m)" >&2; exit 1 ;;
-            esac;
-            mkdir -p /tmp/github-cli;
-            curl --fail --silent --show-error --location
-            "https://github.com/cli/cli/releases/download/v$${GH_VERSION}/gh_$${GH_VERSION}_linux_$${GH_ARCH}.tar.gz"
-            | tar -xzf - -C /tmp/github-cli --strip-components=2
-            "gh_$${GH_VERSION}_linux_$${GH_ARCH}/bin/gh";
-            mkdir -p /tmp/openssl;
-            (cd /tmp/openssl && apk fetch --no-cache --quiet openssl);
-            tar -xzf /tmp/openssl/openssl-*.apk -C /tmp/openssl
       apply:
         after:
           - >-
-            export PATH="/tmp/github-cli:/tmp/openssl/usr/bin:$${PATH}"
-            && GH_TOKEN="$(bash github-app-token.sh)"
-            && export GH_TOKEN
-            && SETUP_REPOSITORY_TAG="$(gh release view
-            --repo spacelift-solutions/git-hooks
-            --json tagName --jq .tagName)"
+            case "$(uname -m)" in
+            x86_64) SETUP_REPOSITORY_ARCH=amd64 ;;
+            aarch64|arm64) SETUP_REPOSITORY_ARCH=arm64 ;;
+            *) echo "Unsupported runner architecture: $(uname -m)" >&2; exit 1 ;;
+            esac
             && curl --fail --silent --show-error --location
             --output /tmp/setup-repository
-            "https://raw.githubusercontent.com/spacelift-solutions/git-hooks/$${SETUP_REPOSITORY_TAG}/scripts/setup-repository"
+            "https://github.com/spacelift-solutions/git-hooks/releases/latest/download/setup-repository_linux_$${SETUP_REPOSITORY_ARCH}"
             && chmod +x /tmp/setup-repository
-            /tmp/setup-repository "spacelift-solutions/$${TF_VAR_repository_name}"
+            && /tmp/setup-repository "spacelift-solutions/$${TF_VAR_repository_name}"

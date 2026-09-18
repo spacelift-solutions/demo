@@ -1,3 +1,13 @@
+variable "github_app_id" {
+  type        = string
+  description = "App ID used to authenticate the GitHub provider."
+}
+
+variable "github_app_installation_id" {
+  type        = string
+  description = "Installation ID used to authenticate the GitHub provider."
+}
+
 variable "repository_name" {
   type        = string
   description = "Name of the GitHub repository to create."
