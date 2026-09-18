@@ -8,6 +8,12 @@ variable "github_app_installation_id" {
   description = "Installation ID used to authenticate the GitHub provider."
 }
 
+variable "import_existing_repository" {
+  type        = bool
+  description = "Whether to import an existing repository instead of creating one."
+  default     = false
+}
+
 variable "repository_name" {
   type        = string
   description = "Name of the GitHub repository to create."

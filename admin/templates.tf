@@ -18,7 +18,7 @@ resource "spacelift_template_version" "cloudwatch_dashboard_v1" {
 resource "spacelift_template" "github_repository" {
   name        = "GitHub Repository Template"
   description = "Creates a Spacelift Solutions repository with the shared checks and rulesets"
-  space       = "root"
+  space       = spacelift_space.github.id
   labels      = ["github", "repository"]
 }
 
@@ -44,5 +44,15 @@ resource "spacelift_template_version" "github_repository_v1_2" {
   state          = "PUBLISHED"
   template = templatefile("templates/github-repository-v1.2.0.yaml", {
     github_app_context_id = spacelift_context.spacelift_solutions_github_app.id
+  })
+}
+
+resource "spacelift_template_version" "github_repository_v1_3" {
+  template_id    = spacelift_template.github_repository.id
+  version_number = "1.3.0"
+  state          = "PUBLISHED"
+  template = templatefile("templates/github-repository-v1.3.0.yaml", {
+    github_app_context_id = spacelift_context.spacelift_solutions_github_app.id
+    github_space_id       = spacelift_space.github.id
   })
 }
