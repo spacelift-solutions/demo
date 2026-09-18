@@ -130,6 +130,12 @@ resource "spacelift_space" "azure_terragrunt" {
   parent_space_id  = spacelift_space.azure.id
 }
 
+resource "spacelift_space" "github" {
+  name             = "github"
+  inherit_entities = true
+  parent_space_id  = "root"
+}
+
 resource "spacelift_space" "examples" {
   name             = "examples"
   inherit_entities = true
