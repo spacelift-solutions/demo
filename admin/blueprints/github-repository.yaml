@@ -72,11 +72,14 @@ stack:
     apply:
       after:
         - >-
-          curl --fail --silent --show-error --location
+          export PATH="/tmp/github-cli:${PATH}"
+          && SETUP_REPOSITORY_TAG="$(gh release view
+          --repo spacelift-solutions/git-hooks
+          --json tagName --jq .tagName)"
+          && curl --fail --silent --show-error --location
           --output /tmp/setup-repository
-          https://raw.githubusercontent.com/spacelift-solutions/git-hooks/v1.2.1/scripts/setup-repository
+          "https://raw.githubusercontent.com/spacelift-solutions/git-hooks/${SETUP_REPOSITORY_TAG}/scripts/setup-repository"
           && chmod +x /tmp/setup-repository
-          && PATH="/tmp/github-cli:${PATH}"
           /tmp/setup-repository "spacelift-solutions/${TF_VAR_repository_name}"
 
 options:
