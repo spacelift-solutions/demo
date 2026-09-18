@@ -1,0 +1,91 @@
+space: ${github_space_id}
+
+inputs:
+  - id: repository_name
+    name: Repository name
+    type: short_text
+    validations:
+      required: true
+      min_length: 1
+      max_length: 100
+      pattern: "^[A-Za-z0-9._-]+$"
+
+  - id: description
+    name: Repository description
+    type: long_text
+    default: ""
+    validations:
+      max_length: 350
+
+  - id: visibility
+    name: Repository visibility
+    type: select
+    default: private
+    options:
+      - private
+      - public
+      - internal
+
+  - id: import_existing
+    name: Import existing repository
+    description: Import the repository into the new stack instead of creating it.
+    type: boolean
+    default: false
+
+stacks:
+  - key: github_repository
+    name: github-$${{ inputs.repository_name }}
+    description: >
+      Manages the spacelift-solutions/$${{ inputs.repository_name }} GitHub
+      repository and its shared repository protections.
+    labels:
+      - template
+      - github-repository
+    autodeploy: true
+    attachments:
+      contexts:
+        - id: ${github_app_context_id}
+          priority: 0
+    environment:
+      variables:
+        - name: TF_VAR_repository_name
+          value: $${{ inputs.repository_name }}
+        - name: TF_VAR_repository_description
+          value: >-
+            $${{ inputs.description }}
+        - name: TF_VAR_repository_visibility
+          value: $${{ inputs.visibility }}
+        - name: TF_VAR_import_existing_repository
+          value: "$${{ inputs.import_existing }}"
+    vcs:
+      reference:
+        type: branch
+        value: main
+      repository: demo
+      provider: GITHUB
+      project_root: opentofu/github/repository
+    vendor:
+      terraform:
+        manage_state: true
+        version: "1.10.2"
+        workflow_tool: OPEN_TOFU
+    hooks:
+      run:
+        after:
+          - |
+            if [ "$${TF_VAR_spacelift_final_run_state}" != "FINISHED" ] ||
+              [ "$${TF_VAR_spacelift_run_type}" != "TRACKED" ]; then
+              exit 0
+            fi
+
+            case "$(uname -m)" in
+              x86_64) SETUP_REPOSITORY_ARCH=amd64 ;;
+              aarch64|arm64) SETUP_REPOSITORY_ARCH=arm64 ;;
+              *) echo "Unsupported runner architecture: $(uname -m)" >&2; exit 1 ;;
+            esac
+
+            curl --fail --silent --show-error --location \
+              --output /tmp/setup-repository \
+              "https://github.com/spacelift-solutions/git-hooks/releases/latest/download/setup-repository_linux_$${SETUP_REPOSITORY_ARCH}"
+            chmod +x /tmp/setup-repository
+            /tmp/setup-repository "spacelift-solutions/$${TF_VAR_repository_name}"

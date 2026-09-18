@@ -52,6 +52,13 @@ declaration becomes inert.
 The import does not copy or backfill files from `repository-template`; it only
 brings the existing repository under the stack's OpenTofu state.
 
+### Repository setup
+
+Version `1.4.0` runs the repository setup command from the final hook after
+every successful tracked run, including no-op runs. Proposed runs, tasks, and
+failed runs skip setup so previews and unsuccessful deployments cannot mutate
+the target repository.
+
 ### GitHub App authentication
 
 Versions `1.1.0` and later attach the `Spacelift-Solutions[Bot]` context. Before
@@ -63,4 +70,4 @@ using the template, replace these context placeholders in the Spacelift UI:
 
 The mounted file is available to runs at `/mnt/workspace/github-app.pem`. The
 GitHub provider reads it directly. The released Go setup CLI uses the same file
-to issue the short-lived token needed by the post-apply repository setup hook.
+to issue the short-lived token needed by the final repository setup hook.
