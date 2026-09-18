@@ -26,5 +26,7 @@ resource "spacelift_template_version" "github_repository_v1" {
   template_id    = spacelift_template.github_repository.id
   version_number = "1.0.0"
   state          = "PUBLISHED"
-  template       = file("templates/github-repository.yaml")
+  template = templatefile("templates/github-repository.yaml", {
+    github_app_context_id = spacelift_context.spacelift_solutions_github_app.id
+  })
 }
