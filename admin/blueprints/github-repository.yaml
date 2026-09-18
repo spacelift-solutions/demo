@@ -1,0 +1,83 @@
+inputs:
+  - id: repository_name
+    name: Repository name
+    type: short_text
+    validations:
+      required: true
+      min_length: 1
+      max_length: 100
+      pattern: "^[A-Za-z0-9._-]+$"
+
+  - id: description
+    name: Repository description
+    type: long_text
+    default: ""
+    validations:
+      max_length: 350
+
+  - id: visibility
+    name: Repository visibility
+    type: select
+    default: private
+    options:
+      - private
+      - public
+      - internal
+
+stack:
+  name: github-${{ inputs.repository_name }}
+  space: root
+  description: >
+    Manages the spacelift-solutions/${{ inputs.repository_name }} GitHub
+    repository and its shared repository protections.
+  labels:
+    - blueprint
+    - github-auth
+    - github-repository
+  auto_deploy: true
+  local_preview_enabled: true
+  environment:
+    variables:
+      - name: TF_VAR_repository_name
+        value: ${{ inputs.repository_name }}
+      - name: TF_VAR_repository_description
+        value: ${{ inputs.description }}
+      - name: TF_VAR_repository_visibility
+        value: ${{ inputs.visibility }}
+  vcs:
+    branch: main
+    repository: demo
+    provider: GITHUB
+    project_root: opentofu/github/repository
+  vendor:
+    terraform:
+      manage_state: true
+      version: "1.10.2"
+      workflow_tool: OPEN_TOFU
+  hooks:
+    init:
+      before:
+        - >-
+          GH_VERSION=2.101.0;
+          case "$(uname -m)" in
+          x86_64) GH_ARCH=amd64 ;;
+          aarch64|arm64) GH_ARCH=arm64 ;;
+          *) echo "Unsupported runner architecture: $(uname -m)" >&2; exit 1 ;;
+          esac;
+          mkdir -p /tmp/github-cli;
+          curl --fail --silent --show-error --location
+          "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${GH_ARCH}.tar.gz"
+          | tar -xzf - -C /tmp/github-cli --strip-components=2
+          "gh_${GH_VERSION}_linux_${GH_ARCH}/bin/gh"
+    apply:
+      after:
+        - >-
+          curl --fail --silent --show-error --location
+          --output /tmp/setup-repository
+          https://raw.githubusercontent.com/spacelift-solutions/git-hooks/v1.2.1/scripts/setup-repository
+          && chmod +x /tmp/setup-repository
+          && PATH="/tmp/github-cli:${PATH}"
+          /tmp/setup-repository "spacelift-solutions/${TF_VAR_repository_name}"
+
+options:
+  trigger_run: true

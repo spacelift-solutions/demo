@@ -19,3 +19,11 @@ resource "spacelift_blueprint" "minesible" {
     ec2_worker_pool_id    = spacelift_worker_pool.aws_ec2_asg.id
   })
 }
+
+resource "spacelift_blueprint" "github_repository" {
+  name        = "GitHub Repository"
+  description = "Creates a Spacelift Solutions repository with the shared checks and rulesets"
+  space       = "root"
+  state       = "PUBLISHED"
+  template    = file("blueprints/github-repository.yaml")
+}
