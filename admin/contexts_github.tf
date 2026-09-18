@@ -17,6 +17,10 @@ resource "spacelift_environment_variable" "github_app_id" {
   name        = "TF_VAR_github_app_id"
   value       = "PLACEHOLDER_SET_VIA_UI"
   write_only  = true
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "spacelift_environment_variable" "github_app_installation_id" {
@@ -25,6 +29,10 @@ resource "spacelift_environment_variable" "github_app_installation_id" {
   name        = "TF_VAR_github_app_installation_id"
   value       = "PLACEHOLDER_SET_VIA_UI"
   write_only  = true
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "spacelift_mounted_file" "github_app_pem_file" {
@@ -33,6 +41,10 @@ resource "spacelift_mounted_file" "github_app_pem_file" {
   relative_path = "github-app.pem"
   content       = base64encode("PLACEHOLDER_SET_VIA_UI")
   write_only    = true
+
+  lifecycle {
+    ignore_changes = [content]
+  }
 }
 
 resource "spacelift_environment_variable" "github_app_pem_file_path" {
