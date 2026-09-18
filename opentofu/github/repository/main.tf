@@ -33,4 +33,8 @@ resource "github_repository" "this" {
     repository           = "repository-template"
     include_all_branches = false
   }
+
+  lifecycle {
+    ignore_changes = [template]
+  }
 }

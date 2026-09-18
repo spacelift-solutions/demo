@@ -37,3 +37,12 @@ resource "spacelift_template_version" "github_repository_v1_1" {
     github_app_context_id = spacelift_context.spacelift_solutions_github_app.id
   })
 }
+
+resource "spacelift_template_version" "github_repository_v1_2" {
+  template_id    = spacelift_template.github_repository.id
+  version_number = "1.2.0"
+  state          = "PUBLISHED"
+  template = templatefile("templates/github-repository-v1.2.0.yaml", {
+    github_app_context_id = spacelift_context.spacelift_solutions_github_app.id
+  })
+}
