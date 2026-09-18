@@ -20,10 +20,11 @@ then configures its shared rulesets with the latest
 | `repository_name` | yes | | GitHub repository name |
 | `description` | no | empty | Repository description |
 | `visibility` | no | `private` | `private`, `public`, or `internal` |
+| `import_existing` | no | `false` | Import an existing repository into the new stack |
 
 ### Repository starter files
 
-GitHub copies these files into each repository once:
+When creating a repository, GitHub copies these files into it once:
 
 - `README.md`
 - `CONTRIBUTING.md`
@@ -39,10 +40,24 @@ Run `make hooks` after cloning to install the shared local Git hooks from
 stack's state, so repository owners can change or delete them without a later
 stack run restoring the template copies.
 
+### Importing an existing repository
+
+Version `1.2.0` adds the **Import existing repository** option. After OpenTofu
+initializes, the stack checks whether `github_repository.this` is already in
+state. If it is not, the stack runs:
+
+```sh
+tofu import github_repository.this "$TF_VAR_repository_name"
+```
+
+The import is idempotent across later runs. It does not copy or backfill files
+from `repository-template`; it only brings the existing repository under the
+stack's OpenTofu state before planning.
+
 ### GitHub App authentication
 
-Version `1.1.0` attaches the `Spacelift-Solutions[Bot]` context. Before using the
-template, replace these context placeholders in the Spacelift UI:
+Versions `1.1.0` and later attach the `Spacelift-Solutions[Bot]` context. Before
+using the template, replace these context placeholders in the Spacelift UI:
 
 - `TF_VAR_github_app_id`: the GitHub App ID
 - `TF_VAR_github_app_installation_id`: the organization installation ID
