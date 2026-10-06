@@ -35,18 +35,17 @@ module "jira_approval" {
   monthly_cost_input   = "input.third_party_metadata.custom.infracost.projects[0].breakdown.totalMonthlyCost"
 
   jira = {
-    url         = "https://spacelift-demo-plugin.atlassian.net"
-    email       = "spacelift-demo@theoutdoorprogrammer.com"
+    url         = "https://spacelift-solutions.atlassian.net"
+    email       = "joeys@spacelift.io"
     api_token   = var.jira_api_token
-    project_key = "KAN"
+    project_key = "SOLUTIONS"
 
-    # The "Spacelift Info" short-text field in the KAN project. Team-managed
-    # project, so the field is project-scoped and this changes if recreated.
+    # The "Spacelift Info" short-text field used by the approval flow.
     custom_field_id = "customfield_10043"
 
     # No initial_status: the plugin passes it as a create-time status field,
-    # which Jira rejects. KAN's workflow starts issues in "Needs Approval"
-    # instead; the flow reacts when a human moves them to Approved/Rejected.
+    # which Jira rejects. SOLUTIONS starts issues in "To Do"; the flow reacts
+    # when a human moves them to Approved/Denied.
   }
 
   infracost = {

@@ -4,13 +4,13 @@
 resource "flows_app_installation_config_field" "jira_url" {
   app_installation_id = flows_app_installation.jira.id
   key                 = "jiraUrl"
-  value               = jsonencode("https://spacelift-demo-plugin.atlassian.net")
+  value               = jsonencode("https://spacelift-solutions.atlassian.net")
 }
 
 resource "flows_app_installation_config_field" "jira_email" {
   app_installation_id = flows_app_installation.jira.id
   key                 = "email"
-  value               = jsonencode("spacelift-demo@theoutdoorprogrammer.com")
+  value               = jsonencode("joeys@spacelift.io")
 }
 
 resource "flows_app_installation_config_field" "jira_api_token" {

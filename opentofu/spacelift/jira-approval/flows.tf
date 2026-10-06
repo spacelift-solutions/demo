@@ -52,7 +52,7 @@ resource "flows_secret" "approved_status" {
 resource "flows_secret" "denied_status" {
   project_id = local.flows_project_id
   key        = "JIRA_DENIED_STATUS"
-  value      = "Rejected"
+  value      = "Denied"
 }
 
 # The flow reads the JWT out of this issue field; undocumented in the plugin
