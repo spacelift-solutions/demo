@@ -2,7 +2,7 @@ module "stack_aws_kubernetes_example_deployments" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   # Required inputs
-  description     = "stack that creates Kubernetes Resources for the Kubernetes Example"
+  description     = "stack that deploys the demo apps onto the Spacelift-Solutions cluster"
   name            = "kubernetes-deployments"
   repository_name = "demo"
   space_id        = spacelift_space.aws_kubernetes.id

@@ -155,7 +155,8 @@ module "ebs_csi_driver_irsa" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~> 5.34"
 
-  role_name_prefix = "${module.eks.cluster_name}-ebs-csi-driver-"
+  # IAM caps role name prefixes at 38 characters
+  role_name_prefix = "${module.eks.cluster_name}-ebs-csi-"
 
   attach_ebs_csi_policy = true
 

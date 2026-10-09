@@ -6,6 +6,10 @@ variable "vpc_name" {
   description = "Name of the VPC"
 }
 
+variable "cluster_name" {
+  description = "Name of the EKS cluster that uses this VPC's subnets"
+}
+
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
 }
