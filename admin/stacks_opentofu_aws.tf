@@ -267,3 +267,40 @@ resource "spacelift_scheduled_task" "cloudwatch_dashboard_version_check" {
   every    = ["*/15 * * * *"]
   timezone = "UTC"
 }
+
+# Namespaces, quotas, network policies and IAM roles for each app on the
+# shared cluster. Tenants are listed in opentofu/aws/eks-tenants/tenants.tf.
+module "stack_aws_eks_tenants" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "Onboards applications onto the shared EKS cluster as isolated tenants"
+  name            = "eks-tenants"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "eks", "kubernetes", "tenants"]
+  project_root      = "opentofu/aws/eks-tenants"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
+
+  # Module source lives outside the project root
+  additional_project_globs = ["opentofu/aws/modules/eks-tenant/**"]
+
+  dependencies = {
+    CLUSTER = {
+      parent_stack_id = module.stack_aws_eks_kubernetes_example.id
+
+      references = {
+        CLUSTER_NAME = {
+          output_name    = "cluster_name"
+          input_name     = "TF_VAR_cluster_name"
+          trigger_always = true
+        }
+      }
+    }
+  }
+}
