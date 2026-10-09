@@ -302,5 +302,9 @@ module "stack_aws_eks_tenants" {
         }
       }
     }
+    # The demo apps deploy into the namespaces and service accounts created here
+    DEMO_APPS = {
+      child_stack_id = module.stack_aws_kubernetes_example_deployments.id
+    }
   }
 }

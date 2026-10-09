@@ -15,7 +15,57 @@
 # DNS label of at most 29 characters so the IAM role name fits.
 
 locals {
-  tenants = {}
+  # Every tenant accepts traffic from its own namespace plus these
+  platform_namespaces = ["kube-system", "prometheus"]
+
+  # Bundled databases, Backstage and RabbitMQ set no resources, so they run
+  # on the LimitRange defaults; 512Mi is too tight for them
+  stateful_container_defaults = {
+    limit_cpu    = "1"
+    limit_memory = "1Gi"
+  }
+
+  tenants = {
+    # Retail store sample app. ui is the storefront and calls every other service.
+    ui = {
+      labels = { "app.kubernetes.io/name" = "ui" }
+      # Internet-facing NLB with instance targets: traffic arrives from node IPs
+      network_policy = { allowed_namespaces = local.platform_namespaces, allowed_cidrs = [var.vpc_cidr] }
+    }
+    catalog = {
+      labels             = { "app.kubernetes.io/name" = "catalog" }
+      container_defaults = local.stateful_container_defaults
+      network_policy     = { allowed_namespaces = concat(local.platform_namespaces, ["ui"]) }
+    }
+    carts = {
+      labels             = { "app.kubernetes.io/name" = "carts" }
+      container_defaults = local.stateful_container_defaults
+      network_policy     = { allowed_namespaces = concat(local.platform_namespaces, ["ui"]) }
+    }
+    assets = {
+      labels         = { "app.kubernetes.io/name" = "assets" }
+      network_policy = { allowed_namespaces = concat(local.platform_namespaces, ["ui"]) }
+    }
+    checkout = {
+      labels         = { "app.kubernetes.io/name" = "checkout" }
+      network_policy = { allowed_namespaces = concat(local.platform_namespaces, ["ui"]) }
+    }
+    orders = {
+      labels             = { "app.kubernetes.io/name" = "orders" }
+      container_defaults = local.stateful_container_defaults
+      network_policy     = { allowed_namespaces = concat(local.platform_namespaces, ["ui", "checkout"]) }
+    }
+    rabbitmq = {
+      labels             = { "app.kubernetes.io/name" = "rabbitmq" }
+      container_defaults = local.stateful_container_defaults
+      network_policy     = { allowed_namespaces = concat(local.platform_namespaces, ["orders"]) }
+    }
+
+    # Backstage developer portal, reached by port-forward
+    backstage = {
+      container_defaults = local.stateful_container_defaults
+    }
+  }
 }
 
 module "tenant" {
