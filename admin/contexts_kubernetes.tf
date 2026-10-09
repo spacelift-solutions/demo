@@ -75,3 +75,18 @@ resource "spacelift_environment_variable" "aws_region_k8s" {
   write_only  = false
   description = "AWS region to deploy the EKS cluster"
 }
+
+# FinOps Scripts Context
+resource "spacelift_context" "finops_scripts" {
+  description = "Mounted scripts for FinOps automation (Helm deployment)"
+  name        = "FinOps Scripts"
+  labels      = ["autoattach:finops-scripts"]
+  space_id    = spacelift_space.aws_opentofu.id
+}
+
+# Mount deploy-helm.sh script
+resource "spacelift_mounted_file" "deploy_helm_script" {
+  context_id    = spacelift_context.finops_scripts.id
+  relative_path = "deploy-helm.sh"
+  content       = filebase64("${path.module}/../opentofu/aws/cost-optimisation/scripts/deploy-helm.sh")
+}

@@ -45,12 +45,11 @@ opencost:
         cpu: 200m
         memory: 256Mi
 
-  # Enable metrics export
+  # Metrics are scraped by the opencost job in prometheus/values.yaml.
+  # A ServiceMonitor needs the Prometheus Operator CRDs, which aren't installed.
   metrics:
     serviceMonitor:
-      enabled: true
-      additionalLabels:
-        prometheus: kube-prometheus
+      enabled: false
 
 # Annotations for Prometheus scraping
 podAnnotations:

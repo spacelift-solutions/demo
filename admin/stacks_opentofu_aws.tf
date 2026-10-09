@@ -267,3 +267,135 @@ resource "spacelift_scheduled_task" "cloudwatch_dashboard_version_check" {
   every    = ["*/15 * * * *"]
   timezone = "UTC"
 }
+
+#---# AWS FINOPS IMPLEMENTATION #---#
+
+# FinOps Stack 1: EKS Prerequisites (IRSA roles)
+module "stack_aws_finops_eks_prerequisites" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "IAM roles for IRSA (OpenCost, Prometheus, Grafana)"
+  name            = "finops-eks-prerequisites"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "finops", "eks", "iam"]
+  project_root      = "opentofu/aws/cost-optimisation/eks-prerequisites"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
+
+  environment_variables = {
+    TF_VAR_aws_region = {
+      value = "us-east-1"
+    }
+  }
+
+  dependencies = {
+    EKS = {
+      parent_stack_id = module.stack_aws_eks_kubernetes_example.id
+
+      references = {
+        CLUSTER_NAME = {
+          output_name    = "cluster_name"
+          input_name     = "TF_VAR_cluster_name"
+          trigger_always = true
+        }
+      }
+    }
+    MONITORING_INFRA = {
+      child_stack_id = module.stack_aws_finops_monitoring_infra.id
+
+      references = {
+        OPENCOST_ROLE = {
+          output_name    = "opencost_role_arn"
+          input_name     = "TF_VAR_opencost_role_arn"
+          trigger_always = true
+        }
+        PROMETHEUS_ROLE = {
+          output_name    = "prometheus_role_arn"
+          input_name     = "TF_VAR_prometheus_role_arn"
+          trigger_always = true
+        }
+        GRAFANA_ROLE = {
+          output_name    = "grafana_role_arn"
+          input_name     = "TF_VAR_grafana_role_arn"
+          trigger_always = true
+        }
+      }
+    }
+  }
+}
+
+# FinOps Stack 2: Monitoring Infrastructure
+# Creates namespaces, service accounts, PVCs and secrets, then installs
+# Prometheus, OpenCost and Grafana via the mounted deploy-helm.sh script.
+module "stack_aws_finops_monitoring_infra" {
+  source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
+
+  description     = "Kubernetes namespaces, service accounts, and supporting resources for FinOps monitoring"
+  name            = "finops-monitoring-infra"
+  repository_name = "demo"
+  space_id        = spacelift_space.aws_opentofu.id
+
+  aws_integration = {
+    enabled = true
+    id      = spacelift_aws_integration.demo.id
+  }
+  labels            = ["aws", "finops", "kubernetes", "monitoring", "finops-scripts"]
+  project_root      = "opentofu/aws/cost-optimisation/monitoring-infra"
+  repository_branch = "main"
+  tf_version        = "1.8.4"
+
+  environment_variables = {
+    TF_VAR_aws_region = {
+      value = "us-east-1"
+    }
+  }
+
+  dependencies = {
+    EKS = {
+      parent_stack_id = module.stack_aws_eks_kubernetes_example.id
+
+      references = {
+        CLUSTER_NAME = {
+          output_name    = "cluster_name"
+          input_name     = "TF_VAR_cluster_name"
+          trigger_always = true
+        }
+        CLUSTER_ENDPOINT = {
+          output_name    = "cluster_endpoint"
+          input_name     = "TF_VAR_cluster_endpoint"
+          trigger_always = true
+        }
+        CLUSTER_CA = {
+          output_name    = "cluster_certificate_authority_data"
+          input_name     = "TF_VAR_cluster_ca_certificate"
+          trigger_always = true
+        }
+      }
+    }
+  }
+
+  # The runner image has no helm/kubectl and runs as a non-root user, so the
+  # binaries are installed into the workspace; deploy-helm.sh adds it to PATH.
+  hooks = {
+    before = {
+      init = [
+        "mkdir -p /mnt/workspace/bin",
+        "curl -fsSL https://get.helm.sh/helm-v3.19.0-linux-amd64.tar.gz | tar -xz -C /mnt/workspace/bin --strip-components=1 linux-amd64/helm",
+        "curl -fsSL -o /mnt/workspace/bin/kubectl https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable-1.35.txt)/bin/linux/amd64/kubectl",
+        "chmod +x /mnt/workspace/bin/helm /mnt/workspace/bin/kubectl"
+      ]
+    }
+    after = {
+      apply = [
+        "chmod +x /mnt/workspace/deploy-helm.sh",
+        "/mnt/workspace/deploy-helm.sh"
+      ]
+    }
+  }
+}
