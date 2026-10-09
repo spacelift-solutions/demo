@@ -187,6 +187,13 @@ resource "aws_iam_role" "this" {
     Tenant    = var.name
     ManagedBy = "Spacelift"
   })
+
+  lifecycle {
+    precondition {
+      condition     = length("${var.cluster_name}-${var.name}-tenant") <= 64
+      error_message = "IAM role name \"${var.cluster_name}-${var.name}-tenant\" exceeds 64 characters; use a shorter tenant name."
+    }
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "this" {

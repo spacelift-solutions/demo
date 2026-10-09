@@ -20,7 +20,7 @@ variable "aws_region" {
 
 variable "cluster_name" {
   type    = string
-  default = "eks-cluster"
+  default = "spacelift-solutions-cluster"
 }
 
 provider "aws" {
