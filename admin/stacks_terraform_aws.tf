@@ -1,7 +1,7 @@
 module "stack_aws_vpc_kubernetes_example" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
-  description     = "stack that creates a VPC for the Kubernetes Example"
+  description     = "stack that creates the VPC for the Spacelift-Solutions cluster"
   name            = "kubernetes-vpc"
   repository_name = "demo"
   space_id        = spacelift_space.aws_terraform.id
@@ -39,8 +39,8 @@ module "stack_aws_vpc_kubernetes_example" {
 module "stack_aws_eks_kubernetes_example" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
-  description     = "stack that creates an EKS Cluster for the Kubernetes Example"
-  name            = "eks-cluster"
+  description     = "stack that creates the Spacelift-Solutions cluster, a general-purpose EKS cluster shared by the demo apps"
+  name            = "Spacelift-Solutions cluster"
   repository_name = "demo"
   space_id        = spacelift_space.aws_terraform.id
 

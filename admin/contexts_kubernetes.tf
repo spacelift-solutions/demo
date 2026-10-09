@@ -1,6 +1,6 @@
 resource "spacelift_context" "k8s_example" {
-  description = "Configuration details for the Kubernetes Example"
-  name        = "Kubernetes Example"
+  description = "Configuration details for the Spacelift-Solutions cluster and its VPC"
+  name        = "Spacelift-Solutions cluster"
   labels      = ["autoattach:aws"]
   space_id    = spacelift_space.aws.id
 }
@@ -16,9 +16,9 @@ resource "spacelift_environment_variable" "aws_region" {
 resource "spacelift_environment_variable" "vpc_name" {
   context_id  = spacelift_context.k8s_example.id
   name        = "TF_VAR_vpc_name"
-  value       = "eks-vpc"
+  value       = "spacelift-solutions-vpc"
   write_only  = false
-  description = "VPC name for the EKS cluster"
+  description = "VPC name for the Spacelift-Solutions cluster"
 }
 
 resource "spacelift_environment_variable" "vpc_cidr" {
@@ -48,9 +48,9 @@ resource "spacelift_environment_variable" "private_subnets" {
 resource "spacelift_environment_variable" "cluster_name" {
   context_id  = spacelift_context.k8s_example.id
   name        = "TF_VAR_cluster_name"
-  value       = "eks-cluster"
+  value       = "spacelift-solutions-cluster"
   write_only  = false
-  description = "Name of the EKS cluster"
+  description = "Name of the shared general-purpose EKS cluster (changing it recreates the cluster)"
 }
 
 resource "spacelift_environment_variable" "cluster_version" {
@@ -62,8 +62,8 @@ resource "spacelift_environment_variable" "cluster_version" {
 }
 
 resource "spacelift_context" "k8s_configuration" {
-  description = "Configuration details for the EKS Cluster"
-  name        = "EKS Context"
+  description = "Connection details for stacks that deploy onto the Spacelift-Solutions cluster"
+  name        = "Spacelift-Solutions cluster access"
   labels      = ["autoattach:eks"]
   space_id    = spacelift_space.aws.id
 }
