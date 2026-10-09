@@ -56,18 +56,24 @@ dashboardProviders:
 # Pre-configured dashboards
 dashboards:
   default:
-    opencost-dashboard:
-      url: https://raw.githubusercontent.com/opencost/opencost/main/grafana/opencost-dashboard.json
+    opencost-overview:
+      gnetId: 22208
+      revision: 8
       datasource: Prometheus
 
-    kubernetes-cluster:
-      gnetId: 7249
-      revision: 1
+    opencost-namespace:
+      gnetId: 22252
+      revision: 8
+      datasource: Prometheus
+
+    kubernetes-global:
+      gnetId: 15757
+      revision: 43
       datasource: Prometheus
 
     kubernetes-pods:
-      gnetId: 6417
-      revision: 1
+      gnetId: 15760
+      revision: 41
       datasource: Prometheus
 
 # Grafana.ini configuration
@@ -92,9 +98,7 @@ grafana.ini:
 
 # Plugins to install
 plugins:
-  - grafana-piechart-panel
   - grafana-clock-panel
-  - grafana-simple-json-datasource
 
 # Service configuration
 service:
@@ -126,6 +130,5 @@ securityContext:
 
 # Environment variables
 env:
-  GF_INSTALL_PLUGINS: ""
   GF_PATHS_PROVISIONING: /etc/grafana/provisioning
   GF_PATHS_DATA: /var/lib/grafana

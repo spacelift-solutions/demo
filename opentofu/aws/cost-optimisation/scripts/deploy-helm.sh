@@ -9,6 +9,9 @@ echo "========================================="
 echo "Deploying FinOps Monitoring Stack"
 echo "========================================="
 
+# helm and kubectl are installed into the workspace by the stack's before-init hook
+export PATH="/mnt/workspace/bin:${PATH}"
+
 # Configuration
 CLUSTER_NAME="${TF_VAR_cluster_name:-eks-cluster}"
 AWS_REGION="${TF_VAR_aws_region:-us-east-1}"
@@ -17,7 +20,7 @@ PROMETHEUS_NAMESPACE="${TF_OUTPUT_prometheus_namespace:-prometheus}"
 GRAFANA_NAMESPACE="${TF_OUTPUT_grafana_namespace:-grafana}"
 
 # Helm chart versions
-OPENCOST_VERSION="1.108.0"
+OPENCOST_VERSION="1.43.2"
 PROMETHEUS_VERSION="25.8.0"
 GRAFANA_VERSION="7.0.8"
 
@@ -33,18 +36,18 @@ echo "  Values Dir: ${VALUES_DIR}"
 
 # Update kubeconfig
 echo ""
-echo "[1/5] Updating kubeconfig for EKS cluster..."
+echo "[1/7] Updating kubeconfig for EKS cluster..."
 aws eks update-kubeconfig --name "${CLUSTER_NAME}" --region "${AWS_REGION}"
 
 # Verify cluster connectivity
 echo ""
-echo "[2/5] Verifying cluster connectivity..."
+echo "[2/7] Verifying cluster connectivity..."
 kubectl cluster-info
 kubectl get nodes
 
 # Add Helm repositories
 echo ""
-echo "[3/5] Adding Helm repositories..."
+echo "[3/7] Adding Helm repositories..."
 helm repo add opencost https://opencost.github.io/opencost-helm-chart
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo add grafana https://grafana.github.io/helm-charts
@@ -52,7 +55,7 @@ helm repo update
 
 # Deploy Prometheus (required for OpenCost)
 echo ""
-echo "[4/5] Deploying Prometheus..."
+echo "[4/7] Deploying Prometheus..."
 if helm list -n "${PROMETHEUS_NAMESPACE}" | grep -q "prometheus"; then
     echo "  Prometheus already installed, upgrading..."
     helm upgrade prometheus prometheus-community/prometheus \
@@ -80,7 +83,7 @@ kubectl wait --for=condition=ready pod \
 
 # Deploy OpenCost
 echo ""
-echo "[5/5] Deploying OpenCost..."
+echo "[5/7] Deploying OpenCost..."
 if helm list -n "${OPENCOST_NAMESPACE}" | grep -q "opencost"; then
     echo "  OpenCost already installed, upgrading..."
     helm upgrade opencost opencost/opencost \
@@ -166,5 +169,5 @@ echo "Grafana:"
 echo "  kubectl port-forward -n ${GRAFANA_NAMESPACE} svc/grafana 3000:80"
 echo "  Open: http://localhost:3000"
 echo "  Username: admin"
-echo "  Password: (run) kubectl get secret -n ${GRAFANA_NAMESPACE} grafana -o jsonpath='{.data.admin-password}' | base64 -d"
+echo "  Password: (run) kubectl get secret -n ${GRAFANA_NAMESPACE} grafana-admin-credentials -o jsonpath='{.data.admin-password}' | base64 -d"
 echo ""
