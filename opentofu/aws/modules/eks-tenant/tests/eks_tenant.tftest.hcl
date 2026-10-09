@@ -20,7 +20,7 @@ mock_provider "aws" {
 
 variables {
   name         = "demo"
-  cluster_name = "eks-cluster"
+  cluster_name = "spacelift-solutions-cluster"
 }
 
 run "defaults" {
@@ -66,7 +66,7 @@ run "everything_enabled" {
   }
 
   assert {
-    condition     = aws_iam_role.this[0].name == "eks-cluster-demo-tenant"
+    condition     = aws_iam_role.this[0].name == "spacelift-solutions-cluster-demo-tenant"
     error_message = "IAM role should be created"
   }
 
@@ -108,4 +108,15 @@ run "invalid_name" {
   }
 
   expect_failures = [var.name]
+}
+
+run "iam_role_name_too_long" {
+  command = plan
+
+  variables {
+    name            = "a-tenant-name-that-is-too-long-for-iam"
+    iam_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"]
+  }
+
+  expect_failures = [aws_iam_role.this]
 }

@@ -20,7 +20,7 @@ module "reports" {
   source = "../modules/eks-tenant"
 
   name         = "reports"
-  cluster_name = "eks-cluster"
+  cluster_name = "spacelift-solutions-cluster"
 
   resource_quota = {
     requests_cpu    = "8"
