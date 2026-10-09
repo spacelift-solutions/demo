@@ -14,10 +14,15 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
 
-  cluster_name                             = var.cluster_name
-  cluster_version                          = var.cluster_version
-  cluster_endpoint_public_access           = true
+  cluster_name                   = var.cluster_name
+  cluster_version                = var.cluster_version
+  cluster_endpoint_public_access = true
+
+  # Access is granted with EKS access entries only; there is no aws-auth ConfigMap.
+  # Managed node groups get their access entries from EKS automatically.
+  authentication_mode                      = "API"
   enable_cluster_creator_admin_permissions = true
+  access_entries                           = local.access_entries
 
   cluster_enabled_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
@@ -54,27 +59,31 @@ module "eks" {
 # Cluster Auth
 #---------------------------------------------------------------
 
-module "auth" {
-  source                    = "terraform-aws-modules/eks/aws//modules/aws-auth"
-  version                   = "~> 20.0"
-  manage_aws_auth_configmap = true
-  aws_auth_roles = [
-    {
-      rolearn  = module.eks_blueprints_addons.karpenter.node_iam_role_arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups = [
-        "system:bootstrappers",
-        "system:nodes",
-      ]
-    },
-    {
-      rolearn  = "arn:aws:iam::234878555361:role/spacelift-solutions"
-      username = "spacelift-solutionsEKS"
-      groups = [
-        "system:masters"
-      ]
-    }
-  ]
+# The role that runs this stack (the Spacelift AWS integration) gets cluster admin
+# through enable_cluster_creator_admin_permissions. Every other admin is listed
+# here. A principal can only have one access entry, so the creator is skipped.
+data "aws_iam_session_context" "current" {
+  arn = data.aws_caller_identity.current.arn
+}
+
+locals {
+  cluster_admin_role_arns = {
+    spacelift_solutions = "arn:aws:iam::234878555361:role/spacelift-solutions"
+  }
+
+  access_entries = {
+    for name, arn in local.cluster_admin_role_arns : name => {
+      principal_arn = arn
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    } if arn != data.aws_iam_session_context.current.issuer_arn
+  }
 }
 
 #---------------------------------------------------------------
