@@ -25,7 +25,7 @@ run "demo_apps" {
   command = plan
 
   assert {
-    condition     = toset(keys(module.tenant)) == toset(["ui", "catalog", "carts", "assets", "checkout", "orders", "rabbitmq", "backstage"])
+    condition     = toset(keys(module.tenant)) == toset(["ui", "catalog", "carts", "assets", "checkout", "orders", "backstage"])
     error_message = "every demo app should be a tenant"
   }
 
@@ -63,11 +63,6 @@ run "network_policies_follow_service_calls" {
   }
 
   assert {
-    condition     = local.tenants.rabbitmq.network_policy.allowed_namespaces == concat(local.platform_namespaces, ["orders"])
-    error_message = "only orders talks to rabbitmq"
-  }
-
-  assert {
     condition = alltrue([
       for name, tenant in local.tenants : alltrue([for ns in local.platform_namespaces : contains(try(tenant.network_policy.allowed_namespaces, local.platform_namespaces), ns)])
     ])
@@ -80,7 +75,7 @@ run "stateful_apps_get_bigger_defaults" {
 
   assert {
     condition = alltrue([
-      for app in ["catalog", "carts", "orders", "rabbitmq", "backstage"] : local.tenants[app].container_defaults.limit_memory == "1Gi"
+      for app in ["catalog", "carts", "orders", "backstage"] : local.tenants[app].container_defaults.limit_memory == "1Gi"
     ])
     error_message = "apps with bundled databases need 1Gi default limits"
   }

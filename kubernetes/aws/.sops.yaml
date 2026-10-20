@@ -4,7 +4,6 @@ creation_rules:
 secrets:
   - catalog/secret.yaml
   - orders/secret.yaml
-  - rabbitmq/secret.yaml
   - orders/mysql.yaml
   - backstage/postgres-secrets.yaml
   - backstage/backstage-secrets.yaml

@@ -4,5 +4,4 @@ kind: ConfigMap
 metadata:
   name: orders
 data:
-  SPRING_PROFILES_ACTIVE: mysql,rabbitmq
-  SPRING_RABBITMQ_HOST: rabbitmq.rabbitmq.svc
+  SPRING_PROFILES_ACTIVE: mysql

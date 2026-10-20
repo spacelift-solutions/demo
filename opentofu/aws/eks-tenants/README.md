@@ -26,9 +26,9 @@ The key becomes the namespace, service account and part of the IAM role name. Ke
 
 ## Current tenants
 
-The retail store demo apps (`ui`, `catalog`, `carts`, `assets`, `checkout`, `orders`, `rabbitmq`) and `backstage`. Their workloads are deployed by the `kubernetes-deployments` stack, which runs after this one. Namespaces and service accounts are owned here, not by the kustomizations.
+The retail store demo apps (`ui`, `catalog`, `carts`, `assets`, `checkout`, `orders`) and `backstage`. Their workloads are deployed by the `kubernetes-deployments` stack, which runs after this one. Namespaces and service accounts are owned here, not by the kustomizations.
 
-Network policies follow the service calls: `ui` calls catalog, carts, assets, checkout and orders; `checkout` calls orders; `orders` calls rabbitmq. `ui` also accepts the VPC CIDR because its NLB uses instance targets. When an app starts calling a new service, add the caller to that tenant's `allowed_namespaces`.
+Network policies follow the service calls: `ui` calls catalog, carts, assets, checkout and orders; `checkout` calls orders. `ui` also accepts the VPC CIDR because its NLB uses instance targets. When an app starts calling a new service, add the caller to that tenant's `allowed_namespaces`.
 
 ## Inputs
 

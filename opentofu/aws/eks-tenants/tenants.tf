@@ -18,8 +18,8 @@ locals {
   # Every tenant accepts traffic from its own namespace plus these
   platform_namespaces = ["kube-system", "prometheus"]
 
-  # Bundled databases, Backstage and RabbitMQ set no resources, so they run
-  # on the LimitRange defaults; 512Mi is too tight for them
+  # Bundled databases and Backstage set no resources, so they run on the
+  # LimitRange defaults; 512Mi is too tight for them
   stateful_container_defaults = {
     limit_cpu    = "1"
     limit_memory = "1Gi"
@@ -54,11 +54,6 @@ locals {
       labels             = { "app.kubernetes.io/name" = "orders" }
       container_defaults = local.stateful_container_defaults
       network_policy     = { allowed_namespaces = concat(local.platform_namespaces, ["ui", "checkout"]) }
-    }
-    rabbitmq = {
-      labels             = { "app.kubernetes.io/name" = "rabbitmq" }
-      container_defaults = local.stateful_container_defaults
-      network_policy     = { allowed_namespaces = concat(local.platform_namespaces, ["orders"]) }
     }
 
     # Backstage developer portal, reached by port-forward
