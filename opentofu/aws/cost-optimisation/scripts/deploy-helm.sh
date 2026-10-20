@@ -10,7 +10,7 @@ echo "Deploying FinOps Monitoring Stack"
 echo "========================================="
 
 # Configuration
-CLUSTER_NAME="${TF_VAR_cluster_name:-eks-cluster}"
+CLUSTER_NAME="${TF_VAR_cluster_name:-spacelift-solutions-cluster}"
 AWS_REGION="${TF_VAR_aws_region:-us-east-1}"
 OPENCOST_NAMESPACE="${TF_OUTPUT_opencost_namespace:-opencost}"
 PROMETHEUS_NAMESPACE="${TF_OUTPUT_prometheus_namespace:-prometheus}"

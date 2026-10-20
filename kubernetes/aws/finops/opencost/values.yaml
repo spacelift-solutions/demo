@@ -2,7 +2,7 @@
 opencost:
   exporter:
     # Use IRSA for AWS credentials
-    defaultClusterId: eks-cluster
+    defaultClusterId: spacelift-solutions-cluster
 
     aws:
       # IRSA is configured via service account annotation
