@@ -56,7 +56,7 @@ resource "spacelift_environment_variable" "cluster_name" {
 resource "spacelift_environment_variable" "cluster_version" {
   context_id  = spacelift_context.k8s_example.id
   name        = "TF_VAR_cluster_version"
-  value       = "1.35"
+  value       = "1.37"
   write_only  = false
   description = "Version of the EKS cluster"
 }
