@@ -67,9 +67,7 @@ data "aws_iam_session_context" "current" {
 }
 
 locals {
-  cluster_admin_role_arns = {
-    spacelift_solutions = "arn:aws:iam::234878555361:role/spacelift-solutions"
-  }
+  cluster_admin_role_arns = var.cluster_admin_role_arns
 
   access_entries = {
     for name, arn in local.cluster_admin_role_arns : name => {
