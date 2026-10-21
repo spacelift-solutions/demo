@@ -35,15 +35,11 @@ resource "kubernetes_namespace" "grafana" {
   }
 }
 
-# Service accounts for IRSA
+# Service accounts. eks-prerequisites associates each with its IAM role through EKS Pod Identity.
 resource "kubernetes_service_account" "opencost" {
   metadata {
     name      = "opencost"
     namespace = kubernetes_namespace.opencost.metadata[0].name
-
-    annotations = {
-      "eks.amazonaws.com/role-arn" = var.opencost_role_arn
-    }
 
     labels = {
       app       = "opencost"
@@ -57,10 +53,6 @@ resource "kubernetes_service_account" "prometheus" {
     name      = "prometheus"
     namespace = kubernetes_namespace.prometheus.metadata[0].name
 
-    annotations = {
-      "eks.amazonaws.com/role-arn" = var.prometheus_role_arn
-    }
-
     labels = {
       app       = "prometheus"
       managedBy = "spacelift"
@@ -72,10 +64,6 @@ resource "kubernetes_service_account" "grafana" {
   metadata {
     name      = "grafana"
     namespace = kubernetes_namespace.grafana.metadata[0].name
-
-    annotations = {
-      "eks.amazonaws.com/role-arn" = var.grafana_role_arn
-    }
 
     labels = {
       app       = "grafana"

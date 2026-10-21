@@ -9,11 +9,14 @@ mock_provider "aws" {
 
   mock_data "aws_eks_cluster" {
     defaults = {
-      identity = [{
-        oidc = [{
-          issuer = "https://oidc.eks.us-east-1.amazonaws.com/id/EXAMPLE"
-        }]
-      }]
+      arn = "arn:aws:eks:us-east-1:123456789012:cluster/spacelift-solutions-cluster"
+    }
+  }
+
+  # aws_eks_pod_identity_association validates role_arn
+  mock_resource "aws_iam_role" {
+    defaults = {
+      arn = "arn:aws:iam::123456789012:role/spacelift-solutions-cluster-demo-tenant"
     }
   }
 }
@@ -42,13 +45,8 @@ run "defaults" {
   }
 
   assert {
-    condition     = length(aws_iam_role.this) == 0 && length(kubernetes_role_binding_v1.admins) == 0
-    error_message = "no IAM role or role binding without inputs"
-  }
-
-  assert {
-    condition     = length(kubernetes_service_account_v1.this.metadata[0].annotations) == 0
-    error_message = "service account shouldn't be annotated without a role"
+    condition     = length(aws_iam_role.this) == 0 && length(aws_eks_pod_identity_association.this) == 0 && length(kubernetes_role_binding_v1.admins) == 0
+    error_message = "no IAM role, pod identity association or role binding without inputs"
   }
 }
 
@@ -71,13 +69,22 @@ run "everything_enabled" {
   }
 
   assert {
-    condition     = jsondecode(aws_iam_role.this[0].assume_role_policy).Statement[0].Condition.StringEquals["oidc.eks.us-east-1.amazonaws.com/id/EXAMPLE:sub"] == "system:serviceaccount:demo:demo"
-    error_message = "trust policy should be scoped to the tenant service account"
+    condition     = jsondecode(aws_iam_role.this[0].assume_role_policy).Statement[0].Principal.Service == "pods.eks.amazonaws.com"
+    error_message = "trust policy should allow EKS Pod Identity"
   }
 
   assert {
-    condition     = kubernetes_service_account_v1.this.metadata[0].annotations["eks.amazonaws.com/role-arn"] == aws_iam_role.this[0].arn
-    error_message = "service account should point at the role"
+    condition     = jsondecode(aws_iam_role.this[0].assume_role_policy).Statement[0].Condition.ArnEquals["aws:SourceArn"] == "arn:aws:eks:us-east-1:123456789012:cluster/spacelift-solutions-cluster"
+    error_message = "trust policy should be scoped to the cluster"
+  }
+
+  assert {
+    condition = (
+      aws_eks_pod_identity_association.this[0].namespace == "demo" &&
+      aws_eks_pod_identity_association.this[0].service_account == "demo" &&
+      aws_eks_pod_identity_association.this[0].role_arn == aws_iam_role.this[0].arn
+    )
+    error_message = "the tenant service account should be associated with the role"
   }
 
   assert {

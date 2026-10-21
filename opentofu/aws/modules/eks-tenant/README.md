@@ -9,7 +9,7 @@ Onboards one application onto the shared EKS cluster. Each tenant gets:
 | LimitRange | Default requests and limits for containers that don't set them (needed once a quota exists) |
 | NetworkPolicy | Pods only accept ingress from their own namespace, `kube-system`, `prometheus`, and any extra namespaces or CIDRs you allow. Egress is open. |
 | RoleBinding (optional) | Grants the built-in `admin` ClusterRole in the namespace to `admin_groups` |
-| Service account + IAM role (optional) | IRSA role that the `<name>` service account assumes; created when `iam_policy_arns` or `iam_policy_json` is set |
+| Service account + IAM role (optional) | EKS Pod Identity role associated with the `<name>` service account; created when `iam_policy_arns` or `iam_policy_json` is set |
 
 ## Usage
 
@@ -36,7 +36,7 @@ module "reports" {
 }
 ```
 
-Workloads use the IAM role by setting `serviceAccountName: <name>`.
+Workloads use the IAM role by setting `serviceAccountName: <name>`. The cluster must run the `eks-pod-identity-agent` add-on, and pods pick up the role when they start.
 
 See [`examples/basic`](examples/basic) for a full configuration.
 
@@ -45,14 +45,14 @@ See [`examples/basic`](examples/basic) for a full configuration.
 | Name | Default | Description |
 |---|---|---|
 | `name` | — | Tenant name; becomes the namespace, service account and IAM role suffix |
-| `cluster_name` | — | EKS cluster name, used to find its OIDC provider |
+| `cluster_name` | — | EKS cluster the role is associated with |
 | `labels` | `{}` | Extra namespace labels |
 | `resource_quota` | 4 CPU / 8Gi requested, 8 CPU / 16Gi limit, 50 pods, 10 PVCs, 100Gi storage, 2 LBs | Set to `null` to skip the quota |
 | `container_defaults` | 100m / 128Mi requested, 500m / 512Mi limit | LimitRange defaults |
 | `network_policy` | enabled, allows `kube-system` and `prometheus` | `enabled`, `allowed_namespaces`, `allowed_cidrs` |
 | `admin_groups` | `[]` | Kubernetes groups given `admin` in the namespace |
-| `iam_policy_arns` | `[]` | Managed policies for the IRSA role |
-| `iam_policy_json` | `null` | Inline policy for the IRSA role |
+| `iam_policy_arns` | `[]` | Managed policies for the Pod Identity role |
+| `iam_policy_json` | `null` | Inline policy for the Pod Identity role |
 | `tags` | `{}` | Tags for AWS resources |
 
 ## Outputs

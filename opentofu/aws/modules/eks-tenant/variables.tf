@@ -67,13 +67,13 @@ variable "admin_groups" {
 }
 
 variable "iam_policy_arns" {
-  description = "IAM policy ARNs attached to the tenant's IRSA role. The role is only created when this or iam_policy_json is set."
+  description = "IAM policy ARNs attached to the tenant's Pod Identity role. The role is only created when this or iam_policy_json is set."
   type        = list(string)
   default     = []
 }
 
 variable "iam_policy_json" {
-  description = "Inline IAM policy document for the tenant's IRSA role"
+  description = "Inline IAM policy document for the tenant's Pod Identity role"
   type        = string
   default     = null
 }

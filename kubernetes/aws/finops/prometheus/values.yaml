@@ -1,6 +1,6 @@
 # Prometheus Helm values for AWS EKS
 server:
-  # Use existing service account with IRSA
+  # Use existing service account (IAM role via EKS Pod Identity)
   serviceAccount:
     create: false
     name: prometheus
