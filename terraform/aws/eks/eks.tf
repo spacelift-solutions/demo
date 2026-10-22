@@ -102,6 +102,9 @@ module "eks_blueprints_addons" {
   enable_aws_load_balancer_controller = true
   aws_load_balancer_controller = {
     wait = true
+    # The role comes from EKS Pod Identity below. Without a role the chart's
+    # service account gets no IRSA annotation.
+    create_role = false
   }
 
   enable_metrics_server = true
@@ -148,8 +151,10 @@ module "eks_blueprints_addons" {
       })
     }
     aws-ebs-csi-driver = {
-      most_recent              = true
-      service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
+      most_recent = true
+    }
+    eks-pod-identity-agent = {
+      most_recent = true
     }
   }
 
@@ -158,19 +163,45 @@ module "eks_blueprints_addons" {
   }
 }
 
-module "ebs_csi_driver_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.34"
+#---------------------------------------------------------------
+# Workload identity (EKS Pod Identity)
+#---------------------------------------------------------------
 
-  # IAM caps role name prefixes at 38 characters
-  role_name_prefix = "${module.eks.cluster_name}-ebs-csi-"
+module "ebs_csi_driver_pod_identity" {
+  source  = "terraform-aws-modules/eks-pod-identity/aws"
+  version = "~> 1.12"
 
-  attach_ebs_csi_policy = true
+  # IAM caps role name prefixes at 38 characters (the module appends "-")
+  name = "${module.eks.cluster_name}-ebs-csi"
 
-  oidc_providers = {
-    main = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
+  attach_aws_ebs_csi_policy = true
+
+  associations = {
+    controller = {
+      cluster_name    = module.eks.cluster_name
+      namespace       = "kube-system"
+      service_account = "ebs-csi-controller-sa"
+    }
+  }
+
+  tags = {
+    Name = var.cluster_name
+  }
+}
+
+module "aws_load_balancer_controller_pod_identity" {
+  source  = "terraform-aws-modules/eks-pod-identity/aws"
+  version = "~> 1.12"
+
+  name = "${module.eks.cluster_name}-lb-ctrl"
+
+  attach_aws_lb_controller_policy = true
+
+  associations = {
+    controller = {
+      cluster_name    = module.eks.cluster_name
+      namespace       = "kube-system"
+      service_account = "aws-load-balancer-controller-sa"
     }
   }
 

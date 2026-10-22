@@ -1,38 +1,40 @@
-# Data source to get EKS cluster OIDC provider
 data "aws_eks_cluster" "target" {
   name = var.cluster_name
 }
 
-# Extract OIDC provider URL without https://
+# EKS Pod Identity trust policy shared by every role below. Each role is bound
+# to its service account by an aws_eks_pod_identity_association.
 locals {
-  oidc_provider_url = replace(data.aws_eks_cluster.target.identity[0].oidc[0].issuer, "https://", "")
-}
-
-# IAM Role for OpenCost with IRSA
-resource "aws_iam_role" "opencost_irsa" {
-  name = "opencost-irsa-role"
-
-  assume_role_policy = jsonencode({
+  pod_identity_assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Effect = "Allow"
         Principal = {
-          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider_url}"
+          Service = "pods.eks.amazonaws.com"
         }
-        Action = "sts:AssumeRoleWithWebIdentity"
+        Action = ["sts:AssumeRole", "sts:TagSession"]
         Condition = {
           StringEquals = {
-            "${local.oidc_provider_url}:sub" = "system:serviceaccount:opencost:opencost"
-            "${local.oidc_provider_url}:aud" = "sts.amazonaws.com"
+            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+          ArnEquals = {
+            "aws:SourceArn" = data.aws_eks_cluster.target.arn
           }
         }
       }
     ]
   })
+}
+
+# IAM Role for OpenCost
+resource "aws_iam_role" "opencost" {
+  name = "opencost-pod-identity-role"
+
+  assume_role_policy = local.pod_identity_assume_role_policy
 
   tags = {
-    Name      = "OpenCost IRSA Role"
+    Name      = "OpenCost Pod Identity Role"
     ManagedBy = "Spacelift"
     Purpose   = "FinOps - OpenCost AWS access"
   }
@@ -41,7 +43,7 @@ resource "aws_iam_role" "opencost_irsa" {
 # IAM Policy for OpenCost to access AWS Cost Explorer and pricing data
 resource "aws_iam_role_policy" "opencost_policy" {
   name = "opencost-aws-access"
-  role = aws_iam_role.opencost_irsa.id
+  role = aws_iam_role.opencost.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -91,30 +93,13 @@ resource "aws_iam_role_policy" "opencost_policy" {
 }
 
 # IAM Role for Prometheus (if needed for CloudWatch metrics)
-resource "aws_iam_role" "prometheus_irsa" {
-  name = "prometheus-irsa-role"
+resource "aws_iam_role" "prometheus" {
+  name = "prometheus-pod-identity-role"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider_url}"
-        }
-        Action = "sts:AssumeRoleWithWebIdentity"
-        Condition = {
-          StringEquals = {
-            "${local.oidc_provider_url}:sub" = "system:serviceaccount:prometheus:prometheus"
-            "${local.oidc_provider_url}:aud" = "sts.amazonaws.com"
-          }
-        }
-      }
-    ]
-  })
+  assume_role_policy = local.pod_identity_assume_role_policy
 
   tags = {
-    Name      = "Prometheus IRSA Role"
+    Name      = "Prometheus Pod Identity Role"
     ManagedBy = "Spacelift"
     Purpose   = "FinOps - Prometheus CloudWatch access"
   }
@@ -122,7 +107,7 @@ resource "aws_iam_role" "prometheus_irsa" {
 
 resource "aws_iam_role_policy" "prometheus_policy" {
   name = "prometheus-cloudwatch-access"
-  role = aws_iam_role.prometheus_irsa.id
+  role = aws_iam_role.prometheus.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -142,30 +127,13 @@ resource "aws_iam_role_policy" "prometheus_policy" {
 }
 
 # IAM Role for Grafana (if needed for CloudWatch datasource)
-resource "aws_iam_role" "grafana_irsa" {
-  name = "grafana-irsa-role"
+resource "aws_iam_role" "grafana" {
+  name = "grafana-pod-identity-role"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider_url}"
-        }
-        Action = "sts:AssumeRoleWithWebIdentity"
-        Condition = {
-          StringEquals = {
-            "${local.oidc_provider_url}:sub" = "system:serviceaccount:grafana:grafana"
-            "${local.oidc_provider_url}:aud" = "sts.amazonaws.com"
-          }
-        }
-      }
-    ]
-  })
+  assume_role_policy = local.pod_identity_assume_role_policy
 
   tags = {
-    Name      = "Grafana IRSA Role"
+    Name      = "Grafana Pod Identity Role"
     ManagedBy = "Spacelift"
     Purpose   = "FinOps - Grafana AWS access"
   }
@@ -173,7 +141,7 @@ resource "aws_iam_role" "grafana_irsa" {
 
 resource "aws_iam_role_policy" "grafana_policy" {
   name = "grafana-aws-access"
-  role = aws_iam_role.grafana_irsa.id
+  role = aws_iam_role.grafana.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -200,4 +168,26 @@ resource "aws_iam_role_policy" "grafana_policy" {
       }
     ]
   })
+}
+
+# Bind each role to the service account monitoring-infra creates
+resource "aws_eks_pod_identity_association" "opencost" {
+  cluster_name    = var.cluster_name
+  namespace       = "opencost"
+  service_account = "opencost"
+  role_arn        = aws_iam_role.opencost.arn
+}
+
+resource "aws_eks_pod_identity_association" "prometheus" {
+  cluster_name    = var.cluster_name
+  namespace       = "prometheus"
+  service_account = "prometheus"
+  role_arn        = aws_iam_role.prometheus.arn
+}
+
+resource "aws_eks_pod_identity_association" "grafana" {
+  cluster_name    = var.cluster_name
+  namespace       = "grafana"
+  service_account = "grafana"
+  role_arn        = aws_iam_role.grafana.arn
 }
