@@ -32,7 +32,9 @@ Network policies follow the service calls: `ui` calls catalog, carts, assets, ch
 
 ## Flux
 
-[`flux.tf`](flux.tf) installs the Flux controllers into `flux-system` from the `fluxcd-community/flux2` Helm chart. Nothing is reconciled yet. To hand a path to Flux, add a `GitRepository` and `Kustomization` for it, and take that path out of `kubernetes-deployments`.
+[`flux.tf`](flux.tf) installs the [Flux Operator](https://fluxoperator.dev) into `flux-system` and a `FluxInstance` that runs Flux at the version pinned in `local.flux_version`. To upgrade Flux, bump `flux_version`. If the current operator doesn't bundle that version, bump `flux_operator_version` too.
+
+Nothing is reconciled yet. To hand a path to Flux, give the `FluxInstance` a `sync` source, or add a `GitRepository` and `Kustomization`, and take that path out of `kubernetes-deployments`.
 
 ## Inputs
 

@@ -82,3 +82,12 @@ run "stateful_apps_get_bigger_defaults" {
     error_message = "apps with bundled databases need 1Gi default limits"
   }
 }
+
+run "flux_version_is_pinned" {
+  command = plan
+
+  assert {
+    condition     = can(regex("^\\d+\\.\\d+\\.\\d+$", local.flux_version)) && yamldecode(helm_release.flux_instance.values[0]).instance.distribution.version == local.flux_version
+    error_message = "the FluxInstance must run an exact Flux version, not a range"
+  }
+}
