@@ -66,3 +66,20 @@ resource "spacelift_template_version" "github_repository_v1_4" {
     github_space_id       = spacelift_space.github.id
   })
 }
+
+resource "spacelift_template" "s3_bucket" {
+  name        = "S3 Bucket Template"
+  description = "Creates a private, versioned S3 bucket"
+  space       = spacelift_space.flows_examples.id
+  labels      = ["s3"]
+}
+
+resource "spacelift_template_version" "s3_bucket_v1" {
+  template_id    = spacelift_template.s3_bucket.id
+  version_number = "1.0.0"
+  state          = "PUBLISHED"
+  template = templatefile("templates/s3-bucket.yaml", {
+    flows_examples_space_id = spacelift_space.flows_examples.id
+    aws_integration_id      = spacelift_aws_integration.demo.id
+  })
+}
