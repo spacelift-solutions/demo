@@ -30,6 +30,10 @@ The retail store demo apps (`ui`, `catalog`, `carts`, `assets`, `checkout`, `ord
 
 Network policies follow the service calls: `ui` calls catalog, carts, assets, checkout and orders; `checkout` calls orders. `ui` also accepts the VPC CIDR because its NLB uses instance targets. When an app starts calling a new service, add the caller to that tenant's `allowed_namespaces`.
 
+## Flux
+
+[`flux.tf`](flux.tf) installs the Flux controllers into `flux-system` from the `fluxcd-community/flux2` Helm chart. Nothing is reconciled yet. To hand a path to Flux, add a `GitRepository` and `Kustomization` for it, and take that path out of `kubernetes-deployments`.
+
 ## Inputs
 
 `cluster_name` comes from the cluster stack through a Spacelift dependency. `aws_region` and `vpc_cidr` come from the `Spacelift-Solutions cluster` context. A new cluster re-triggers this stack.

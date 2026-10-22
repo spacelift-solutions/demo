@@ -1,5 +1,7 @@
 mock_provider "kubernetes" {}
 
+mock_provider "helm" {}
+
 mock_provider "aws" {
   mock_data "aws_caller_identity" {
     defaults = {
