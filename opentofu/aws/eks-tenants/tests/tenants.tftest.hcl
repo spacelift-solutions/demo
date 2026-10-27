@@ -2,6 +2,10 @@ mock_provider "kubernetes" {}
 
 mock_provider "helm" {}
 
+mock_provider "github" {}
+
+mock_provider "tls" {}
+
 mock_provider "aws" {
   mock_data "aws_caller_identity" {
     defaults = {
@@ -19,8 +23,10 @@ mock_provider "aws" {
 }
 
 variables {
-  cluster_name = "spacelift-solutions-cluster"
-  vpc_cidr     = "10.0.0.0/16"
+  cluster_name               = "spacelift-solutions-cluster"
+  vpc_cidr                   = "10.0.0.0/16"
+  github_app_id              = "1"
+  github_app_installation_id = "2"
 }
 
 run "demo_apps" {
@@ -89,5 +95,14 @@ run "flux_version_is_pinned" {
   assert {
     condition     = can(regex("^\\d+\\.\\d+\\.\\d+$", local.flux_version)) && yamldecode(helm_release.flux_instance.values[0]).instance.distribution.version == local.flux_version
     error_message = "the FluxInstance must run an exact Flux version, not a range"
+  }
+
+  assert {
+    condition = (
+      yamldecode(helm_release.flux_instance.values[0]).instance.sync.url == local.flux_repository_url &&
+      yamldecode(helm_release.flux_instance.values[0]).instance.sync.ref == "refs/heads/main" &&
+      yamldecode(helm_release.flux_instance.values[0]).instance.sync.path == "clusters/spacelift-solutions"
+    )
+    error_message = "the FluxInstance must reconcile the Spacelift Solutions cluster root"
   }
 }

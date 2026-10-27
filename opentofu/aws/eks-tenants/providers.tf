@@ -14,6 +14,14 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 3.0"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.0"
+    }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
   }
 }
 
@@ -46,5 +54,15 @@ provider "helm" {
       command     = "aws"
       args        = ["eks", "get-token", "--cluster-name", var.cluster_name, "--region", var.aws_region]
     }
+  }
+}
+
+provider "github" {
+  owner = "spacelift-solutions"
+
+  app_auth {
+    id              = var.github_app_id
+    installation_id = var.github_app_installation_id
+    pem_file        = try(file("/mnt/workspace/github-app.pem"), "")
   }
 }
