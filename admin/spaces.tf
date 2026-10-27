@@ -141,3 +141,9 @@ resource "spacelift_space" "examples" {
   inherit_entities = true
   parent_space_id  = "root"
 }
+
+resource "spacelift_space" "flows_examples" {
+  name             = "flows-examples"
+  inherit_entities = true
+  parent_space_id  = "root"
+}

@@ -1,5 +1,7 @@
 mock_provider "kubernetes" {}
 
+mock_provider "helm" {}
+
 mock_provider "aws" {
   mock_data "aws_caller_identity" {
     defaults = {
@@ -78,5 +80,14 @@ run "stateful_apps_get_bigger_defaults" {
       for app in ["catalog", "carts", "orders", "backstage"] : local.tenants[app].container_defaults.limit_memory == "1Gi"
     ])
     error_message = "apps with bundled databases need 1Gi default limits"
+  }
+}
+
+run "flux_version_is_pinned" {
+  command = plan
+
+  assert {
+    condition     = can(regex("^\\d+\\.\\d+\\.\\d+$", local.flux_version)) && yamldecode(helm_release.flux_instance.values[0]).instance.distribution.version == local.flux_version
+    error_message = "the FluxInstance must run an exact Flux version, not a range"
   }
 }
