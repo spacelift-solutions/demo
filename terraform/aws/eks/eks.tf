@@ -150,11 +150,13 @@ module "eks_blueprints_addons" {
         enableNetworkPolicy : "true",
       })
     }
-    # aws-ebs-csi-driver is temporarily removed so EKS deletes the add-on while
-    # keeping the driver running (preserve = true). Updating it in place cannot
-    # clear the old IRSA service_account_role_arn: EKS rejects the empty ARN
-    # with "Cross-account pass role is not allowed". A follow-up change adds it
-    # back without a role, and it then uses the Pod Identity association below.
+    # Credentials come from the Pod Identity association below. Do not set
+    # service_account_role_arn: IRSA takes precedence over Pod Identity, and
+    # clearing the ARN later fails with "Cross-account pass role is not
+    # allowed", so the add-on has to be removed and re-added instead.
+    aws-ebs-csi-driver = {
+      most_recent = true
+    }
     eks-pod-identity-agent = {
       most_recent = true
     }
