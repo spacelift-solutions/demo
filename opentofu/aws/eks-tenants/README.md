@@ -34,11 +34,31 @@ Network policies follow the service calls: `ui` calls catalog, carts, assets, ch
 
 [`flux.tf`](flux.tf) installs the [Flux Operator](https://fluxoperator.dev) into `flux-system` and a `FluxInstance` that runs Flux at the version pinned in `local.flux_version`. To upgrade Flux, bump `flux_version`. If the current operator doesn't bundle that version, bump `flux_operator_version` too.
 
-Nothing is reconciled yet. To hand a path to Flux, give the `FluxInstance` a `sync` source, or add a `GitRepository` and `Kustomization`, and take that path out of `kubernetes-deployments`.
+The `FluxInstance` reconciles
+`clusters/spacelift-solutions` from the private
+[`spacelift-solutions/flux`](https://github.com/spacelift-solutions/flux)
+repository. [`flux_repository.tf`](flux_repository.tf) generates an ED25519 key
+pair, registers the public key as a read-only repository deploy key, and stores
+the private key in the `flux-system/flux-repository-auth` Secret. GitHub host
+keys are pinned in that file and should only be changed against GitHub's
+published metadata.
+
+The reconciliation root is intentionally empty. The
+`kubernetes-deployments` stack remains the sole owner of the demo workloads.
+Before moving any resource to Flux, remove it from that stack in the same
+coordinated cutover so the cluster never has two reconcilers for one object.
+
+To rotate the repository credential, replace
+`tls_private_key.flux_repository` in a reviewed Spacelift run. The deploy key
+and Kubernetes Secret must update together; do not create an unmanaged key.
 
 ## Inputs
 
-`cluster_name` comes from the cluster stack through a Spacelift dependency. `aws_region` and `vpc_cidr` come from the `Spacelift-Solutions cluster` context. A new cluster re-triggers this stack.
+`cluster_name` comes from the cluster stack through a Spacelift dependency.
+`aws_region` and `vpc_cidr` come from the `Spacelift-Solutions cluster`
+context. The `Spacelift-Solutions[Bot]` context supplies the GitHub App ID,
+installation ID, and mounted private key used only to provision the deploy
+key. A new cluster re-triggers this stack.
 
 ## Testing
 

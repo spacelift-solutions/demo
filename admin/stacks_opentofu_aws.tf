@@ -287,6 +287,10 @@ module "stack_aws_eks_tenants" {
   repository_branch = "main"
   tf_version        = "1.8.4"
 
+  contexts = {
+    GITHUB_APP = spacelift_context.spacelift_solutions_github_app.id
+  }
+
   # Module source lives outside the project root
   additional_project_globs = ["opentofu/aws/modules/eks-tenant/**"]
 

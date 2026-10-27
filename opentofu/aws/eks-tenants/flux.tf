@@ -1,8 +1,8 @@
 # Flux for the Spacelift-Solutions cluster, managed by the Flux Operator.
 #
 # The operator installs and upgrades the Flux controllers described by the
-# FluxInstance. There is no sync source yet, so the kubernetes-deployments stack
-# still owns the demo apps.
+# FluxInstance. Flux reconciles an empty cluster root from the dedicated Flux
+# repository; the kubernetes-deployments stack still owns the demo apps.
 
 locals {
   # The operator only installs Flux versions it bundles, so bump both together
@@ -36,9 +36,20 @@ resource "helm_release" "flux_instance" {
         version  = local.flux_version
         registry = "ghcr.io/fluxcd"
       }
+      sync = {
+        kind       = "GitRepository"
+        name       = "spacelift-solutions"
+        url        = local.flux_repository_url
+        ref        = "refs/heads/main"
+        path       = "clusters/spacelift-solutions"
+        pullSecret = kubernetes_secret_v1.flux_repository_auth.metadata[0].name
+      }
     }
   })]
 
-  # The FluxInstance CRD comes with the operator chart
-  depends_on = [helm_release.flux_operator]
+  # The FluxInstance CRD and repository credentials must exist first.
+  depends_on = [
+    helm_release.flux_operator,
+    kubernetes_secret_v1.flux_repository_auth,
+  ]
 }
