@@ -22,6 +22,7 @@ dedicated `github` space.
 | `repository_name` | yes | | GitHub repository name |
 | `description` | no | empty | Repository description |
 | `visibility` | no | `private` | `private`, `public`, or `internal` |
+| `has_issues` | no | `true` | Enable GitHub Issues (version `1.5.0` and later) |
 | `import_existing` | no | `false` | Import an existing repository into the new stack |
 
 ### Repository starter files
@@ -58,6 +59,13 @@ Version `1.4.0` runs the repository setup command from the final hook after
 every successful tracked run, including no-op runs. Proposed runs, tasks, and
 failed runs skip setup so previews and unsuccessful deployments cannot mutate
 the target repository.
+
+### GitHub Issues
+
+Every repository managed by the template has GitHub Issues enabled by default,
+including repositories created with versions earlier than `1.5.0`, because all
+versions share the same OpenTofu code. Version `1.5.0` adds the **Enable GitHub
+Issues** input so a repository can opt out.
 
 ### GitHub App authentication
 
