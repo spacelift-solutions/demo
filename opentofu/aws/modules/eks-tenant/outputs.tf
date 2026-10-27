@@ -9,6 +9,6 @@ output "service_account" {
 }
 
 output "iam_role_arn" {
-  description = "ARN of the tenant's IRSA role, or null when none was created"
+  description = "ARN of the tenant's Pod Identity role, or null when none was created"
   value       = local.create_iam_role ? aws_iam_role.this[0].arn : null
 }

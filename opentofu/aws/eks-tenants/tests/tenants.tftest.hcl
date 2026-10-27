@@ -13,7 +13,7 @@ mock_provider "aws" {
     defaults = {
       endpoint              = "https://example.eks.amazonaws.com"
       certificate_authority = [{ data = "Y2E=" }]
-      identity              = [{ oidc = [{ issuer = "https://oidc.eks.us-east-1.amazonaws.com/id/EXAMPLE" }] }]
+      arn                   = "arn:aws:eks:us-east-1:123456789012:cluster/spacelift-solutions-cluster"
     }
   }
 }

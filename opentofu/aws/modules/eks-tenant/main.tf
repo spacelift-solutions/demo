@@ -145,7 +145,7 @@ resource "kubernetes_role_binding_v1" "admins" {
 }
 
 #---------------------------------------------------------------
-# Workload identity (IRSA)
+# Workload identity (EKS Pod Identity)
 #---------------------------------------------------------------
 
 data "aws_caller_identity" "current" {}
@@ -154,11 +154,8 @@ data "aws_eks_cluster" "this" {
   name = var.cluster_name
 }
 
-locals {
-  oidc_provider_url = replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")
-  oidc_provider_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider_url}"
-}
-
+# The pod identity association below binds the role to the tenant's service
+# account; the trust policy only lets this cluster's Pod Identity agent assume it
 resource "aws_iam_role" "this" {
   count = local.create_iam_role ? 1 : 0
 
@@ -170,13 +167,15 @@ resource "aws_iam_role" "this" {
       {
         Effect = "Allow"
         Principal = {
-          Federated = local.oidc_provider_arn
+          Service = "pods.eks.amazonaws.com"
         }
-        Action = "sts:AssumeRoleWithWebIdentity"
+        Action = ["sts:AssumeRole", "sts:TagSession"]
         Condition = {
           StringEquals = {
-            "${local.oidc_provider_url}:sub" = "system:serviceaccount:${var.name}:${var.name}"
-            "${local.oidc_provider_url}:aud" = "sts.amazonaws.com"
+            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+          ArnEquals = {
+            "aws:SourceArn" = data.aws_eks_cluster.this.arn
           }
         }
       }
@@ -216,9 +215,19 @@ resource "kubernetes_service_account_v1" "this" {
     name      = var.name
     namespace = kubernetes_namespace_v1.this.metadata[0].name
     labels    = local.common_labels
-
-    annotations = local.create_iam_role ? {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.this[0].arn
-    } : {}
   }
+}
+
+resource "aws_eks_pod_identity_association" "this" {
+  count = local.create_iam_role ? 1 : 0
+
+  cluster_name    = var.cluster_name
+  namespace       = kubernetes_namespace_v1.this.metadata[0].name
+  service_account = kubernetes_service_account_v1.this.metadata[0].name
+  role_arn        = aws_iam_role.this[0].arn
+
+  tags = merge(var.tags, {
+    Tenant    = var.name
+    ManagedBy = "Spacelift"
+  })
 }

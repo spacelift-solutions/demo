@@ -1,11 +1,10 @@
 # OpenCost Helm values for AWS EKS
 opencost:
   exporter:
-    # Use IRSA for AWS credentials
     defaultClusterId: spacelift-solutions-cluster
 
     aws:
-      # IRSA is configured via service account annotation
+      # AWS credentials come from EKS Pod Identity
       access_key_id: ""
       secret_access_key: ""
 
@@ -21,7 +20,7 @@ opencost:
         cpu: 500m
         memory: 512Mi
 
-  # Service account with IRSA annotation
+  # Service account associated with an IAM role through EKS Pod Identity
   serviceAccount:
     create: false  # Created by Terraform
     name: opencost

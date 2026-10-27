@@ -19,18 +19,3 @@ variable "cluster_ca_certificate" {
   type        = string
   sensitive   = true
 }
-
-variable "opencost_role_arn" {
-  description = "ARN of the IAM role for OpenCost"
-  type        = string
-}
-
-variable "prometheus_role_arn" {
-  description = "ARN of the IAM role for Prometheus"
-  type        = string
-}
-
-variable "grafana_role_arn" {
-  description = "ARN of the IAM role for Grafana"
-  type        = string
-}
