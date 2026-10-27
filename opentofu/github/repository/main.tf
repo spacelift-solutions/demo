@@ -28,6 +28,7 @@ resource "github_repository" "this" {
   name        = var.repository_name
   description = var.repository_description
   visibility  = var.repository_visibility
+  has_issues  = var.repository_has_issues
 
   archive_on_destroy     = true
   delete_branch_on_merge = true

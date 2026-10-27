@@ -67,6 +67,16 @@ resource "spacelift_template_version" "github_repository_v1_4" {
   })
 }
 
+resource "spacelift_template_version" "github_repository_v1_5" {
+  template_id    = spacelift_template.github_repository.id
+  version_number = "1.5.0"
+  state          = "PUBLISHED"
+  template = templatefile("templates/github-repository-v1.5.0.yaml", {
+    github_app_context_id = spacelift_context.spacelift_solutions_github_app.id
+    github_space_id       = spacelift_space.github.id
+  })
+}
+
 resource "spacelift_template" "s3_bucket" {
   name        = "S3 Bucket Template"
   description = "Creates a private, versioned S3 bucket"

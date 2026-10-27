@@ -14,6 +14,12 @@ variable "import_existing_repository" {
   default     = false
 }
 
+variable "repository_has_issues" {
+  type        = bool
+  description = "Whether to enable GitHub Issues on the repository."
+  default     = true
+}
+
 variable "repository_name" {
   type        = string
   description = "Name of the GitHub repository to create."
