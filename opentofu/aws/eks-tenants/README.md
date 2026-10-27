@@ -52,6 +52,26 @@ To rotate the repository credential, replace
 `tls_private_key.flux_repository` in a reviewed Spacelift run. The deploy key
 and Kubernetes Secret must update together; do not create an unmanaged key.
 
+### SOPS decryption with AWS KMS
+
+[`flux_sops.tf`](flux_sops.tf) gives `flux-system/kustomize-controller` a dedicated EKS Pod Identity role with only `kms:Decrypt` on `var.flux_sops_kms_key_arn`.
+It reuses the existing demo SOPS key owned by the `aws-cloudformation-kms` stack; this stack does not own or replace that key.
+The existing key policy permits the account to delegate access through IAM.
+The cluster's `eks-pod-identity-agent` add-on must remain enabled.
+
+The FluxInstance patches its generated root Kustomization to enable SOPS and its controller pod template with the association ID.
+This creates/restarts the pod after the association is ready so EKS injects temporary credentials.
+No static AWS credentials, IRSA annotations, decryption Secret reference, or object-level decryption service account are needed.
+
+The key ARN must match `.sops.yaml` in the Flux repository.
+Apply this stack before reconciling encrypted Secrets.
+See the [Flux secret workflow](https://github.com/spacelift-solutions/flux#encrypting-and-decrypting-secrets) for local encryption, editing, and decryption commands.
+Authors need their own IAM access to encrypt/decrypt with this key; the controller only decrypts.
+
+To roll back the integration, first remove or migrate encrypted resources from Flux, then remove the decryption patch and Pod Identity resources.
+Keep the KMS key available for encrypted Git history.
+Removing access while encrypted resources remain will cause reconciliation failures.
+
 ## Inputs
 
 `cluster_name` comes from the cluster stack through a Spacelift dependency.

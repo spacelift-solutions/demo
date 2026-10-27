@@ -8,3 +8,8 @@ output "tenants" {
     }
   }
 }
+
+output "flux_sops_kms_key_arn" {
+  description = "KMS key that must match the Flux repository SOPS creation rules"
+  value       = var.flux_sops_kms_key_arn
+}
