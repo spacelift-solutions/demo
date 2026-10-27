@@ -1,6 +1,37 @@
-# Reuse the SOPS key owned by the aws-cloudformation-kms stack. Key lifecycle
-# stays there so replacing Flux cannot destroy the key protecting Git history.
+# Dedicated key for Flux Secrets; protect it for as long as encrypted Git
+# history must remain readable, independently of controller replacements.
 data "aws_caller_identity" "flux" {}
+data "aws_partition" "flux" {}
+
+resource "aws_kms_key" "flux_sops" {
+  description             = "SOPS encryption for Flux Secrets on ${var.cluster_name}"
+  enable_key_rotation     = true
+  deletion_window_in_days = 30
+
+  # Delegate access to account IAM policies. The controller's policy below
+  # grants only decryption; authors need separately granted encrypt/decrypt.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid       = "EnableAccountIAMPermissions"
+      Effect    = "Allow"
+      Principal = { AWS = "arn:${data.aws_partition.flux.partition}:iam::${data.aws_caller_identity.flux.account_id}:root" }
+      Action    = "kms:*"
+      Resource  = "*"
+    }]
+  })
+
+  tags = { Cluster = var.cluster_name, ManagedBy = "Spacelift" }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_kms_alias" "flux_sops" {
+  name          = "alias/flux-sops-${var.cluster_name}"
+  target_key_id = aws_kms_key.flux_sops.key_id
+}
 
 resource "aws_iam_role" "flux_sops" {
   name_prefix = "flux-sops-"
@@ -35,7 +66,7 @@ resource "aws_iam_role_policy" "flux_sops" {
     Statement = [{
       Effect   = "Allow"
       Action   = ["kms:Decrypt"]
-      Resource = var.flux_sops_kms_key_arn
+      Resource = aws_kms_key.flux_sops.arn
     }]
   })
 }

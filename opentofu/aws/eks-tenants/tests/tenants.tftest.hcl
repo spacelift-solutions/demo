@@ -7,6 +7,17 @@ mock_provider "github" {}
 mock_provider "tls" {}
 
 mock_provider "aws" {
+  mock_resource "aws_kms_key" {
+    defaults = {
+      arn    = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+      key_id = "12345678-1234-1234-1234-123456789012"
+    }
+  }
+  mock_data "aws_partition" {
+    defaults = {
+      partition = "aws"
+    }
+  }
   mock_resource "aws_iam_role" {
     defaults = {
       arn = "arn:aws:iam::123456789012:role/flux-sops-test"
@@ -42,7 +53,7 @@ run "flux_sops_uses_scoped_pod_identity" {
   assert {
     condition = (
       jsondecode(aws_iam_role_policy.flux_sops.policy).Statement[0].Action == ["kms:Decrypt"] &&
-      jsondecode(aws_iam_role_policy.flux_sops.policy).Statement[0].Resource == var.flux_sops_kms_key_arn
+      jsondecode(aws_iam_role_policy.flux_sops.policy).Statement[0].Resource == aws_kms_key.flux_sops.arn
     )
     error_message = "Flux must have decrypt-only access scoped to the configured SOPS key"
   }
@@ -61,6 +72,25 @@ run "flux_sops_uses_scoped_pod_identity" {
       yamldecode(helm_release.flux_instance.values[0]).instance.kustomize.patches[0].target.name == "spacelift-solutions"
     )
     error_message = "The operator-owned root must enable SOPS without static credentials or object identity"
+  }
+}
+
+run "flux_sops_has_dedicated_rotating_key" {
+  command = plan
+
+  assert {
+    condition = (
+      aws_kms_key.flux_sops.enable_key_rotation &&
+      aws_kms_key.flux_sops.deletion_window_in_days == 30 &&
+      aws_kms_alias.flux_sops.name == "alias/flux-sops-${var.cluster_name}" &&
+      aws_kms_alias.flux_sops.target_key_id == aws_kms_key.flux_sops.key_id
+    )
+    error_message = "Flux must have a dedicated rotating key with a stable cluster-specific alias and recovery window"
+  }
+
+  assert {
+    condition     = jsondecode(aws_kms_key.flux_sops.policy).Statement[0].Principal.AWS == "arn:aws:iam::123456789012:root"
+    error_message = "The key policy must delegate access through this account's IAM policies"
   }
 }
 
