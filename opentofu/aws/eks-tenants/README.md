@@ -52,6 +52,29 @@ To rotate the repository credential, replace
 `tls_private_key.flux_repository` in a reviewed Spacelift run. The deploy key
 and Kubernetes Secret must update together; do not create an unmanaged key.
 
+### SOPS decryption with AWS KMS
+
+[`flux_sops.tf`](flux_sops.tf) creates a dedicated KMS key for Flux Secrets and gives `flux-system/kustomize-controller` a dedicated EKS Pod Identity role with only `kms:Decrypt` on that key.
+The key has automatic rotation, a 30-day deletion window, and `prevent_destroy` protection so ordinary controller replacements cannot delete encrypted Git history's key.
+The key policy delegates access through the account's IAM policies; authors need their own encrypt/decrypt grants on the new key.
+The existing CloudFormation-managed demo SOPS key and its consumers remain unchanged.
+The cluster's `eks-pod-identity-agent` add-on must remain enabled.
+
+The FluxInstance patches its generated root Kustomization to enable SOPS and its controller pod template with the association ID.
+This creates/restarts the pod after the association is ready so EKS injects temporary credentials.
+No static AWS credentials, IRSA annotations, decryption Secret reference, or object-level decryption service account are needed.
+
+The stable alias `alias/flux-sops-${var.cluster_name}` points to the dedicated key.
+The `flux_sops_kms_alias_arn` output must match `.sops.yaml` in the Flux repository; `flux_sops_kms_key_arn` supplies the actual key ARN for author IAM policies.
+Apply this stack before reconciling encrypted Secrets.
+See the [Flux secret workflow](https://github.com/spacelift-solutions/flux#encrypting-and-decrypting-secrets) for local encryption, editing, and decryption commands.
+Authors need their own IAM access to encrypt/decrypt with this key; the controller only decrypts.
+
+To roll back the integration, first remove or migrate encrypted resources from Flux, then remove the decryption patch and Pod Identity resources.
+Keep the KMS key available for encrypted Git history.
+Destroying this stack is blocked while the key's `prevent_destroy` protection is configured; retiring the key requires an explicit retention and migration decision.
+Removing access while encrypted resources remain will cause reconciliation failures.
+
 ## Inputs
 
 `cluster_name` comes from the cluster stack through a Spacelift dependency.

@@ -44,6 +44,37 @@ resource "helm_release" "flux_instance" {
         path       = "clusters/spacelift-solutions"
         pullSecret = kubernetes_secret_v1.flux_repository_auth.metadata[0].name
       }
+      kustomize = {
+        patches = [
+          {
+            target = { kind = "Kustomization", name = "spacelift-solutions" }
+            patch = yamlencode([{
+              op    = "add"
+              path  = "/spec/decryption"
+              value = { provider = "sops" }
+            }])
+          },
+          {
+            # Pod Identity credentials are injected only when a pod is created.
+            # This rolls existing controllers after the association is ready.
+            target = { kind = "Deployment", name = "kustomize-controller" }
+            patch = yamlencode({
+              apiVersion = "apps/v1"
+              kind       = "Deployment"
+              metadata   = { name = "kustomize-controller" }
+              spec = {
+                template = {
+                  metadata = {
+                    annotations = {
+                      "spacelift.io/pod-identity-association" = aws_eks_pod_identity_association.flux_sops.association_id
+                    }
+                  }
+                }
+              }
+            })
+          },
+        ]
+      }
     }
   })]
 

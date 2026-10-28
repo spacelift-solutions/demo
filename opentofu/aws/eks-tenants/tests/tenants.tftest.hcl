@@ -7,6 +7,22 @@ mock_provider "github" {}
 mock_provider "tls" {}
 
 mock_provider "aws" {
+  mock_resource "aws_kms_key" {
+    defaults = {
+      arn    = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+      key_id = "12345678-1234-1234-1234-123456789012"
+    }
+  }
+  mock_data "aws_partition" {
+    defaults = {
+      partition = "aws"
+    }
+  }
+  mock_resource "aws_iam_role" {
+    defaults = {
+      arn = "arn:aws:iam::123456789012:role/flux-sops-test"
+    }
+  }
   mock_data "aws_caller_identity" {
     defaults = {
       account_id = "123456789012"
@@ -19,6 +35,62 @@ mock_provider "aws" {
       certificate_authority = [{ data = "Y2E=" }]
       arn                   = "arn:aws:eks:us-east-1:123456789012:cluster/spacelift-solutions-cluster"
     }
+  }
+}
+
+run "flux_sops_uses_scoped_pod_identity" {
+  command = plan
+
+  assert {
+    condition = (
+      aws_eks_pod_identity_association.flux_sops.namespace == "flux-system" &&
+      aws_eks_pod_identity_association.flux_sops.service_account == "kustomize-controller" &&
+      aws_eks_pod_identity_association.flux_sops.cluster_name == var.cluster_name
+    )
+    error_message = "SOPS identity must belong only to this cluster's Flux kustomize-controller"
+  }
+
+  assert {
+    condition = (
+      jsondecode(aws_iam_role_policy.flux_sops.policy).Statement[0].Action == ["kms:Decrypt"] &&
+      jsondecode(aws_iam_role_policy.flux_sops.policy).Statement[0].Resource == aws_kms_key.flux_sops.arn
+    )
+    error_message = "Flux must have decrypt-only access scoped to the configured SOPS key"
+  }
+
+  assert {
+    condition = (
+      jsondecode(aws_iam_role.flux_sops.assume_role_policy).Statement[0].Condition.ArnEquals["aws:SourceArn"] == data.aws_eks_cluster.this.arn &&
+      jsondecode(aws_iam_role.flux_sops.assume_role_policy).Statement[0].Condition.StringEquals["aws:RequestTag/kubernetes-service-account"] == "kustomize-controller"
+    )
+    error_message = "Role trust must be restricted to this cluster and controller"
+  }
+
+  assert {
+    condition = (
+      yamldecode(yamldecode(helm_release.flux_instance.values[0]).instance.kustomize.patches[0].patch)[0].value == { provider = "sops" } &&
+      yamldecode(helm_release.flux_instance.values[0]).instance.kustomize.patches[0].target.name == "spacelift-solutions"
+    )
+    error_message = "The operator-owned root must enable SOPS without static credentials or object identity"
+  }
+}
+
+run "flux_sops_has_dedicated_rotating_key" {
+  command = plan
+
+  assert {
+    condition = (
+      aws_kms_key.flux_sops.enable_key_rotation &&
+      aws_kms_key.flux_sops.deletion_window_in_days == 30 &&
+      aws_kms_alias.flux_sops.name == "alias/flux-sops-${var.cluster_name}" &&
+      aws_kms_alias.flux_sops.target_key_id == aws_kms_key.flux_sops.key_id
+    )
+    error_message = "Flux must have a dedicated rotating key with a stable cluster-specific alias and recovery window"
+  }
+
+  assert {
+    condition     = jsondecode(aws_kms_key.flux_sops.policy).Statement[0].Principal.AWS == "arn:aws:iam::123456789012:root"
+    error_message = "The key policy must delegate access through this account's IAM policies"
   }
 }
 
