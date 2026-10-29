@@ -75,6 +75,20 @@ Keep the KMS key available for encrypted Git history.
 Destroying this stack is blocked while the key's `prevent_destroy` protection is configured; retiring the key requires an explicit retention and migration decision.
 Removing access while encrypted resources remain will cause reconciliation failures.
 
+### Object storage for Mimir, Loki and Tempo
+
+[`observability_storage.tf`](observability_storage.tf) creates the S3 buckets behind the Grafana LGTM backends that Flux installs from the [`flux`](https://github.com/spacelift-solutions/flux#mimir-loki-and-tempo) repository: three for Mimir (blocks, ruler, alertmanager), two for Loki (chunks, ruler) and one for Tempo (traces).
+Each component gets its own IAM role, limited to its own buckets, and an EKS Pod Identity association for service account `<component>` in namespace `<component>`.
+No static credentials are created; the charts' service accounts must keep those names.
+
+Bucket names are deterministic, `<account id>-<cluster name>-<component>-<bucket>`, so the Flux `HelmRelease` values can reference them.
+The `observability_buckets` output lists them; keep it in step with the values in the Flux repository.
+Apply this stack before merging the Flux change, otherwise the pods cannot reach S3.
+
+Buckets block public access, use SSE-S3, and abort incomplete multipart uploads after 7 days.
+Data retention is enforced by each component's compactor, not by bucket lifecycle rules.
+Buckets are not force-destroyed; empty them before removing the resources.
+
 ## Inputs
 
 `cluster_name` comes from the cluster stack through a Spacelift dependency.
