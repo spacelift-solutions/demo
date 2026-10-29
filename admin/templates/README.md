@@ -1,7 +1,7 @@
 # Stack templates
 
 Terraform registers the stack templates in this directory through
-[`../templates.tf`](../templates.tf). Published template versions are immutable:
+[`main.tf`](main.tf). Published template versions are immutable:
 change their source only before publishing. Create a new version resource and
 YAML file for later changes.
 

@@ -4,11 +4,11 @@ module "stack_aws_vpc_kubernetes_example" {
   description     = "stack that creates the VPC for the Spacelift-Solutions cluster"
   name            = "kubernetes-vpc"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_terraform.id
+  space_id        = var.space_ids.aws_terraform
 
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   labels            = ["aws", "vpc"]
   project_root      = "terraform/aws/vpc"
@@ -42,11 +42,11 @@ module "stack_aws_eks_kubernetes_example" {
   description     = "stack that creates the Spacelift-Solutions cluster, a general-purpose EKS cluster shared by the demo apps"
   name            = "Spacelift-Solutions cluster"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_terraform.id
+  space_id        = var.space_ids.aws_terraform
 
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   labels            = ["aws", "kubernetes"]
   project_root      = "terraform/aws/eks"

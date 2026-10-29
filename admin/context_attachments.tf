@@ -6,6 +6,6 @@ resource "spacelift_context_attachment" "monitoring_admin" {
 
 resource "spacelift_context_attachment" "monitoring_stack" {
   context_id = module.contexts.context_ids.monitoring
-  stack_id   = module.stack_gcp_monitoring.id
+  stack_id   = module.stacks.gcp_monitoring_stack_id
   priority   = 0
 }

@@ -5,12 +5,12 @@ module "stack_aws_kubernetes_example_deployments" {
   description     = "stack that deploys the demo apps onto the Spacelift-Solutions cluster"
   name            = "kubernetes-deployments"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_kubernetes.id
+  space_id        = var.space_ids.aws_kubernetes
 
   # Optional inputs
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   labels            = ["aws", "eks", "kubernetes", "plugin_sops"]
   project_root      = "kubernetes/aws"

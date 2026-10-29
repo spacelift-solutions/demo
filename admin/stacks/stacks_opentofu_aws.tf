@@ -4,11 +4,11 @@ module "stack_opentofu_aws_s3" {
   description     = "stack that creates s3 buckets"
   name            = "opentofu-aws-s3"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_opentofu.id
+  space_id        = var.space_ids.aws_opentofu
 
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   labels            = ["aws", "s3", "opentofu"]
   project_root      = "opentofu/aws/s3"
@@ -21,11 +21,11 @@ module "stack_aws_ec2" {
   description     = "creates a simple EC2 instance"
   name            = "ec2"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_opentofu.id
+  space_id        = var.space_ids.aws_opentofu
 
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   labels            = ["aws", "ec2"]
   project_root      = "opentofu/aws/ec2"
@@ -55,11 +55,11 @@ module "stack_opentofu_aws_vpc" {
   description     = "creates the dev VPC, public subnet and security group used by the EC2 stacks"
   name            = "opentofu-aws-vpc"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_opentofu.id
+  space_id        = var.space_ids.aws_opentofu
 
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   auto_deploy       = true
   labels            = ["aws", "vpc", "opentofu"]
@@ -72,10 +72,10 @@ module "stack_aws_ec2_asg_worker_pool" {
   description     = "stack to deploy private workers on AWS EC2 ASG"
   name            = "worker pool on ASG"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_opentofu.id
+  space_id        = var.space_ids.aws_opentofu
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   labels            = ["aws", "ec2", "asg"]
   project_root      = "worker-pools/docker/aws/workers-on-ec2"
@@ -86,7 +86,7 @@ module "stack_aws_ec2_asg_worker_pool" {
       parent_stack_id = module.stack_opentofu_aws_vpc.id
     }
     ADMIN = {
-      parent_stack_id = data.spacelift_current_stack.admin.id
+      parent_stack_id = var.admin_stack_id
       references = {
         WORKER_POOL_ID = {
           output_name = "ec2_worker_pool_id"
@@ -110,11 +110,11 @@ module "stack_aws_eks_worker_pool" {
   description     = "stack to deploy private workers on AWS EKS"
   name            = "worker pool on EKS"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_opentofu.id
-  worker_pool_id  = spacelift_worker_pool.aws_ec2_asg.id
+  space_id        = var.space_ids.aws_opentofu
+  worker_pool_id  = var.worker_pool_ids.aws_ec2_asg
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   labels            = ["aws", "eks"]
   project_root      = "worker-pools/kubernetes/aws"
@@ -122,7 +122,7 @@ module "stack_aws_eks_worker_pool" {
   tf_version        = "1.8.4"
   dependencies = {
     ADMIN = {
-      parent_stack_id = data.spacelift_current_stack.admin.id
+      parent_stack_id = var.admin_stack_id
       references = {
         WORKER_POOL_ID = {
           output_name = "eks_worker_pool_id"
@@ -165,13 +165,13 @@ module "stack_aws_audit_event_collector" {
   name              = "AWS events collector"
   repository_name   = "demo"
   repository_branch = "main"
-  space_id          = spacelift_space.aws_opentofu.id
-  worker_pool_id    = spacelift_worker_pool.aws_ec2_asg.id
+  space_id          = var.space_ids.aws_opentofu
+  worker_pool_id    = var.worker_pool_ids.aws_ec2_asg
   project_root      = "opentofu/aws/audit_trail"
   aws_integration = {
     tf_version = "1.8.4"
     enabled    = true
-    id         = module.integrations.aws_integration_id
+    id         = var.aws_integration_id
   }
   environment_variables = {
     TF_VAR_audit_trail_secret = {
@@ -184,7 +184,7 @@ module "stack_aws_audit_event_collector" {
   dependencies = {
     for key, dependency in {
       ADMIN = {
-        child_stack_id = data.spacelift_current_stack.admin.id
+        child_stack_id = var.admin_stack_id
         references = {
           ENDPOINT = {
             output_name = "courier_url"
@@ -203,11 +203,11 @@ module "stack_aws_winrm" {
   description     = "stack that creates an ec2 instance of windows with winrm enabled"
   name            = "tofu-winrm"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_opentofu.id
+  space_id        = var.space_ids.aws_opentofu
 
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   labels            = ["aws", "winrm"]
   project_root      = "opentofu/aws/winrm"
@@ -231,11 +231,11 @@ module "stack_aws_cloudwatch_dashboard" {
   description     = "stack that creates a cloudwatch dashboard with alb and rds metrics"
   name            = "tofu-cloudwatch-dashboard"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_opentofu.id
+  space_id        = var.space_ids.aws_opentofu
 
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   #ensuring that the stack is protected from deletion and requires a project tag to be applied to the stack
   labels                = ["aws", "cloudwatch", "dashboard", "deletion-prevention", "require-project-tag"]
@@ -252,11 +252,11 @@ module "stack_aws_cloudwatch_dashboard" {
   }
 
   contexts = {
-    github_auth = module.contexts.context_ids.github_auth
+    github_auth = var.context_ids.github_auth
   }
   #these are the policies that will be applied to this stack, they are defined in the admin/policies.tf file
   policies = {
-    NO_WEEKEND_DEPLOYS = spacelift_policy.no-weekend-deploys.id
+    NO_WEEKEND_DEPLOYS = var.no_weekend_deploys_policy_id
   }
 }
 
@@ -276,11 +276,11 @@ module "stack_aws_eks_tenants" {
   description     = "Onboards applications onto the shared EKS cluster as isolated tenants"
   name            = "eks-tenants"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_opentofu.id
+  space_id        = var.space_ids.aws_opentofu
 
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   labels            = ["aws", "eks", "kubernetes", "tenants"]
   project_root      = "opentofu/aws/eks-tenants"
@@ -288,7 +288,7 @@ module "stack_aws_eks_tenants" {
   tf_version        = "1.8.4"
 
   contexts = {
-    GITHUB_APP = module.contexts.context_ids.spacelift_solutions_github_app
+    GITHUB_APP = var.context_ids.spacelift_solutions_github_app
   }
 
   # Module source lives outside the project root

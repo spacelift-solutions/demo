@@ -1,16 +1,10 @@
-# Renamed from azure_linux_stack to follow the {type}_{cloud}_{service} convention.
-moved {
-  from = module.azure_linux_stack
-  to   = module.stack_azure_linux
-}
-
 module "stack_azure_linux" {
   source = "spacelift.io/spacelift-solutions/stacks-module/spacelift"
 
   name            = "azure-terraform-stack"
   description     = "Stack to Deploy Infrastructure to Azure"
   repository_name = "demo"
-  space_id        = spacelift_space.azure_terraform.id
+  space_id        = var.space_ids.azure_terraform
 
   workflow_tool = "OPEN_TOFU"
   tf_version    = "1.8.4"
@@ -23,12 +17,12 @@ module "stack_azure_linux" {
   # (This was the missing piece causing the stack to fail.)
   azure_integration = {
     enabled         = true
-    id              = module.integrations.azure_integration.id
-    subscription_id = module.integrations.azure_integration.default_subscription_id
+    id              = var.azure_integration.id
+    subscription_id = var.azure_integration.default_subscription_id
   }
 
   # Run on the dedicated Azure VMSS worker pool.
-  worker_pool_id = spacelift_worker_pool.azure_vmss.id
+  worker_pool_id = var.worker_pool_ids.azure_vmss
 
   environment_variables = {
     TF_VAR_project_name = {
@@ -77,7 +71,7 @@ module "stack_azure_vmss_worker_pool" {
   repository_name   = "demo"
   repository_branch = "main"
   project_root      = "worker-pools/docker/azure/vmss"
-  space_id          = spacelift_space.azure_terraform.id
+  space_id          = var.space_ids.azure_terraform
   workflow_tool     = "OPEN_TOFU"
   tf_version        = "1.8.4"
   labels            = ["azure", "vmss", "worker-pool"]
@@ -85,13 +79,13 @@ module "stack_azure_vmss_worker_pool" {
 
   azure_integration = {
     enabled         = true
-    id              = module.integrations.azure_integration.id
-    subscription_id = module.integrations.azure_integration.default_subscription_id
+    id              = var.azure_integration.id
+    subscription_id = var.azure_integration.default_subscription_id
   }
 
   dependencies = {
     ADMIN = {
-      parent_stack_id = data.spacelift_current_stack.admin.id
+      parent_stack_id = var.admin_stack_id
       references = {
         WORKER_POOL_ID = {
           output_name = "azure_vmss_worker_pool_id"

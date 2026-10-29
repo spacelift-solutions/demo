@@ -4,19 +4,19 @@ module "stack_opentofu_spacelift_tofusible" {
   description     = "Stack that creates EC2 Servers"
   name            = "Tofusible - Administrative"
   repository_name = "tofusible"
-  space_id        = spacelift_space.aws_opentofu.id
+  space_id        = var.space_ids.aws_opentofu
 
   auto_deploy = true
   roles = {
     ADMIN_ROLE = {
-      role_id  = spacelift_role.admin.id
-      space_id = spacelift_space.aws_opentofu.id
+      role_id  = var.admin_role_id
+      space_id = var.space_ids.aws_opentofu
     }
   }
 
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
 
   environment_variables = {
@@ -28,13 +28,13 @@ module "stack_opentofu_spacelift_tofusible" {
       value = "us-east-1"
     }
     TF_VAR_aws_integration_id = {
-      value = module.integrations.aws_integration_id
+      value = var.aws_integration_id
     }
     TF_VAR_resource_space_id = {
-      value = spacelift_space.aws_opentofu.id
+      value = var.space_ids.aws_opentofu
     }
     TF_VAR_ansible_worker_pool_id = {
-      value = spacelift_worker_pool.aws_ec2_asg.id
+      value = var.worker_pool_ids.aws_ec2_asg
     }
   }
 
@@ -70,7 +70,7 @@ module "stack_opentofu_spacelift_jira_approval" {
   auto_deploy = true
   roles = {
     ADMIN_ROLE = {
-      role_id  = spacelift_role.admin.id
+      role_id  = var.admin_role_id
       space_id = "root"
     }
   }
@@ -89,7 +89,7 @@ module "stack_opentofu_spacelift_jira_approval" {
       sensitive = true
     }
     TF_VAR_admin_role_id = {
-      value = spacelift_role.admin.id
+      value = var.admin_role_id
     }
   }
 

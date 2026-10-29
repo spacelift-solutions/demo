@@ -3,7 +3,7 @@
 A minimal Pulumi program that creates one encrypted, private S3 bucket.
 It exists to demonstrate the Spacelift GitOps workflow against the **Pulumi** vendor, not to host anything.
 
-The Spacelift stack is defined in `admin/stacks_pulumi_aws.tf` as `pulumi-aws-s3`, in the `aws/pulumi` space.
+The Spacelift stack is defined in `admin/stacks/stacks_pulumi_aws.tf` as `pulumi-aws-s3`, in the `aws/pulumi` space.
 
 ## What it deploys
 

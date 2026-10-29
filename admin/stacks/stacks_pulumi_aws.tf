@@ -4,7 +4,7 @@ module "stack_pulumi_aws_s3" {
   description     = "pulumi typescript program that creates an encrypted, private s3 bucket"
   name            = "pulumi-aws-s3"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_pulumi.id
+  space_id        = var.space_ids.aws_pulumi
 
   workflow_tool = "PULUMI"
 
@@ -21,7 +21,7 @@ module "stack_pulumi_aws_s3" {
 
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
 
   labels            = ["aws", "s3", "pulumi", "typescript"]

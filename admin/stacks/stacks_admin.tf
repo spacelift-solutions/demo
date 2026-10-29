@@ -4,7 +4,7 @@ module "stack_example_admin_vars" {
   description     = "Creates an admin stack for the env vars yaml example"
   name            = "env vars admin"
   repository_name = "examples"
-  space_id        = spacelift_space.examples.id
+  space_id        = var.space_ids.examples
 
   labels            = ["example"]
   project_root      = "env_vars"
@@ -12,8 +12,8 @@ module "stack_example_admin_vars" {
 
   roles = {
     ADMIN_ROLE = {
-      role_id  = spacelift_role.admin.id
-      space_id = spacelift_space.examples.id
+      role_id  = var.admin_role_id
+      space_id = var.space_ids.examples
     }
   }
 

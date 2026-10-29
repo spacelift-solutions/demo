@@ -14,7 +14,7 @@ data "spacelift_azure_devops_integration" "demo" {}
 resource "spacelift_stack" "azure_demo_app" {
   name        = "azure-demo-app"
   description = "Demo: deploys an Azure VM from Azure DevOps; gated by the large-VM-SKU approval policy."
-  space_id    = spacelift_space.azure_terraform.id
+  space_id    = var.space_ids.azure_terraform
 
   repository = "demo"
   branch     = "main"
@@ -26,7 +26,7 @@ resource "spacelift_stack" "azure_demo_app" {
 
   terraform_workflow_tool = "OPEN_TOFU"
   terraform_version       = "1.8.4"
-  worker_pool_id          = spacelift_worker_pool.azure_vmss.id
+  worker_pool_id          = var.worker_pool_ids.azure_vmss
   # autodeploy on so small changes flow through; the plan policy marks large-VM
   # SKU changes for human review (warn) before they can apply.
   autodeploy = true
@@ -35,9 +35,9 @@ resource "spacelift_stack" "azure_demo_app" {
 }
 
 resource "spacelift_azure_integration_attachment" "azure_demo_app" {
-  integration_id  = module.integrations.azure_integration.id
+  integration_id  = var.azure_integration.id
   stack_id        = spacelift_stack.azure_demo_app.id
-  subscription_id = module.integrations.azure_integration.default_subscription_id
+  subscription_id = var.azure_integration.default_subscription_id
   read            = true
   write           = true
 }

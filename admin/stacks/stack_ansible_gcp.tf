@@ -19,16 +19,16 @@ module "stack_ansible_ce_gcp" {
   description      = "Creates an ansible stack that configures an existing windows host"
   name             = "ansible-ce-gcp"
   repository_name  = "demo"
-  space_id         = spacelift_space.gcp_ansible.id
+  space_id         = var.space_ids.gcp_ansible
   manage_state     = true
   workflow_tool    = "ANSIBLE"
   ansible_playbook = "playbook.yml"
-  #  worker_pool_id    = spacelift_worker_pool.gcp_ce_worker.id
+  #  worker_pool_id    = var.worker_pool_ids.gcp_ce_worker
   #  runner_image      = "gcr.io/swift-climate-439711-s0/ansible-winrm-image"
   roles = {
     ADMIN_ROLE = {
-      role_id  = spacelift_role.admin.id
-      space_id = spacelift_space.gcp_ansible.id
+      role_id  = var.admin_role_id
+      space_id = var.space_ids.gcp_ansible
     }
   }
 

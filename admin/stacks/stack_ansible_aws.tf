@@ -18,14 +18,14 @@ module "stack_aws_ansible" {
   description     = "creates an ansible stack to install nginx"
   name            = "ansible-ec2"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_ansible.id
+  space_id        = var.space_ids.aws_ansible
 
   workflow_tool    = "ANSIBLE"
   ansible_playbook = "playbook.yml"
 
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   labels            = ["aws", "ansible"]
   project_root      = "ansible/aws/nginx"
@@ -60,14 +60,14 @@ module "stack_aws_ansible_winrm" {
   description     = "creates an ansible stack to showcase winrm"
   name            = "ansible-ec2-winrm"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_ansible.id
+  space_id        = var.space_ids.aws_ansible
 
   workflow_tool    = "ANSIBLE"
   ansible_playbook = "playbook.yml"
 
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
   labels            = ["aws", "ansible"]
   project_root      = "ansible/aws/winrm_example"

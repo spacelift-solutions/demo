@@ -3,14 +3,14 @@ module "stack_gcp_iam" {
   description     = "Creates all the relevant roles, service accounts and permissions for the gcp environment"
   name            = "gcp-iam"
   repository_name = "demo"
-  space_id        = spacelift_space.gcp_terraform.id
+  space_id        = var.space_ids.gcp_terraform
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
 
   roles = {
     ADMIN_ROLE = {
-      role_id  = spacelift_role.admin.id
-      space_id = spacelift_space.gcp_terraform.id
+      role_id  = var.admin_role_id
+      space_id = var.space_ids.gcp_terraform
     }
   }
 
@@ -26,10 +26,10 @@ module "stack_gcp_iam" {
       value     = var.project_id
     }
     TF_VAR_gcp_region = {
-      value = local.gcp_region
+      value = var.gcp_region
     }
     TF_VAR_gcp_environment_type = {
-      value = local.gcp_environment_type
+      value = var.gcp_environment_type
     }
   }
 
@@ -101,7 +101,7 @@ module "stack_gcp_networking" {
   description     = "Creates all the relevant networking components for the GCP environment"
   name            = "gcp-network"
   repository_name = "demo"
-  space_id        = spacelift_space.gcp_terraform.id
+  space_id        = var.space_ids.gcp_terraform
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
 
@@ -118,10 +118,10 @@ module "stack_gcp_networking" {
       value     = var.project_id
     }
     TF_VAR_gcp_region = {
-      value = local.gcp_region
+      value = var.gcp_region
     }
     TF_VAR_gcp_environment_type = {
-      value = local.gcp_environment_type
+      value = var.gcp_environment_type
     }
   }
 
@@ -164,7 +164,7 @@ module "stack_gcp_gke" {
   description     = "Creates a basic demo-grade GKE cluster"
   name            = "gcp-gke"
   repository_name = "demo"
-  space_id        = spacelift_space.gcp_terraform.id
+  space_id        = var.space_ids.gcp_terraform
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
 
@@ -182,10 +182,10 @@ module "stack_gcp_gke" {
       value     = var.project_id
     }
     TF_VAR_gcp_region = {
-      value = local.gcp_region
+      value = var.gcp_region
     }
     TF_VAR_gcp_environment_type = {
-      value = local.gcp_environment_type
+      value = var.gcp_environment_type
     }
   }
   dependencies = {
@@ -228,7 +228,7 @@ module "stack_gcp_db" {
   description     = "Creates a basic demo-grade DB instance, along a user and pass"
   name            = "gcp-db"
   repository_name = "demo"
-  space_id        = spacelift_space.gcp_terraform.id
+  space_id        = var.space_ids.gcp_terraform
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
 
@@ -245,10 +245,10 @@ module "stack_gcp_db" {
       value     = var.project_id
     }
     TF_VAR_gcp_region = {
-      value = local.gcp_region
+      value = var.gcp_region
     }
     TF_VAR_gcp_environment_type = {
-      value = local.gcp_environment_type
+      value = var.gcp_environment_type
     }
   }
   dependencies = {
@@ -289,7 +289,7 @@ module "stack_gcp_db" {
 #   description     = "Creates a the required cloud functions for resource uptime scheduling"
 #   name            = "gcp-cloud-functions"
 #   repository_name = "demo"
-#   space_id        = spacelift_space.gcp_terraform.id
+#   space_id        = var.space_ids.gcp_terraform
 #   manage_state    = true
 #   workflow_tool   = "TERRAFORM_FOSS"
 
@@ -306,10 +306,10 @@ module "stack_gcp_db" {
 #       value     = var.project_id
 #     }
 #     TF_VAR_gcp_region = {
-#       value = local.gcp_region
+#       value = var.gcp_region
 #     }
 #     TF_VAR_gcp_environment_type = {
-#       value = local.gcp_environment_type
+#       value = var.gcp_environment_type
 #     }
 #   }
 
@@ -330,10 +330,10 @@ module "stack_gcp_ce_win" {
   description     = "Creates simple ce instance with windows for demo and testing purposes"
   name            = "gcp-ce-win"
   repository_name = "demo"
-  space_id        = spacelift_space.gcp_terraform.id
+  space_id        = var.space_ids.gcp_terraform
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
-  # optional:  worker_pool_id  = spacelift_worker_pool.gcp_ce_worker.id
+  # optional:  worker_pool_id  = var.worker_pool_ids.gcp_ce_worker
   # administrative    = false
   auto_deploy       = true
   labels            = ["gcp", "compute-engine", "win", "demo"]
@@ -347,10 +347,10 @@ module "stack_gcp_ce_win" {
       value     = var.project_id
     }
     TF_VAR_gcp_region = {
-      value = local.gcp_region
+      value = var.gcp_region
     }
     TF_VAR_gcp_environment_type = {
-      value = local.gcp_environment_type
+      value = var.gcp_environment_type
     }
   }
   dependencies = {
@@ -374,7 +374,7 @@ module "stack_gcp_ce_worker_pool" {
   description     = "Creates a worker pool residing on a compute engine"
   name            = "gcp-ce-worker-pool"
   repository_name = "demo"
-  space_id        = spacelift_space.gcp_terraform.id
+  space_id        = var.space_ids.gcp_terraform
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
   #  runner_image    = "gcr.io/swift-climate-439711-s0/demo-winrm-image"
@@ -392,16 +392,16 @@ module "stack_gcp_ce_worker_pool" {
       value     = var.project_id
     }
     TF_VAR_gcp_region = {
-      value = local.gcp_region
+      value = var.gcp_region
     }
     TF_VAR_gcp_environment_type = {
-      value = local.gcp_environment_type
+      value = var.gcp_environment_type
     }
   }
 
   dependencies = {
     ADMIN = {
-      parent_stack_id = data.spacelift_current_stack.admin.id
+      parent_stack_id = var.admin_stack_id
       references = {
         WORKER_POOL_ID = {
           output_name = "gcp_ce_worker_pool_id"
@@ -427,7 +427,7 @@ module "stack_gcp_monitoring" {
   description     = "Creates Grafana monitoring stack for Spacelift observability on GKE"
   name            = "gcp-monitoring"
   repository_name = "demo"
-  space_id        = spacelift_space.gcp_terraform.id
+  space_id        = var.space_ids.gcp_terraform
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
 
@@ -444,13 +444,13 @@ module "stack_gcp_monitoring" {
       value     = var.project_id
     }
     TF_VAR_gcp_region = {
-      value = local.gcp_region
+      value = var.gcp_region
     }
     TF_VAR_gcp_environment_type = {
-      value = local.gcp_environment_type
+      value = var.gcp_environment_type
     }
     TF_VAR_spacelift_hostname = {
-      value = local.spacelift_hostname
+      value = var.spacelift_hostname
     }
     # API credentials (TF_VAR_spacelift_api_key_id and TF_VAR_spacelift_api_key_secret) 
     # are provided via the monitoring context attachment
@@ -492,7 +492,7 @@ module "stack_gcp_gke_control" {
   description     = "Manual control stack for starting/stopping GKE cluster during work hours"
   name            = "gcp-gke-control"
   repository_name = "demo"
-  space_id        = spacelift_space.gcp_terraform.id
+  space_id        = var.space_ids.gcp_terraform
   manage_state    = true
   workflow_tool   = "TERRAFORM_FOSS"
 
@@ -509,7 +509,7 @@ module "stack_gcp_gke_control" {
       value     = var.project_id
     }
     TF_VAR_gcp_region = {
-      value = local.gcp_region
+      value = var.gcp_region
     }
     TF_VAR_desired_state = {
       value = "stopped" # Default to stopped for cost control

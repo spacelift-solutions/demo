@@ -5,12 +5,12 @@ module "stack_cloudformation_aws_kms" {
   description     = "stack that creates a kms key in aws with cloudformation"
   name            = "aws-cloudformation-kms"
   repository_name = "demo"
-  space_id        = spacelift_space.aws_opentofu.id
+  space_id        = var.space_ids.aws_opentofu
 
   # Optional inputs
   aws_integration = {
     enabled = true
-    id      = module.integrations.aws_integration_id
+    id      = var.aws_integration_id
   }
 
   labels            = ["aws", "kms", "cloudformation"]
