@@ -8,7 +8,7 @@ module "stack_aws_vpc_kubernetes_example" {
 
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   labels            = ["aws", "vpc"]
   project_root      = "terraform/aws/vpc"
@@ -46,7 +46,7 @@ module "stack_aws_eks_kubernetes_example" {
 
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   labels            = ["aws", "kubernetes"]
   project_root      = "terraform/aws/eks"

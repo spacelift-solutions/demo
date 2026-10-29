@@ -25,7 +25,7 @@ module "stack_aws_ansible" {
 
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   labels            = ["aws", "ansible"]
   project_root      = "ansible/aws/nginx"
@@ -67,7 +67,7 @@ module "stack_aws_ansible_winrm" {
 
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   labels            = ["aws", "ansible"]
   project_root      = "ansible/aws/winrm_example"

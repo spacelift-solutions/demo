@@ -10,7 +10,7 @@ module "stack_cloudformation_aws_kms" {
   # Optional inputs
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
 
   labels            = ["aws", "kms", "cloudformation"]

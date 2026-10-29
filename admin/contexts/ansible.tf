@@ -1,7 +1,7 @@
 resource "spacelift_context" "ansible_context" {
   description = "Context for Ansible stacks"
   name        = "Ansible context"
-  space_id    = spacelift_space.aws_ansible.id
+  space_id    = var.space_ids.aws_ansible
   labels      = ["autoattach:ansible"]
 }
 
@@ -22,7 +22,7 @@ resource "spacelift_environment_variable" "ansible_inventory" {
 resource "spacelift_context" "public_key" {
   description = "public key for EC2 instance"
   name        = "EC2 Public key"
-  space_id    = spacelift_space.aws_opentofu.id
+  space_id    = var.space_ids.aws_opentofu
   labels      = ["autoattach:ec2"]
 }
 

@@ -16,7 +16,7 @@ module "stack_opentofu_spacelift_tofusible" {
 
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
 
   environment_variables = {
@@ -28,7 +28,7 @@ module "stack_opentofu_spacelift_tofusible" {
       value = "us-east-1"
     }
     TF_VAR_aws_integration_id = {
-      value = spacelift_aws_integration.demo.id
+      value = module.integrations.aws_integration_id
     }
     TF_VAR_resource_space_id = {
       value = spacelift_space.aws_opentofu.id

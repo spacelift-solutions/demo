@@ -4,7 +4,7 @@ resource "spacelift_blueprint" "s3_blueprint" {
   space       = "root"
   state       = "PUBLISHED"
   template = templatefile("blueprints/s3.yaml", {
-    aws_integration_id = spacelift_aws_integration.demo.id
+    aws_integration_id = module.integrations.aws_integration_id
   })
 }
 
@@ -15,7 +15,7 @@ resource "spacelift_blueprint" "minesible" {
   state       = "PUBLISHED"
   template = templatefile("blueprints/minesible.yaml", {
     aws_opentofu_space_id = spacelift_space.aws_opentofu.id
-    aws_integration_id    = spacelift_aws_integration.demo.id
+    aws_integration_id    = module.integrations.aws_integration_id
     ec2_worker_pool_id    = spacelift_worker_pool.aws_ec2_asg.id
   })
 }

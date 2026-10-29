@@ -10,7 +10,7 @@ module "stack_aws_kubernetes_example_deployments" {
   # Optional inputs
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   labels            = ["aws", "eks", "kubernetes", "plugin_sops"]
   project_root      = "kubernetes/aws"

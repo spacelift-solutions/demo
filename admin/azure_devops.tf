@@ -35,9 +35,9 @@ resource "spacelift_stack" "azure_demo_app" {
 }
 
 resource "spacelift_azure_integration_attachment" "azure_demo_app" {
-  integration_id  = data.spacelift_azure_integration.demo.id
+  integration_id  = module.integrations.azure_integration.id
   stack_id        = spacelift_stack.azure_demo_app.id
-  subscription_id = data.spacelift_azure_integration.demo.default_subscription_id
+  subscription_id = module.integrations.azure_integration.default_subscription_id
   read            = true
   write           = true
 }

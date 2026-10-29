@@ -21,7 +21,7 @@ module "stack_pulumi_aws_s3" {
 
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
 
   labels            = ["aws", "s3", "pulumi", "typescript"]

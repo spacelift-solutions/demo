@@ -23,8 +23,8 @@ module "stack_azure_linux" {
   # (This was the missing piece causing the stack to fail.)
   azure_integration = {
     enabled         = true
-    id              = data.spacelift_azure_integration.demo.id
-    subscription_id = data.spacelift_azure_integration.demo.default_subscription_id
+    id              = module.integrations.azure_integration.id
+    subscription_id = module.integrations.azure_integration.default_subscription_id
   }
 
   # Run on the dedicated Azure VMSS worker pool.
@@ -85,8 +85,8 @@ module "stack_azure_vmss_worker_pool" {
 
   azure_integration = {
     enabled         = true
-    id              = data.spacelift_azure_integration.demo.id
-    subscription_id = data.spacelift_azure_integration.demo.default_subscription_id
+    id              = module.integrations.azure_integration.id
+    subscription_id = module.integrations.azure_integration.default_subscription_id
   }
 
   dependencies = {

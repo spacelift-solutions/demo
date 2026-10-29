@@ -8,7 +8,7 @@ module "stack_opentofu_aws_s3" {
 
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   labels            = ["aws", "s3", "opentofu"]
   project_root      = "opentofu/aws/s3"
@@ -25,7 +25,7 @@ module "stack_aws_ec2" {
 
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   labels            = ["aws", "ec2"]
   project_root      = "opentofu/aws/ec2"
@@ -59,7 +59,7 @@ module "stack_opentofu_aws_vpc" {
 
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   auto_deploy       = true
   labels            = ["aws", "vpc", "opentofu"]
@@ -75,7 +75,7 @@ module "stack_aws_ec2_asg_worker_pool" {
   space_id        = spacelift_space.aws_opentofu.id
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   labels            = ["aws", "ec2", "asg"]
   project_root      = "worker-pools/docker/aws/workers-on-ec2"
@@ -114,7 +114,7 @@ module "stack_aws_eks_worker_pool" {
   worker_pool_id  = spacelift_worker_pool.aws_ec2_asg.id
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   labels            = ["aws", "eks"]
   project_root      = "worker-pools/kubernetes/aws"
@@ -171,7 +171,7 @@ module "stack_aws_audit_event_collector" {
   aws_integration = {
     tf_version = "1.8.4"
     enabled    = true
-    id         = spacelift_aws_integration.demo.id
+    id         = module.integrations.aws_integration_id
   }
   environment_variables = {
     TF_VAR_audit_trail_secret = {
@@ -207,7 +207,7 @@ module "stack_aws_winrm" {
 
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   labels            = ["aws", "winrm"]
   project_root      = "opentofu/aws/winrm"
@@ -235,7 +235,7 @@ module "stack_aws_cloudwatch_dashboard" {
 
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   #ensuring that the stack is protected from deletion and requires a project tag to be applied to the stack
   labels                = ["aws", "cloudwatch", "dashboard", "deletion-prevention", "require-project-tag"]
@@ -252,7 +252,7 @@ module "stack_aws_cloudwatch_dashboard" {
   }
 
   contexts = {
-    github_auth = spacelift_context.github_auth.id
+    github_auth = module.contexts.context_ids.github_auth
   }
   #these are the policies that will be applied to this stack, they are defined in the admin/policies.tf file
   policies = {
@@ -280,7 +280,7 @@ module "stack_aws_eks_tenants" {
 
   aws_integration = {
     enabled = true
-    id      = spacelift_aws_integration.demo.id
+    id      = module.integrations.aws_integration_id
   }
   labels            = ["aws", "eks", "kubernetes", "tenants"]
   project_root      = "opentofu/aws/eks-tenants"
@@ -288,7 +288,7 @@ module "stack_aws_eks_tenants" {
   tf_version        = "1.8.4"
 
   contexts = {
-    GITHUB_APP = spacelift_context.spacelift_solutions_github_app.id
+    GITHUB_APP = module.contexts.context_ids.spacelift_solutions_github_app
   }
 
   # Module source lives outside the project root

@@ -2,7 +2,7 @@ resource "spacelift_context" "k8s_example" {
   description = "Configuration details for the Spacelift-Solutions cluster and its VPC"
   name        = "Spacelift-Solutions cluster"
   labels      = ["autoattach:aws"]
-  space_id    = spacelift_space.aws.id
+  space_id    = var.space_ids.aws
 }
 
 resource "spacelift_environment_variable" "aws_region" {
@@ -65,7 +65,7 @@ resource "spacelift_context" "k8s_configuration" {
   description = "Connection details for stacks that deploy onto the Spacelift-Solutions cluster"
   name        = "Spacelift-Solutions cluster access"
   labels      = ["autoattach:eks"]
-  space_id    = spacelift_space.aws.id
+  space_id    = var.space_ids.aws
 }
 
 resource "spacelift_environment_variable" "aws_region_k8s" {

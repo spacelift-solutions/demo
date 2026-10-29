@@ -1,5 +1,5 @@
 resource "spacelift_gcp_service_account" "admin" {
-  stack_id = data.spacelift_current_stack.admin.id
+  stack_id = var.admin_stack_id
 
   token_scopes = [
     "https://www.googleapis.com/auth/compute",
@@ -29,8 +29,8 @@ resource "google_iam_workload_identity_pool_provider" "spacelift" {
     "attribute.space" = "assertion.spaceId"
   }
   oidc {
-    allowed_audiences = ["${local.spacelift_hostname}.app.spacelift.io"]
-    issuer_uri        = "https://${local.spacelift_hostname}.app.spacelift.io"
+    allowed_audiences = ["${var.spacelift_hostname}.app.spacelift.io"]
+    issuer_uri        = "https://${var.spacelift_hostname}.app.spacelift.io"
   }
 }
 
