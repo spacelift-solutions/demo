@@ -42,17 +42,21 @@ run "observability_buckets_are_deterministic_and_private" {
   command = plan
 
   assert {
-    condition = (
-      aws_s3_bucket.observability["mimir-blocks"].bucket == "123456789012-spacelift-solutions-cluster-mimir-blocks" &&
-      aws_s3_bucket.observability["loki-chunks"].bucket == "123456789012-spacelift-solutions-cluster-loki-chunks" &&
-      aws_s3_bucket.observability["tempo-traces"].bucket == "123456789012-spacelift-solutions-cluster-tempo-traces"
-    )
+    condition = output.observability_buckets == {
+      for component, buckets in {
+        mimir = ["blocks", "ruler", "alertmanager"]
+        loki  = ["chunks", "ruler"]
+        tempo = ["traces"]
+        } : component => {
+        for bucket in buckets : bucket => "123456789012-spacelift-solutions-cluster-${component}-${bucket}"
+      }
+    }
     error_message = "Bucket names must stay predictable; the Flux repository references them by name"
   }
 
   assert {
     condition = alltrue([
-      for key, block in aws_s3_bucket_public_access_block.observability :
+      for block in values(aws_s3_bucket_public_access_block.observability) :
       block.block_public_acls && block.block_public_policy && block.ignore_public_acls && block.restrict_public_buckets
     ])
     error_message = "Every observability bucket must block public access"
@@ -76,18 +80,20 @@ run "observability_roles_are_scoped_to_their_component" {
     condition = alltrue([
       for component, role in aws_iam_role.observability :
       jsondecode(role.assume_role_policy).Statement[0].Condition.ArnEquals["aws:SourceArn"] == data.aws_eks_cluster.this.arn &&
+      jsondecode(role.assume_role_policy).Statement[0].Condition.StringEquals["aws:RequestTag/kubernetes-namespace"] == component &&
       jsondecode(role.assume_role_policy).Statement[0].Condition.StringEquals["aws:RequestTag/kubernetes-service-account"] == component
     ])
     error_message = "Role trust must be restricted to this cluster and the component's service account"
   }
 
   assert {
-    condition = (
-      length(jsondecode(aws_iam_role_policy.observability["tempo"].policy).Statement[0].Resource) == 1 &&
-      length(jsondecode(aws_iam_role_policy.observability["mimir"].policy).Statement[1].Resource) == 3 &&
-      contains(jsondecode(aws_iam_role_policy.observability["loki"].policy).Statement[1].Resource, "arn:aws:s3:::123456789012-spacelift-solutions-cluster-loki-chunks/*") &&
-      !contains(jsondecode(aws_iam_role_policy.observability["loki"].policy).Statement[1].Resource, "arn:aws:s3:::123456789012-spacelift-solutions-cluster-mimir-blocks/*")
-    )
+    condition = alltrue([
+      for component, buckets in output.observability_buckets :
+      toset(jsondecode(aws_iam_role_policy.observability[component].policy).Statement[0].Resource) ==
+      toset([for name in values(buckets) : "arn:aws:s3:::${name}"]) &&
+      toset(jsondecode(aws_iam_role_policy.observability[component].policy).Statement[1].Resource) ==
+      toset([for name in values(buckets) : "arn:aws:s3:::${name}/*"])
+    ])
     error_message = "A component's policy must grant access to its own buckets only"
   }
 }
