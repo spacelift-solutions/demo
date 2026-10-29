@@ -254,7 +254,7 @@ module "stack_aws_cloudwatch_dashboard" {
   contexts = {
     github_auth = var.context_ids.github_auth
   }
-  #these are the policies that will be applied to this stack, they are defined in the admin/policies.tf file
+  #these are the policies that will be applied to this stack, they are defined in the admin/policies/main.tf file
   policies = {
     NO_WEEKEND_DEPLOYS = var.no_weekend_deploys_policy_id
   }

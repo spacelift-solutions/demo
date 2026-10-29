@@ -1,11 +1,31 @@
+module "spaces" {
+  source = "./spaces"
+}
+
+module "roles" {
+  source = "./roles"
+}
+
+module "worker_pools" {
+  source = "./worker_pools"
+
+  spacelift_hostname = local.spacelift_hostname
+}
+
+module "policies" {
+  source = "./policies"
+
+  aws_opentofu_space_id = module.spaces.space_ids.aws_opentofu
+}
+
 module "contexts" {
   source = "./contexts"
 
   space_ids = {
-    aws          = spacelift_space.aws.id
-    aws_ansible  = spacelift_space.aws_ansible.id
-    aws_opentofu = spacelift_space.aws_opentofu.id
-    gcp          = spacelift_space.gcp.id
+    aws          = module.spaces.space_ids.aws
+    aws_ansible  = module.spaces.space_ids.aws_ansible
+    aws_opentofu = module.spaces.space_ids.aws_opentofu
+    gcp          = module.spaces.space_ids.gcp
   }
 
   gcp_credentials_base64 = filebase64("${path.module}/../gcp.json")
@@ -14,7 +34,7 @@ module "contexts" {
 module "integrations" {
   source = "./integrations"
 
-  aws_space_id       = spacelift_space.aws.id
+  aws_space_id       = module.spaces.space_ids.aws
   role_arn           = var.role_arn
   admin_stack_id     = data.spacelift_current_stack.admin.id
   spacelift_hostname = local.spacelift_hostname
@@ -24,15 +44,15 @@ module "stacks" {
   source = "./stacks"
 
   space_ids = {
-    aws_ansible     = spacelift_space.aws_ansible.id
-    aws_kubernetes  = spacelift_space.aws_kubernetes.id
-    aws_opentofu    = spacelift_space.aws_opentofu.id
-    aws_pulumi      = spacelift_space.aws_pulumi.id
-    aws_terraform   = spacelift_space.aws_terraform.id
-    azure_terraform = spacelift_space.azure_terraform.id
-    examples        = spacelift_space.examples.id
-    gcp_ansible     = spacelift_space.gcp_ansible.id
-    gcp_terraform   = spacelift_space.gcp_terraform.id
+    aws_ansible     = module.spaces.space_ids.aws_ansible
+    aws_kubernetes  = module.spaces.space_ids.aws_kubernetes
+    aws_opentofu    = module.spaces.space_ids.aws_opentofu
+    aws_pulumi      = module.spaces.space_ids.aws_pulumi
+    aws_terraform   = module.spaces.space_ids.aws_terraform
+    azure_terraform = module.spaces.space_ids.azure_terraform
+    examples        = module.spaces.space_ids.examples
+    gcp_ansible     = module.spaces.space_ids.gcp_ansible
+    gcp_terraform   = module.spaces.space_ids.gcp_terraform
   }
 
   context_ids = {
@@ -41,15 +61,15 @@ module "stacks" {
   }
 
   worker_pool_ids = {
-    aws_ec2_asg   = spacelift_worker_pool.aws_ec2_asg.id
-    azure_vmss    = spacelift_worker_pool.azure_vmss.id
-    gcp_ce_worker = spacelift_worker_pool.gcp_ce_worker.id
+    aws_ec2_asg   = module.worker_pools.worker_pool_ids.aws_ec2_asg
+    azure_vmss    = module.worker_pools.worker_pool_ids.azure_vmss
+    gcp_ce_worker = module.worker_pools.worker_pool_ids.gcp_ce_worker
   }
 
   aws_integration_id           = module.integrations.aws_integration_id
   azure_integration            = module.integrations.azure_integration
-  admin_role_id                = spacelift_role.admin.id
-  no_weekend_deploys_policy_id = spacelift_policy.no-weekend-deploys.id
+  admin_role_id                = module.roles.admin_role_id
+  no_weekend_deploys_policy_id = module.policies.no_weekend_deploys_policy_id
   admin_stack_id               = data.spacelift_current_stack.admin.id
   gcp_region                   = local.gcp_region
   gcp_environment_type         = local.gcp_environment_type
@@ -69,11 +89,47 @@ module "templates" {
   source = "./templates"
 
   space_ids = {
-    aws_opentofu   = spacelift_space.aws_opentofu.id
-    github         = spacelift_space.github.id
-    flows_examples = spacelift_space.flows_examples.id
+    aws_opentofu   = module.spaces.space_ids.aws_opentofu
+    github         = module.spaces.space_ids.github
+    flows_examples = module.spaces.space_ids.flows_examples
   }
 
   aws_integration_id    = module.integrations.aws_integration_id
   github_app_context_id = module.contexts.context_ids.spacelift_solutions_github_app
+}
+
+module "plugins" {
+  source = "./plugins"
+
+  infracost_api_key = var.infracost_api_key
+  wiz_client_id     = var.wiz_client_id
+  wiz_client_secret = var.wiz_client_secret
+}
+
+module "blueprints" {
+  source = "./blueprints"
+
+  aws_opentofu_space_id = module.spaces.space_ids.aws_opentofu
+  aws_integration_id    = module.integrations.aws_integration_id
+  ec2_worker_pool_id    = module.worker_pools.worker_pool_ids.aws_ec2_asg
+}
+
+module "module_registry" {
+  source = "./module_registry"
+}
+
+module "webhooks" {
+  source = "./webhooks"
+
+  aws_opentofu_space_id = module.spaces.space_ids.aws_opentofu
+  audit_trail_endpoint  = var.audit_trail_endpoint
+  audit_trail_secret    = var.audit_trail_secret
+}
+
+module "attachments" {
+  source = "./attachments"
+
+  monitoring_context_id = module.contexts.context_ids.monitoring
+  admin_stack_id        = data.spacelift_current_stack.admin.id
+  monitoring_stack_id   = module.stacks.gcp_monitoring_stack_id
 }

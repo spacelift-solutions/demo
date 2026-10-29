@@ -16,6 +16,6 @@ resource "tls_cert_request" "azure_vmss" {
   private_key_pem = tls_private_key.azure_vmss.private_key_pem
 
   subject {
-    organization = local.spacelift_hostname
+    organization = var.spacelift_hostname
   }
 }

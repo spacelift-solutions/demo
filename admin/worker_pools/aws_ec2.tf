@@ -22,6 +22,6 @@ resource "tls_cert_request" "main" {
   private_key_pem = tls_private_key.main.private_key_pem
 
   subject {
-    organization = local.spacelift_hostname
+    organization = var.spacelift_hostname
   }
 }

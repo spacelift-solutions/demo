@@ -17,6 +17,6 @@ resource "tls_cert_request" "primary_ce_worker" {
   private_key_pem = tls_private_key.primary_ce_worker.private_key_pem
 
   subject {
-    organization = local.spacelift_hostname
+    organization = var.spacelift_hostname
   }
 }

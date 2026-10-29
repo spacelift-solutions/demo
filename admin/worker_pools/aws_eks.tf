@@ -22,6 +22,6 @@ resource "tls_cert_request" "eks_cert" {
   private_key_pem = tls_private_key.eks_private_key.private_key_pem
 
   subject {
-    organization = local.spacelift_hostname
+    organization = var.spacelift_hostname
   }
 }
