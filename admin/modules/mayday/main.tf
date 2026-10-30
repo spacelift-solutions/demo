@@ -145,21 +145,20 @@ module "flows" {
   version = "3.3.0"
 
   name                     = "mayday-flows"
-  description              = "Mayday custom Flows app installation and recovery workflow"
+  description              = "Mayday native recovery Flow and monitor webhook secret"
   repository_name          = "Mayday"
   repository_branch        = "main"
   project_root             = "flows/deploy"
   space_id                 = spacelift_space.mayday.id
   auto_deploy              = false
   workflow_tool            = "OPEN_TOFU"
-  tf_version               = "1.10.6"
+  tf_version               = "1.13.1"
   manage_state             = true
   labels                   = ["mayday", "aws"]
   additional_project_globs = ["flows/recovery.yaml"]
   environment_variables = {
-    FLOWS_TOKEN           = { value = var.flows_token, sensitive = true }
-    TF_VAR_api_key_id     = { value = spacelift_api_key.flow.id, sensitive = true }
-    TF_VAR_api_key_secret = { value = spacelift_api_key.flow.secret, sensitive = true }
+    FLOWS_TOKEN       = { value = var.flows_token, sensitive = true }
+    TF_VAR_project_id = { value = var.flows_project_id }
   }
 }
 resource "tls_private_key" "ssh" { algorithm = "ED25519" }
@@ -192,11 +191,16 @@ resource "spacelift_role" "flow" {
   name    = "Mayday recovery"
   actions = ["SPACE_READ", "RUN_TRIGGER", "STACK_ADD_CONFIG"]
 }
-resource "spacelift_api_key" "flow" { name = "Mayday recovery" }
-resource "spacelift_role_attachment" "flow" {
-  api_key_id = spacelift_api_key.flow.id
-  role_id    = spacelift_role.flow.id
-  space_id   = spacelift_space.operations.id
+resource "terraform_data" "flow_access" {
+  triggers_replace = [var.flows_project_id, spacelift_space.operations.id, spacelift_role.flow.id, filesha256("${path.module}/bootstrap_flow_access.py")]
+  provisioner "local-exec" {
+    command = "python3 ${path.module}/bootstrap_flow_access.py"
+    environment = {
+      MAYDAY_FLOWS_PROJECT_ID = var.flows_project_id
+      MAYDAY_FLOWS_SPACE_ID   = spacelift_space.operations.id
+      MAYDAY_FLOWS_ROLE_ID    = spacelift_role.flow.id
+    }
+  }
 }
 resource "spacelift_policy" "intent" {
   name     = "Mayday license repair only"
