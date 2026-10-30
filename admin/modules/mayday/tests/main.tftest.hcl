@@ -4,7 +4,7 @@ mock_provider "tls" {}
 override_resource {
   target = tls_private_key.ssh
   values = {
-    public_key_openssh   = "ssh-ed25519 test-public-key\n"
+    public_key_openssh  = "ssh-ed25519 test-public-key\n"
     private_key_openssh = "test-private-key\n"
   }
 }
