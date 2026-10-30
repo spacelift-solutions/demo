@@ -22,14 +22,14 @@ resource "spacelift_blueprint" "minesible" {
 
 resource "spacelift_blueprint" "no_pr_blueprint" {
   name     = "Create S3 Bucket (no PR)"
-  space    = data.spacelift_current_space.current.id
+  space    = "root"
   state    = "PUBLISHED"
   template = data.github_repository_file.blueprint_no_pr.content
 }
 
 resource "spacelift_blueprint" "pr_blueprint" {
   name     = "Create S3 Bucket (with PR)"
-  space    = data.spacelift_current_space.current.id
+  space    = "root"
   state    = "PUBLISHED"
   template = data.github_repository_file.blueprint_pr.content
 }
