@@ -16,6 +16,7 @@ variables {
   cluster_stack_id   = "shared-cluster"
   license_bucket     = "example-license"
   flows_token        = "test-only-placeholder"
+  flows_project_id   = "01a18e62-7f44-7168-9a2f-a420c435d1b0"
 }
 
 run "admin_contract" {
@@ -27,7 +28,7 @@ run "admin_contract" {
   }
   assert {
     condition     = !contains(spacelift_role.flow.actions, "SPACE_ADMIN")
-    error_message = "The recovery key must not have administrative access."
+    error_message = "The recovery project must not have administrative access."
   }
   assert {
     condition     = toset(spacelift_role.flow.actions) == toset(["SPACE_READ", "RUN_TRIGGER", "STACK_ADD_CONFIG"])

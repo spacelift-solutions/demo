@@ -1,6 +1,6 @@
 # Mayday control plane
 
-Creates the Mayday spaces, four stacks pointing at `spacelift-solutions/Mayday`, dependency references, SSH context, scoped Flows API key, and Intent policy.
+Creates the Mayday spaces, four stacks pointing at `spacelift-solutions/Mayday`, dependency references, SSH context, scoped Flows project access, and Intent policy.
 All four stacks use `spacelift.io/spacelift-solutions/stacks-module/spacelift`, matching the other demo stacks.
 Context attachments, stack environment variables, and dependencies are configured through those module calls.
 The SSH context and mounted file remain here because stacks-module does not create them.
@@ -27,12 +27,24 @@ It creates a project, checks ownership, attaches the policy, then attaches the c
 It does not delete projects on destroy.
 Re-run with `-replace=module.mayday.terraform_data.intent_project` if an administrator removes an attachment outside this configuration.
 
-The recovery API key is restricted to the Operations child space with read, run-trigger, and stack-configuration permissions.
-It cannot edit policies or operate infrastructure stacks.
+The recovery project is restricted to the Operations child space with read, run-trigger, and stack-configuration permissions.
+It cannot edit policies or operate infrastructure stacks. The native Flow does not use a Spacelift API key.
+The module supplies `TF_VAR_project_id` to the Flow deployment stack; the project secret and native YAML definition are managed in Mayday.
+
+`flows_project_id` support is merged in the Spacelift provider but is not in released v1.57.0.
+Until that ships, `terraform_data.flow_access` runs `bootstrap_flow_access.py` with the admin run's existing `SPACELIFT_API_TOKEN`.
+It adopts the existing matching binding or creates it when missing, and rejects unexpected grants for review.
+Unlike Intent bootstrap, space role bindings accept administrative run tokens, so this needs no additional API key.
+It has no destroy action: revoke the binding explicitly during teardown, before removing the recovery role.
+Re-run with `-replace=module.mayday.terraform_data.flow_access` to reconcile access removed outside this configuration.
+When native support ships, import the existing binding as `FLOWS/<binding-id>` into `spacelift_role_attachment` before removing this bootstrap.
 The service's `WORKERS` input starts at two; Flows owns later values.
 Policy administration remains a separate role from the operator who demonstrates Intent resource operations.
 
-After applying, follow the [Mayday runbook](https://github.com/spacelift-solutions/Mayday/blob/main/docs/runbook.md) to publish the images/custom app, seed the Intent license, set the Flows project and app version IDs, and connect the monitor webhook.
+Merge the companion Mayday native Flow change first, then apply admin and `mayday-flows` in that order.
+The admin apply retires the old recovery API key, API-key role attachment, and its two Flow stack variables.
+The existing project binding is retained; Mayday imports the live webhook secret and removes the unused custom app installation.
+Follow the [Mayday runbook](https://github.com/spacelift-solutions/Mayday/blob/main/docs/runbook.md) for the migration, Intent license, and monitor deployment.
 No resource has a secret hardcoded in source.
 
 ## Validation
