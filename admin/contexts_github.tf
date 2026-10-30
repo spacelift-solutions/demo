@@ -1,9 +1,43 @@
+# ---------------------------------------------------------------------------
+# Context: github-auth
+# GitHub token and organization for stack runs. Auto-attached via label.
+# ---------------------------------------------------------------------------
+
 resource "spacelift_context" "github_auth" {
   description = "GitHub authentication context for stack runs"
   name        = "github-auth"
   space_id    = "root"
   labels      = ["autoattach:github-auth"]
 }
+
+resource "spacelift_environment_variable" "github_token" {
+  context_id  = spacelift_context.github_auth.id
+  description = "GitHub token for stack runs"
+  name        = "TF_VAR_github_token"
+  value       = "PLACEHOLDER_SET_VIA_UI"
+  write_only  = true
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "spacelift_environment_variable" "github_organization" {
+  context_id  = spacelift_context.github_auth.id
+  description = "GitHub organization for stack runs"
+  name        = "TF_VAR_github_organization"
+  value       = "PLACEHOLDER_SET_VIA_UI"
+  write_only  = false
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+# ---------------------------------------------------------------------------
+# Context: Spacelift-Solutions[Bot]
+# GitHub App credentials for repository management stacks.
+# ---------------------------------------------------------------------------
 
 resource "spacelift_context" "spacelift_solutions_github_app" {
   description = "GitHub App authentication for repository management stacks"
@@ -34,6 +68,8 @@ resource "spacelift_environment_variable" "github_app_installation_id" {
     ignore_changes = [value]
   }
 }
+
+# Private key: the mounted file and the path variable that points at it.
 
 resource "spacelift_mounted_file" "github_app_pem_file" {
   context_id    = spacelift_context.spacelift_solutions_github_app.id
