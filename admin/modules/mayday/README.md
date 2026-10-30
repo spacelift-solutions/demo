@@ -5,7 +5,9 @@ All four stacks use `spacelift.io/spacelift-solutions/stacks-module/spacelift`, 
 Context attachments, stack environment variables, and dependencies are configured through those module calls.
 The SSH context and mounted file remain here because stacks-module does not create them.
 `WORKERS` remains a separate resource with `ignore_changes` so admin applies preserve Flows capacity changes.
-The parent `admin/mayday.tf` supplies the shared EKS worker pool, cluster stack, and existing AWS integration.
+The parent `admin/mayday.tf` supplies the shared EC2 worker pool, cluster stack, and existing AWS integration.
+Service and diagnostic stacks use Spacelift’s standard AWS Ansible runner, pinned by digest, and the AWS integration for SSH through SSM to the private target in the monitor's VPC.
+GitHub Actions builds the Go binary; Ansible installs the checksum-verified artifact for its exact source commit.
 Set `TF_VAR_mayday_flows_token` as a write-only variable on the admin stack using a deployment API key restricted to the Mayday Flows project.
 The module passes it to `mayday-flows` as `FLOWS_TOKEN`; the Jira credential remains separate.
 

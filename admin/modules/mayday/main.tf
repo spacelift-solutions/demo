@@ -72,7 +72,7 @@ module "service" {
   space_id                 = spacelift_space.operations.id
   auto_deploy              = true
   worker_pool_id           = var.worker_pool_id
-  runner_image             = "ghcr.io/spacelift-solutions/mayday-runner:main"
+  runner_image             = "public.ecr.aws/spacelift/runner-ansible@sha256:c4edf84de69474657ca1376976bae7ec6c2d5fbb2074cce1bdae673bc99aaa88"
   workflow_tool            = "ANSIBLE"
   ansible_playbook         = "playbook.yml"
   manage_state             = false
@@ -80,6 +80,10 @@ module "service" {
   additional_project_globs = ["cmd/**", "internal/**", "go.mod", "go.sum"]
   hooks                    = local.ansible_hooks
   contexts                 = { ssh = spacelift_context.ssh.id }
+  aws_integration = {
+    enabled = true
+    id      = var.aws_integration_id
+  }
   environment_variables = {
     ANSIBLE_INVENTORY = { value = "inventory.py" }
   }
@@ -109,7 +113,7 @@ module "diagnostics" {
   space_id                 = spacelift_space.operations.id
   auto_deploy              = true
   worker_pool_id           = var.worker_pool_id
-  runner_image             = "ghcr.io/spacelift-solutions/mayday-runner:main"
+  runner_image             = "public.ecr.aws/spacelift/runner-ansible@sha256:c4edf84de69474657ca1376976bae7ec6c2d5fbb2074cce1bdae673bc99aaa88"
   workflow_tool            = "ANSIBLE"
   ansible_playbook         = "diagnose.yml"
   manage_state             = false
@@ -117,6 +121,10 @@ module "diagnostics" {
   additional_project_globs = ["cmd/**", "internal/**", "go.mod", "go.sum"]
   hooks                    = local.ansible_hooks
   contexts                 = { ssh = spacelift_context.ssh.id }
+  aws_integration = {
+    enabled = true
+    id      = var.aws_integration_id
+  }
   environment_variables = {
     ANSIBLE_INVENTORY = { value = "inventory.py" }
   }
