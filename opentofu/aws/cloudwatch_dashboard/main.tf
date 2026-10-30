@@ -99,7 +99,7 @@ resource "random_string" "demo_bucket_suffix" {
   numeric = true
   special = false
 }
-
+#This is meant to fail due to not having a Project Tag
 resource "aws_s3_bucket" "demo_bucket" {
   bucket = "spacelift-demo-bucket-${random_string.demo_bucket_suffix.result}"
   tags = {
