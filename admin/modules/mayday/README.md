@@ -6,6 +6,8 @@ Context attachments, stack environment variables, and dependencies are configure
 The SSH context and mounted file remain here because stacks-module does not create them.
 `WORKERS` remains a separate resource with `ignore_changes` so admin applies preserve Flows capacity changes.
 The parent `admin/mayday.tf` supplies the shared EKS worker pool, cluster stack, and existing AWS integration.
+Set `TF_VAR_mayday_flows_token` as a write-only variable on the admin stack using a deployment API key restricted to the Mayday Flows project.
+The module passes it to `mayday-flows` as `FLOWS_TOKEN`; the Jira credential remains separate.
 
 Workload infrastructure and application code live in Mayday.
 Flux owns the monitor and `mayday` namespace from Mayday manifests; do not also add that namespace to `eks-tenants`.
