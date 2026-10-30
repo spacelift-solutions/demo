@@ -4,49 +4,49 @@
 
 // EC2 Worker pool outputs
 output "ec2_worker_pool_private_key" {
-  value     = base64encode(tls_private_key.main.private_key_pem)
+  value     = module.worker_pools.ec2_worker_pool_private_key
   sensitive = true
 }
 
 output "ec2_worker_pool_config" {
-  value     = spacelift_worker_pool.aws_ec2_asg.config
+  value     = module.worker_pools.ec2_worker_pool_config
   sensitive = true
 }
 
 output "ec2_worker_pool_id" {
-  value = spacelift_worker_pool.aws_ec2_asg.id
+  value = module.worker_pools.ec2_worker_pool_id
 }
 
 // EKS Worker pool outputs
 output "eks_worker_pool_private_key" {
-  value     = base64encode(tls_private_key.eks_private_key.private_key_pem)
+  value     = module.worker_pools.eks_worker_pool_private_key
   sensitive = true
 }
 
 output "eks_worker_pool_config" {
-  value     = spacelift_worker_pool.aws_eks.config
+  value     = module.worker_pools.eks_worker_pool_config
   sensitive = true
 }
 
 output "eks_worker_pool_id" {
-  value = spacelift_worker_pool.aws_eks.id
+  value = module.worker_pools.eks_worker_pool_id
 }
 
 // Azure Outputs //
 
 // VMSS worker pool outputs
 output "azure_vmss_worker_pool_private_key" {
-  value     = base64encode(tls_private_key.azure_vmss.private_key_pem)
+  value     = module.worker_pools.azure_vmss_worker_pool_private_key
   sensitive = true
 }
 
 output "azure_vmss_worker_pool_config" {
-  value     = spacelift_worker_pool.azure_vmss.config
+  value     = module.worker_pools.azure_vmss_worker_pool_config
   sensitive = true
 }
 
 output "azure_vmss_worker_pool_id" {
-  value = spacelift_worker_pool.azure_vmss.id
+  value = module.worker_pools.azure_vmss_worker_pool_id
 }
 
 // GCP Outputs //
@@ -54,15 +54,15 @@ output "azure_vmss_worker_pool_id" {
 // Compute Engine worker pool outputs
 
 output "gcp_ce_worker_pool_private_key" {
-  value     = base64encode(tls_private_key.primary_ce_worker.private_key_pem)
+  value     = module.worker_pools.gcp_ce_worker_pool_private_key
   sensitive = true
 }
 
 output "gcp_ce_worker_pool_config" {
-  value     = spacelift_worker_pool.gcp_ce_worker.config
+  value     = module.worker_pools.gcp_ce_worker_pool_config
   sensitive = true
 }
 
 output "gcp_ce_worker_pool_id" {
-  value = spacelift_worker_pool.gcp_ce_worker.id
+  value = module.worker_pools.gcp_ce_worker_pool_id
 }
