@@ -18,3 +18,12 @@ output "flux_sops_kms_alias_arn" {
   description = "Stable KMS alias ARN that must match the Flux repository SOPS creation rules"
   value       = aws_kms_alias.flux_sops.arn
 }
+
+output "observability_buckets" {
+  description = "S3 bucket names per LGTM component; must match the Flux HelmRelease values"
+  value = {
+    for component, buckets in local.observability : component => {
+      for bucket in buckets : bucket => aws_s3_bucket.observability["${component}-${bucket}"].bucket
+    }
+  }
+}
