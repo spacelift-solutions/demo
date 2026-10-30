@@ -19,7 +19,10 @@ Mayday stores its demo password and webhook token in a SOPS-encrypted Secret usi
 Set the matching `TF_VAR_webhook_token` as a write-only variable on `mayday-flows`; this module does not overwrite that operator-managed value.
 
 The current Spacelift provider supports Intent policies but does not expose Intent project/attachment resources.
-`terraform_data.intent_project` runs the idempotent `bootstrap_intent.py` on creation or configuration changes using the admin stack's API credentials.
+`terraform_data.intent_project` runs the idempotent `bootstrap_intent.py` on creation or configuration changes using a dedicated API key.
+Intent rejects administrative run tokens, so the script explicitly exchanges the bootstrap key for a session and never uses the inherited `SPACELIFT_API_TOKEN`.
+The key can only read, create projects, and attach policies/cloud integrations in the Mayday Intent space; it cannot edit policies or operate Intent resources.
+OpenTofu manages the key and role attachment and passes the sensitive secret only to the provisioner environment.
 It creates a project, checks ownership, attaches the policy, then attaches the cloud integration.
 It does not delete projects on destroy.
 Re-run with `-replace=module.mayday.terraform_data.intent_project` if an administrator removes an attachment outside this configuration.
