@@ -204,14 +204,34 @@ resource "spacelift_policy" "intent" {
   space_id = spacelift_space.intent.id
   body     = templatefile("${path.module}/license.rego.tftpl", { license_bucket = var.license_bucket })
 }
+resource "spacelift_api_key" "intent_bootstrap" {
+  name = "Mayday Intent bootstrap"
+}
+resource "spacelift_role" "intent_bootstrap" {
+  name = "Mayday Intent bootstrap"
+  actions = [
+    "SPACE_READ",
+    "INTENT_PROJECT_CREATE",
+    "INTENT_PROJECT_POLICY_ATTACH",
+    "INTENT_PROJECT_CLOUD_INTEGRATION_ATTACH",
+  ]
+}
+resource "spacelift_role_attachment" "intent_bootstrap" {
+  api_key_id = spacelift_api_key.intent_bootstrap.id
+  role_id    = spacelift_role.intent_bootstrap.id
+  space_id   = spacelift_space.intent.id
+}
 resource "terraform_data" "intent_project" {
-  triggers_replace = [spacelift_space.intent.id, spacelift_policy.intent.id, var.aws_integration_id, filesha256("${path.module}/bootstrap_intent.py")]
+  triggers_replace = [spacelift_space.intent.id, spacelift_policy.intent.id, var.aws_integration_id, spacelift_api_key.intent_bootstrap.id, filesha256("${path.module}/bootstrap_intent.py")]
+  depends_on       = [spacelift_role_attachment.intent_bootstrap]
   provisioner "local-exec" {
     command = "python3 ${path.module}/bootstrap_intent.py"
     environment = {
-      MAYDAY_INTENT_SPACE_ID    = spacelift_space.intent.id
-      MAYDAY_INTENT_POLICY_ID   = spacelift_policy.intent.id
-      MAYDAY_AWS_INTEGRATION_ID = var.aws_integration_id
+      MAYDAY_INTENT_SPACE_ID          = spacelift_space.intent.id
+      MAYDAY_INTENT_POLICY_ID         = spacelift_policy.intent.id
+      MAYDAY_AWS_INTEGRATION_ID       = var.aws_integration_id
+      MAYDAY_BOOTSTRAP_API_KEY_ID     = spacelift_api_key.intent_bootstrap.id
+      MAYDAY_BOOTSTRAP_API_KEY_SECRET = spacelift_api_key.intent_bootstrap.secret
     }
   }
 }

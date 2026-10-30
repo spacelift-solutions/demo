@@ -54,7 +54,13 @@ def main():
     ).rstrip("/")
     if endpoint != "https://spacelift-solutions.app.spacelift.io":
         raise RuntimeError("Mayday bootstrap requires the solutions account endpoint")
-    token = os.environ.get("SPACELIFT_API_TOKEN", "")
+    # Administrative run tokens are machine sessions, which Intent rejects.
+    # Use the dedicated API key even when the runner exports SPACELIFT_API_TOKEN.
+    credentials = {
+        "id": os.environ["MAYDAY_BOOTSTRAP_API_KEY_ID"],
+        "secret": os.environ["MAYDAY_BOOTSTRAP_API_KEY_SECRET"],
+    }
+    token = ""
 
     def api(query, variables):
         headers = {"Content-Type": "application/json"}
@@ -68,17 +74,22 @@ def main():
         with urllib.request.urlopen(req, timeout=30) as response:
             body = json.load(response)
         if body.get("errors"):
-            raise RuntimeError("Spacelift rejected the Intent bootstrap operation")
+            message = "; ".join(
+                error.get("message", "Unknown GraphQL error")
+                for error in body["errors"]
+            )
+            for value in (token, *credentials.values()):
+                if value:
+                    message = message.replace(value, "[redacted]")
+            raise RuntimeError(
+                "Spacelift rejected the Intent bootstrap operation: " + message
+            )
         return body["data"]
 
-    if not token:
-        token = api(
-            "mutation($id: ID!, $secret: String!) { apiKeyUser(id:$id,secret:$secret) { jwt } }",
-            {
-                "id": os.environ["SPACELIFT_API_KEY_ID"],
-                "secret": os.environ["SPACELIFT_API_KEY_SECRET"],
-            },
-        )["apiKeyUser"]["jwt"]
+    token = api(
+        "mutation($id: ID!, $secret: String!) { apiKeyUser(id:$id,secret:$secret) { jwt } }",
+        credentials,
+    )["apiKeyUser"]["jwt"]
     project_id = reconcile(
         api,
         os.environ["MAYDAY_INTENT_SPACE_ID"],

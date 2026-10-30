@@ -41,4 +41,10 @@ run "admin_contract" {
     condition     = spacelift_policy.intent.type == "INTENT"
     error_message = "The repair policy must govern Intent resource operations."
   }
+  assert {
+    condition = toset(spacelift_role.intent_bootstrap.actions) == toset([
+      "SPACE_READ", "INTENT_PROJECT_CREATE", "INTENT_PROJECT_POLICY_ATTACH", "INTENT_PROJECT_CLOUD_INTEGRATION_ATTACH",
+    ]) && spacelift_role_attachment.intent_bootstrap.space_id == spacelift_space.intent.id
+    error_message = "Bootstrap permissions must be limited to setup in the Mayday Intent space."
+  }
 }
