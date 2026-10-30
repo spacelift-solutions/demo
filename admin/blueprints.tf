@@ -19,3 +19,17 @@ resource "spacelift_blueprint" "minesible" {
     ec2_worker_pool_id    = spacelift_worker_pool.aws_ec2_asg.id
   })
 }
+
+resource "spacelift_blueprint" "no_pr_blueprint" {
+  name     = "Create S3 Bucket (no PR)"
+  space    = data.spacelift_current_space.current.id
+  state    = "PUBLISHED"
+  template = data.github_repository_file.blueprint_no_pr.content
+}
+
+resource "spacelift_blueprint" "pr_blueprint" {
+  name     = "Create S3 Bucket (with PR)"
+  space    = data.spacelift_current_space.current.id
+  state    = "PUBLISHED"
+  template = data.github_repository_file.blueprint_pr.content
+}
