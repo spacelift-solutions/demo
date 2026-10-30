@@ -30,6 +30,7 @@ Re-run with `-replace=module.mayday.terraform_data.intent_project` if an adminis
 The recovery project is restricted to the Operations child space with read, run-trigger, and stack-configuration permissions.
 It cannot edit policies or operate infrastructure stacks. The native Flow does not use a Spacelift API key.
 The module supplies `TF_VAR_project_id` to the Flow deployment stack; the project secret and native YAML definition are managed in Mayday.
+The Flow stack runs OpenTofu 1.13.1 to support the provider's write-only secret attribute. The infrastructure stack's version stays at 1.10.6.
 
 `flows_project_id` support is merged in the Spacelift provider but is not in released v1.57.0.
 Until that ships, `terraform_data.flow_access` runs `bootstrap_flow_access.py` with the admin run's existing `SPACELIFT_API_TOKEN`.

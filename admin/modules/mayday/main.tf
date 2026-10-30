@@ -152,7 +152,7 @@ module "flows" {
   space_id                 = spacelift_space.mayday.id
   auto_deploy              = false
   workflow_tool            = "OPEN_TOFU"
-  tf_version               = "1.10.6"
+  tf_version               = "1.13.1"
   manage_state             = true
   labels                   = ["mayday", "aws"]
   additional_project_globs = ["flows/recovery.yaml"]
