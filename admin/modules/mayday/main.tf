@@ -43,9 +43,6 @@ module "infrastructure" {
     enabled = true
     id      = var.aws_integration_id
   }
-  environment_variables = {
-    TF_VAR_ssh_public_key = { value = tls_private_key.ssh.public_key_openssh }
-  }
   dependencies = {
     cluster = {
       parent_stack_id = var.cluster_stack_id
@@ -176,6 +173,12 @@ resource "spacelift_mounted_file" "ssh" {
   content       = base64encode(tls_private_key.ssh.private_key_openssh)
   write_only    = true
 }
+resource "spacelift_mounted_file" "ssh_public" {
+  stack_id      = module.infrastructure.id
+  relative_path = "mayday.pub"
+  content       = base64encode(tls_private_key.ssh.public_key_openssh)
+  write_only    = false
+}
 resource "spacelift_environment_variable" "workers" {
   stack_id   = module.service.id
   name       = "WORKERS"
@@ -187,7 +190,7 @@ resource "spacelift_environment_variable" "workers" {
 
 resource "spacelift_role" "flow" {
   name    = "Mayday recovery"
-  actions = ["SPACE_READ", "RUN_TRIGGER", "STACK_CONFIG_ADD"]
+  actions = ["SPACE_READ", "RUN_TRIGGER", "STACK_ADD_CONFIG"]
 }
 resource "spacelift_api_key" "flow" { name = "Mayday recovery" }
 resource "spacelift_role_attachment" "flow" {

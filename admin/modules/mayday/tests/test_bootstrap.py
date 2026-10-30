@@ -2,6 +2,8 @@ import importlib.util
 import unittest
 from pathlib import Path
 
+from graphql import parse
+
 spec = importlib.util.spec_from_file_location(
     "bootstrap", Path(__file__).parents[1] / "bootstrap_intent.py"
 )
@@ -14,6 +16,7 @@ class BootstrapTest(unittest.TestCase):
         calls = []
 
         def api(query, variables):
+            parse(query)
             calls.append(query)
             return {
                 "intentProjects": [
@@ -36,6 +39,7 @@ class BootstrapTest(unittest.TestCase):
         calls = []
 
         def api(query, variables):
+            parse(query)
             calls.append(query)
             if query.startswith("query"):
                 return {"intentProjects": []}

@@ -1,0 +1,18 @@
+name: Validate Mayday bootstrap
+on:
+  pull_request:
+    paths:
+      - admin/modules/mayday/**
+      - .github/workflows/mayday-bootstrap.yml
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python3 -m pip install -r admin/modules/mayday/tests/requirements.txt
+      - run: python3 -m unittest discover -s admin/modules/mayday/tests -p 'test_*.py'
