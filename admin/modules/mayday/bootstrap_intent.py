@@ -8,7 +8,15 @@ import urllib.request
 
 def reconcile(api, space, policy, integration):
     projects = api(
-        "query { intentProjects { id name space { id } attachedPolicies { policyId } awsIntegrationIntentProjectAttachment { awsIntegration { id } } }",
+        """query {
+          intentProjects {
+            id
+            name
+            space { id }
+            attachedPolicies { policyId }
+            awsIntegrationIntentProjectAttachment { awsIntegration { id } }
+          }
+        }""",
         {},
     )["intentProjects"]
     matches = [p for p in projects if p["name"] == "Mayday license"]

@@ -4,6 +4,7 @@ Creates the Mayday spaces, four stacks pointing at `spacelift-solutions/Mayday`,
 All four stacks use `spacelift.io/spacelift-solutions/stacks-module/spacelift`, matching the other demo stacks.
 Context attachments, stack environment variables, and dependencies are configured through those module calls.
 The SSH context and mounted file remain here because stacks-module does not create them.
+The infrastructure stack receives the public key as `/mnt/workspace/mayday.pub`; OpenTofu reads it with `file()` rather than receiving multiline key material in an environment variable.
 `WORKERS` remains a separate resource with `ignore_changes` so admin applies preserve Flows capacity changes.
 The parent `admin/mayday.tf` supplies the shared EC2 worker pool, cluster stack, and existing AWS integration.
 Service and diagnostic stacks use Spacelift’s standard AWS Ansible runner, pinned by digest, and the AWS integration for SSH through SSM to the private target in the monitor's VPC.
@@ -37,6 +38,7 @@ No resource has a secret hardcoded in source.
 tofu init -backend=false
 tofu validate
 tofu test
+python3 -m pip install -r tests/requirements.txt
 python3 -m unittest discover -s tests -p 'test_*.py'
 ```
 
