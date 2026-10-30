@@ -16,7 +16,10 @@ terraform {
 }
 
 provider "spacelift" {}
-provider "github" {}
+
+provider "github" {
+  owner = "spacelift-solutions"
+}
 
 provider "google" {
   project = var.project_id
