@@ -1,0 +1,45 @@
+space: ${space_id}
+
+inputs:
+  - id: license_key
+    name: License key
+    description: Use DEMO-ONLY for a sandbox license.
+    type: short_text
+    default: DEMO-ONLY
+    validations:
+      required: true
+
+stacks:
+  - key: license_request
+    name: mayday-license-$${{ context.deployment.slug }}-$${{ string(int(context.deployment.created_at)) }}
+    description: Sandbox license request managed by a self-service deployment.
+    autodeploy: true
+    worker_pool: ${worker_pool_id}
+    labels: [mayday, mayday-license-request, template]
+    attachments:
+      policies:
+        - ${policy_id}
+      clouds:
+        aws:
+          id: ${aws_integration_id}
+          read: true
+          write: true
+    environment:
+      variables:
+        - name: TF_VAR_license_bucket
+          value: ${license_bucket}
+        - name: TF_VAR_request_id
+          value: $${{ context.deployment.slug }}-$${{ string(int(context.deployment.created_at)) }}
+        - name: TF_VAR_license_key
+          value: $${{ inputs.license_key }}
+    vcs:
+      reference:
+        type: sha
+        value: ${source_commit}
+      repository: Mayday
+      provider: GITHUB
+      project_root: infra/license-request
+    vendor:
+      opentofu:
+        manage_state: true
+        version: "1.13.1"

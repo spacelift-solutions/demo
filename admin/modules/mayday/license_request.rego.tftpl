@@ -1,0 +1,48 @@
+package spacelift
+
+import rego.v1
+
+requests contains rc if {
+  rc := input.terraform.resource_changes[_]
+  rc.mode == "managed"
+}
+
+in_scope(state) if {
+  state.bucket == "${license_bucket}"
+  regex.match("^license-requests/[a-zA-Z0-9-]+[.]json$", state.key)
+}
+
+valid_license(state) if {
+  entitlement := json.unmarshal(state.content)
+  entitlement.service == "mayday"
+  entitlement.license_key == "DEMO-ONLY"
+  entitlement.enabled == true
+}
+
+valid_storage(state) if {
+  state.server_side_encryption == "AES256"
+  object.get(state, "acl", null) in {null, "", "private"}
+}
+
+deny contains "Sandbox license requests may only manage S3 objects" if {
+  some rc in requests
+  rc.type != "aws_s3_object"
+}
+deny contains "Sandbox requests must stay in the license-requests prefix; the live license belongs to Intent" if {
+  some rc in requests
+  some state in [rc.change.before, rc.change.after]
+  state != null
+  not in_scope(state)
+}
+deny contains "Mayday sandbox licenses require license_key DEMO-ONLY, service mayday, and enabled true" if {
+  some rc in requests
+  rc.change.after != null
+  not valid_license(rc.change.after)
+}
+deny contains "Sandbox licenses must remain private and AES256 encrypted" if {
+  some rc in requests
+  rc.change.after != null
+  not valid_storage(rc.change.after)
+}
+
+sample := true

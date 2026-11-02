@@ -38,7 +38,7 @@ module "infrastructure" {
   workflow_tool     = "OPEN_TOFU"
   tf_version        = "1.10.6"
   manage_state      = true
-  labels            = ["mayday", "aws"]
+  labels            = ["mayday", "aws", "wiz"]
   aws_integration = {
     enabled = true
     id      = var.aws_integration_id
