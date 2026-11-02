@@ -8,10 +8,15 @@ terraform {
       source  = "opentofu/google"
       version = "6.4.0"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.0"
+    }
   }
 }
 
 provider "spacelift" {}
+provider "github" {}
 
 provider "google" {
   project = var.project_id

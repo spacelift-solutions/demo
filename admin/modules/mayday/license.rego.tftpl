@@ -1,0 +1,49 @@
+package spacelift
+
+import rego.v1
+
+allowed_operation if input.resource.operation in {"create", "update", "refresh"}
+
+state := input.resource.proposed_state if input.resource.operation in {"create", "update"}
+state := input.resource.current_state if input.resource.operation == "refresh"
+
+in_scope if {
+  input.resource.provider == "hashicorp/aws"
+  input.resource.resource_type == "aws_s3_object"
+  state.bucket == "${license_bucket}"
+  state.key == "license/demo-license.json"
+  original_in_scope
+}
+
+original_in_scope if input.resource.operation != "update"
+original_in_scope if {
+  input.resource.current_state.bucket == "${license_bucket}"
+  input.resource.current_state.key == "license/demo-license.json"
+}
+
+valid_settings if input.resource.operation == "refresh"
+valid_settings if {
+  input.resource.operation in {"create", "update"}
+  state.server_side_encryption == "AES256"
+  object.get(state, "acl", "private") in {"", "private"}
+  entitlement := json.unmarshal(state.content)
+  entitlement.service == "mayday"
+  entitlement.license_key == "DEMO-ONLY"
+  entitlement.enabled == true
+}
+
+deny contains "Mayday AI may restore or refresh its license, but may not delete resources" if not allowed_operation
+deny contains "Mayday AI may only manage the designated S3 license object" if {
+  allowed_operation
+  not in_scope
+}
+deny contains "Restore the private, AES256-encrypted demo entitlement with its documented content" if {
+  allowed_operation
+  in_scope
+  not valid_settings
+}
+allow contains "Scoped Mayday license repair permitted" if {
+  allowed_operation
+  in_scope
+  valid_settings
+}

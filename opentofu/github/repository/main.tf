@@ -43,6 +43,8 @@ resource "github_repository" "this" {
   }
 
   lifecycle {
-    ignore_changes = [template]
+    # Preserve template status managed in GitHub, including on imported repos.
+    # The provider otherwise treats an omitted is_template as false.
+    ignore_changes = [template, is_template]
   }
 }

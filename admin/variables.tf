@@ -57,3 +57,9 @@ variable "jira_api_token" {
   sensitive   = true
 }
 
+
+variable "mayday_flows_token" {
+  type        = string
+  description = "Deployment API key restricted to the Mayday Flows project"
+  sensitive   = true
+}

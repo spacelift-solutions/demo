@@ -53,6 +53,18 @@ declaration becomes inert.
 The import does not copy or backfill files from `repository-template`; it only
 brings the existing repository under the stack's OpenTofu state.
 
+### GitHub template status
+
+The repository's **Template repository** setting is managed in GitHub.
+The shared OpenTofu module preserves its current value when importing or updating a repository, including `repository-template` itself.
+New repositories copied from the starter remain ordinary repositories unless you enable that setting in GitHub.
+
+The `template` block controls where starter files come from; `is_template` controls whether the managed repository can itself be used as a template.
+Both are ignored during updates so a stack run cannot reset either setting.
+This applies to every published stack template version because they all use the same OpenTofu module.
+No template version upgrade is required.
+If an older run already cleared the flag, re-enable **Template repository** in GitHub once.
+
 ### Repository setup
 
 Version `1.4.0` runs the repository setup command from the final hook after
