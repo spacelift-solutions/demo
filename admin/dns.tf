@@ -19,4 +19,17 @@ module "demo_dns" {
     enabled = true
     id      = spacelift_aws_integration.demo.id
   }
+
+  dependencies = {
+    CLUSTER = {
+      parent_stack_id = module.stack_aws_eks_kubernetes_example.id
+      references = {
+        CLUSTER_NAME = {
+          output_name    = "cluster_name"
+          input_name     = "TF_VAR_cluster_name"
+          trigger_always = true
+        }
+      }
+    }
+  }
 }
