@@ -79,6 +79,13 @@ Version 1.1.0 appends the deployment's creation timestamp to its stack name and 
 The suffix stays stable when updating inputs on the same deployment.
 Published version 1.0.0 remains unchanged for its existing deployments.
 
+Version 1.2.0 schedules deletion of the deployment, stack, and sandbox object one hour after the deployment's creation.
+Correcting inputs does not extend the deadline.
+Earlier deployments keep their existing schedules and run history.
+The plan policy reserves `demo-license` and its suffixed variants, including timestamped names, for the live Intent license.
+The separate prefix rule also prevents the Template from managing or deleting `license/demo-license.json`.
+Sandbox deletion remains allowed so automatic cleanup can finish.
+
 The root `mayday_demo_imports.tf` adopts the policy, Template, and published version staged for the live demo.
 Template deployments remain presenter-managed so updating their inputs does not conflict with administrative state.
 
