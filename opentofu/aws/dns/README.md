@@ -14,10 +14,8 @@ Apply this stack before reconciling the ExternalDNS HelmRelease. No AWS keys
 or credentials belong in Flux.
 
 The parent `shovel-emporium.com` stays registered and hosted in Cloudflare.
-Its zone and four delegation NS records are managed in
-`TheOutdoorProgrammer/configurations`, in
-`cloudflare/dns_shovel_emporium_com.tf`.
-Copy this stack's `name_servers` output into those records after initial creation.
+After initial creation, use this stack's `name_servers` output to configure
+all four delegation NS records for `spacelift` in the Cloudflare parent zone.
 Do not replace the parent domain's Cloudflare nameservers.
 
 Application stacks own records below the delegated zone and their certificates.

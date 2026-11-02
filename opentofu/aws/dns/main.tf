@@ -15,7 +15,7 @@ provider "aws" {
 
 resource "aws_route53_zone" "spacelift" {
   name    = "spacelift.shovel-emporium.com"
-  comment = "Delegated demo DNS; parent zone is managed by TheOutdoorProgrammer/configurations in Cloudflare"
+  comment = "Delegated demo DNS; parent zone is hosted in Cloudflare"
 
   tags = {
     Project   = "spacelift-demos"
