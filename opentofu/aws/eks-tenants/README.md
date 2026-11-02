@@ -89,6 +89,13 @@ Buckets block public access, use SSE-S3, and abort incomplete multipart uploads 
 Data retention is enforced by each component's compactor, not by bucket lifecycle rules.
 Buckets are not force-destroyed; empty them before removing the resources.
 
+### Cluster variables for Flux
+
+[`flux_cluster_vars.tf`](flux_cluster_vars.tf) writes the `flux-system/cluster-vars` ConfigMap with the account ID, region, cluster name and one `<COMPONENT>_<BUCKET>_BUCKET` key per observability bucket (for example `MIMIR_BLOCKS_BUCKET`).
+The FluxInstance patches the generated root Kustomization with `postBuild.substituteFrom` that ConfigMap, so manifests in the Flux repository reference `${AWS_REGION}` or `${LOKI_CHUNKS_BUCKET}` instead of copying values by hand.
+Adding a bucket to `local.observability` adds its key automatically; the `flux_cluster_vars` output lists the current set.
+Flux substitutes only at reconciliation, so a key renamed here must be renamed in the Flux repository in the same change window.
+
 ## Inputs
 
 `cluster_name` comes from the cluster stack through a Spacelift dependency.

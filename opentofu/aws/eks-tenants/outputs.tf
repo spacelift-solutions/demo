@@ -27,3 +27,8 @@ output "observability_buckets" {
     }
   }
 }
+
+output "flux_cluster_vars" {
+  description = "Variables the Flux root Kustomization substitutes from the flux-system/cluster-vars ConfigMap"
+  value       = local.flux_cluster_vars
+}

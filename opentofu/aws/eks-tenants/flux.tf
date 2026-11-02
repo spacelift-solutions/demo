@@ -73,6 +73,21 @@ resource "helm_release" "flux_instance" {
               }
             })
           },
+          {
+            # Substitute cluster facts (bucket names, region, account) from the
+            # cluster-vars ConfigMap so the Flux repository stays cluster-agnostic.
+            target = { kind = "Kustomization", name = "spacelift-solutions" }
+            patch = yamlencode([{
+              op   = "add"
+              path = "/spec/postBuild"
+              value = {
+                substituteFrom = [{
+                  kind = "ConfigMap"
+                  name = kubernetes_config_map_v1.flux_cluster_vars.metadata[0].name
+                }]
+              }
+            }])
+          },
         ]
       }
     }
