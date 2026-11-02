@@ -17,3 +17,8 @@ import {
   to = module.mayday.spacelift_template_version.license_request_v1_1
   id = "mayday-sandbox-license-01M6F5D3HZXWBAE6H9NTQAN4Z3"
 }
+
+import {
+  to = module.mayday.spacelift_template_version.license_request_v1_2
+  id = "mayday-sandbox-license-01M6F697QRHFPE5AY1WDTECB0G"
+}

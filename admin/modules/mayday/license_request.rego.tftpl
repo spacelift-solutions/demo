@@ -44,5 +44,10 @@ deny contains "Sandbox licenses must remain private and AES256 encrypted" if {
   rc.change.after != null
   not valid_storage(rc.change.after)
 }
+deny contains "The demo-license name is reserved for the live Intent license; choose another deployment name" if {
+  some rc in requests
+  rc.change.after != null
+  regex.match("(^|/)demo-license([.-]|$)", lower(rc.change.after.key))
+}
 
 sample := true

@@ -45,3 +45,15 @@ test_live_license_cleanup_denied if {
   plan := {"terraform": {"resource_changes": [{"mode": "managed", "type": "aws_s3_object", "change": {"before": state, "after": null, "actions": ["delete"]}}]}}
   count(data.spacelift.deny) > 0 with input as plan
 }
+
+test_reserved_name_denied if {
+  every key in ["license-requests/demo-license.json", "license-requests/demo-license-1793657867.json", "license-requests/DEMO-LICENSE.json"] {
+    state := object.union(request_state, {"key": key})
+    data.spacelift.deny["The demo-license name is reserved for the live Intent license; choose another deployment name"] with input as request_input(state)
+  }
+}
+test_reserved_sandbox_cleanup_allowed if {
+  state := object.union(request_state, {"key": "license-requests/demo-license.json"})
+  plan := {"terraform": {"resource_changes": [{"mode": "managed", "type": "aws_s3_object", "change": {"before": state, "after": null, "actions": ["delete"]}}]}}
+  count(data.spacelift.deny) == 0 with input as plan
+}
