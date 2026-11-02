@@ -60,3 +60,31 @@ python3 -m unittest discover -s tests -p 'test_*.py'
 
 Render `license.rego.tftpl` with `license_bucket = "example-license"` into a temporary `.rego` file, then run `opa test` against that file and `tests/license_test.rego`.
 Live API/worker/network behavior still needs a Spacelift plan and rehearsal in the solutions account.
+
+## Self-service and security demo
+
+The infrastructure stack's `wiz` label attaches the existing Wiz plugin.
+Its installed `wiz-no-policies` template supplies scan output; it does not install a blocking plan policy.
+
+`license_request.tf` publishes the **Mayday sandbox license** Template and its plan policy.
+The pinned Mayday source creates one private, encrypted object under `license-requests/` in the existing bucket.
+It never manages Intent's live `license/demo-license.json` object.
+
+Submit `INVALID` as the license key to demonstrate a plan policy denial.
+Use **Update deployment** on that same deployment and change the key to `DEMO-ONLY` to trigger a new run with the same policy.
+Keep the deployment name unchanged so its object key stays stable.
+Successful deployments expose the S3 URI and JSON content as outputs.
+
+Version 1.1.0 appends the deployment's creation timestamp to its stack name and object key.
+The suffix stays stable when updating inputs on the same deployment.
+Published version 1.0.0 remains unchanged for its existing deployments.
+
+The root `mayday_demo_imports.tf` adopts the policy, Template, and published version staged for the live demo.
+Template deployments remain presenter-managed so updating their inputs does not conflict with administrative state.
+
+Run the policy tests separately from the Intent policy tests because both policies use the `spacelift` package:
+
+```sh
+sed 's/${license_bucket}/example-license/g' license_request.rego.tftpl > /tmp/mayday-license-request.rego
+opa test /tmp/mayday-license-request.rego tests/license_request_test.rego
+```
