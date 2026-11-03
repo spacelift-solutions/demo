@@ -26,6 +26,7 @@ resource "spacelift_plugin" "wiz" {
   name        = "Wiz"
   stack_label = "wiz"
   parameters = {
+    default_policies  = "annam-custom-misconfig-policy"
     wiz_client_id     = var.wiz_client_id
     wiz_client_secret = var.wiz_client_secret
   }
