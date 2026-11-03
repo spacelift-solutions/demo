@@ -19,6 +19,9 @@ module "aws_ec2_asg_worker_pool" {
     export SPACELIFT_SENSITIVE_OUTPUT_UPLOAD_ENABLED=true
   EOT
 
+  # Leave memory headroom for Wiz scans alongside the worker and OpenTofu.
+  ec2_instance_type = "t3.medium"
+
   min_size        = 1
   max_size        = 5
   worker_pool_id  = var.worker_pool_id
