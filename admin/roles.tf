@@ -38,3 +38,9 @@ resource "spacelift_role_attachment" "default_solutions_engineering_role_attachm
   role_id              = spacelift_role.admin.id
   space_id             = "root"
 }
+
+resource "spacelift_role_attachment" "flows_project_role_attachment" {
+  flows_project_id = "01a0ec63-c97c-75ad-b6c8-f907da036ae6"
+  role_id          = spacelift_role.admin.id
+  space_id         = spacelift_space.flows_examples.id
+}
