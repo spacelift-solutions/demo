@@ -109,6 +109,28 @@ module "eks_blueprints_addons" {
 
   enable_metrics_server = true
 
+  # Scales the managed node group on Pending pods. Uses IRSA through the
+  # cluster OIDC provider (the add-ons module's default) rather than Pod
+  # Identity; the autoscaler image supports both.
+  enable_cluster_autoscaler = true
+  cluster_autoscaler = {
+    wait = true
+    set = [
+      {
+        name  = "extraArgs.balance-similar-node-groups"
+        value = "true"
+      },
+      {
+        name  = "extraArgs.skip-nodes-with-system-pods"
+        value = "false"
+      },
+      {
+        name  = "extraArgs.skip-nodes-with-local-storage"
+        value = "false"
+      },
+    ]
+  }
+
   eks_addons = {
     coredns = {
       most_recent = true
