@@ -53,6 +53,9 @@ module "stack_aws_eks_kubernetes_example" {
   repository_branch = "main"
   tf_version        = "1.5.7"
   workflow_tool     = "TERRAFORM_FOSS"
+  # Cluster, tenants and deployments apply on merge so a reviewed PR rolls out
+  # end to end without a manual confirm at each stack.
+  auto_deploy = true
 
   dependencies = {
     KUBERNETES = {
