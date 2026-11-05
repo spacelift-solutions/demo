@@ -53,6 +53,7 @@ module "stack_aws_eks_kubernetes_example" {
   repository_branch = "main"
   tf_version        = "1.5.7"
   workflow_tool     = "TERRAFORM_FOSS"
+  auto_deploy       = true
 
   dependencies = {
     KUBERNETES = {

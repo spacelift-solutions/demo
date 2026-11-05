@@ -286,6 +286,7 @@ module "stack_aws_eks_tenants" {
   project_root      = "opentofu/aws/eks-tenants"
   repository_branch = "main"
   tf_version        = "1.8.4"
+  auto_deploy       = true
 
   contexts = {
     GITHUB_APP = spacelift_context.spacelift_solutions_github_app.id

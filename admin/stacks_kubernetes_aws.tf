@@ -16,6 +16,7 @@ module "stack_aws_kubernetes_example_deployments" {
   project_root      = "kubernetes/aws"
   repository_branch = "main"
   workflow_tool     = "KUBERNETES"
+  auto_deploy       = true
   # worker_pool_id            = string
 
   hooks = {
