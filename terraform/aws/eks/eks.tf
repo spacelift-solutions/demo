@@ -88,6 +88,12 @@ locals {
 # Cluster Addons
 #---------------------------------------------------------------
 
+locals {
+  # Chart 9.60.0 ships appVersion 1.37.0. Bump both lines together.
+  cluster_autoscaler_chart_version = "9.60.0"
+  cluster_autoscaler_image_tag     = "v1.37.0"
+}
+
 module "eks_blueprints_addons" {
   source  = "aws-ia/eks-blueprints-addons/aws"
   version = ">= 1.14.0"
@@ -112,9 +118,17 @@ module "eks_blueprints_addons" {
   # Scales the managed node group on Pending pods. Uses IRSA through the
   # cluster OIDC provider (the add-ons module's default) rather than Pod
   # Identity; the autoscaler image supports both.
+  #
+  # The module pins chart 9.35.0 (RBAC written for CA v1.29) but its image map
+  # stops at Kubernetes 1.35 and falls back to v<cluster_version>.0, so a newer
+  # cluster runs an image the chart's RBAC cannot support. Pin the chart and
+  # image together: the image tag must equal the chart's appVersion. See
+  # https://github.com/kubernetes/autoscaler/releases for the pairing.
   enable_cluster_autoscaler = true
   cluster_autoscaler = {
-    wait = true
+    wait               = true
+    chart_version      = local.cluster_autoscaler_chart_version
+    image_tag_override = local.cluster_autoscaler_image_tag
     set = [
       {
         name  = "extraArgs.balance-similar-node-groups"
